@@ -164,7 +164,7 @@
          (y (nth 1 edges))
          (width (nth 2 edges))
          (height (nth 3 edges))
-         (frame-width (truncate (* 0.4 width)))
+         (frame-width (truncate (* 0.6 width)))
          (frame-height (truncate (* 0.5 height)))
          (frame-x (/ (- width frame-width) 2))
          (frame-y (/ (- height frame-height) 4)))
@@ -185,10 +185,7 @@
       (switch-to-buffer snails-content-buffer)
       (other-window 1)
 
-      (add-hook 'after-change-functions
-                'snails-monitor-input
-                nil
-                t)
+      (add-hook 'after-change-functions 'snails-monitor-input nil t)
       )
 
     (setq snails-parent-frame (selected-frame))
@@ -197,6 +194,30 @@
 (defun snails-quit ()
   (interactive)
   (delete-frame snails-frame))
+
+(defvar snails-backends nil)
+
+(defvar snails-input-ticker 0)
+
+(defvar snails-candiate-list nil)
+
+(setq snails-backends
+      '(snails-backend-buffer-list
+        snails-backend-recentf-list))
+
+(defun snails-search (input)
+  (setq snails-input-ticker (+ snails-input-ticker 1))
+  (setq snails-candiate-list (make-list (length snails-backends) nil))
+
+  (dolist (backend snails-backends)
+    (let ((search-func (cdr (assoc "search" (eval backend)))))
+      (funcall search-func input snails-input-ticker 'snails-render-callback)
+      )
+    )
+  )
+
+(defun snails-render-callback (backend-name input-ticker candidates)
+  (message "%s %s %s" backend-name input-ticker candidates))
 
 (provide 'snails)
 
