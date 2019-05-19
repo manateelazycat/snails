@@ -201,6 +201,8 @@
 
 (defvar snails-candiate-list nil)
 
+(defvar snails-candiate-list-update-p nil)
+
 (setq snails-backends
       '(snails-backend-buffer-list
         snails-backend-recentf-list))
@@ -211,13 +213,25 @@
 
   (dolist (backend snails-backends)
     (let ((search-func (cdr (assoc "search" (eval backend)))))
-      (funcall search-func input snails-input-ticker 'snails-render-callback)
+      (funcall search-func input snails-input-ticker 'snails-update-callback)
       )
     )
   )
 
-(defun snails-render-callback (backend-name input-ticker candidates)
-  (message "%s %s %s" backend-name input-ticker candidates))
+(defun snails-update-callback (backend-name input-ticker candidates)
+  (when (and (equal input-ticker snails-input-ticker)
+             candidates)
+    (let* ((backend-names (mapcar (lambda (b) (eval (cdr (assoc "name" (eval b))))) snails-backends))
+           (backend-index (cl-position backend-name backend-names)))
+      (when backend-index
+        (setq snails-candiate-list
+              (snails-update-list-by-index snails-candiate-list backend-index candidates))
+        (setq snails-candiate-list-update-p t)
+        ))))
+
+(defun snails-update-list-by-index (list n val)
+  (nconc (subseq list 0 n)
+         (cons val (nthcdr (1+ n) list))))
 
 (provide 'snails)
 
