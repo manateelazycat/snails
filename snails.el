@@ -374,7 +374,9 @@
               (or
                (snails-empty-line-p)
                (snails-header-line-p)))
-    (previous-line)))
+    (previous-line))
+  (when (bobp)
+    (forward-line)))
 
 (defun snails-header-line-p ()
   (let ((overlays (overlays-at (point)))
