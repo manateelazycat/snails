@@ -353,8 +353,6 @@
       )))
 
 (defun snails-backend-do (backend-name candidate)
-  ;; (message "%s %s" backend-name candidate)
-
   (catch 'backend-do
     (dolist (backend snails-backends)
       (let ((name (cdr (assoc "name" (eval backend))))
@@ -364,8 +362,7 @@
           (snails-quit)
           (funcall do-func candidate)
           (throw 'backend-do nil)
-          )
-        ))))
+          )))))
 
 (defun snails-keep-cursor-visible ()
   (when (get-buffer-window snails-content-buffer)
