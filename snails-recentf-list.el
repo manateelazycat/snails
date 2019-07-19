@@ -1,6 +1,6 @@
 (require 'recentf)
 
-(defvar snails-backend-name-recentf-list "recentf-list")
+(defvar snails-backend-name-recentf-list "RECENTLY FILES")
 
 (defun snails-backend-search-recentf-list (input input-ticker update-callback)
   (let (candidates)

@@ -1,4 +1,4 @@
-(defvar snails-backend-name-buffer-list "buffer-list")
+(defvar snails-backend-name-buffer-list "BUFFERS")
 
 (defun snails-backend-search-buffer-list (input input-ticker update-callback)
   (let (candidates)

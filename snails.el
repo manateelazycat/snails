@@ -227,17 +227,21 @@
     (erase-buffer)
 
     (let ((candiate-index 0)
-          (backend-names (snails-get-backend-names)))
+          (backend-names (snails-get-backend-names))
+          header-line-start
+          header-line-end)
       (dolist (candiate-list snails-candiate-list)
         (when candiate-list
-          (insert (propertize
-                   (format "%s\n" (nth candiate-index backend-names))
-                   'face `(
-                           :foreground "#3F90F7"
-                           :weight 'bold
-                           :height 130
-                           :underline t
-                           )))
+          (setq header-line-start (point))
+          (insert (format "%s\n" (nth candiate-index backend-names)))
+          (backward-char)
+          (setq header-line-end (point))
+          (let ((header-line-overlay (make-overlay header-line-start header-line-end)))
+            (overlay-put header-line-overlay
+                         'face `(:foreground "#3F90F7" :underline 1 :height 1.3))
+            )
+          (forward-char)
+
           (dolist (candiate candiate-list)
             (insert (format "%s\n" (string-trim-left (car candiate)))))
           (insert "\n"))
