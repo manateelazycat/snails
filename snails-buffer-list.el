@@ -14,7 +14,7 @@
      candidates)))
 
 (defun snails-backend-do-buffer-list (candidate)
-  )
+  (switch-to-buffer candidate))
 
 (defvar snails-backend-buffer-list
   '(("name" . snails-backend-name-buffer-list)

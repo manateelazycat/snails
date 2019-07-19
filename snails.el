@@ -95,6 +95,8 @@
 
 (defvar snails-select-line-number 0)
 
+(defvar snails-header-line-overlays nil)
+
 (defcustom snails-mode-hook '()
   "snails mode hook."
   :type 'hook
@@ -105,11 +107,17 @@
   "Face for header line"
   :group 'snails)
 
+(defface snails-candiate-content-face
+  '((t ))
+  "Face for header line"
+  :group 'snails)
+
 (defvar snails-mode-map
   (let ((map (make-sparse-keymap)))
     (define-key map (kbd "C-g") 'snails-quit)
     (define-key map (kbd "C-n") 'snails-select-next-item)
     (define-key map (kbd "C-p") 'snails-select-prev-item)
+    (define-key map (kbd "C-m") 'snails-do)
     map)
   "Keymap used by `snails-mode'.")
 
@@ -214,10 +222,7 @@
 
   (dolist (backend snails-backends)
     (let ((search-func (cdr (assoc "search" (eval backend)))))
-      (funcall search-func input snails-input-ticker 'snails-update-callback)
-      )
-    )
-  )
+      (funcall search-func input snails-input-ticker 'snails-update-callback))))
 
 (defun snails-update-callback (backend-name input-ticker candidates)
   (when (and (equal input-ticker snails-input-ticker)
@@ -237,6 +242,8 @@
   (with-current-buffer snails-content-buffer
     (erase-buffer)
 
+    (setq snails-header-line-overlays nil)
+
     (setq snails-select-line-number 0)
     (setq snails-select-line-overlay (make-overlay (point) (point)))
     (overlay-put snails-select-line-overlay 'face `(:background "#333" :foreground "#C6433B"))
@@ -244,7 +251,10 @@
     (let ((candiate-index 0)
           (backend-names (snails-get-backend-names))
           header-line-start
-          header-line-end)
+          header-line-end
+          candidate-content-start
+          candidate-content-end
+          )
       (dolist (candiate-list snails-candiate-list)
         (when candiate-list
           (setq header-line-start (point))
@@ -252,6 +262,7 @@
           (backward-char)
           (setq header-line-end (point))
           (let ((header-line-overlay (make-overlay header-line-start header-line-end)))
+            (add-to-list 'snails-header-line-overlays header-line-overlay)
             (overlay-put header-line-overlay
                          'face
                          'snails-header-line-face
@@ -259,7 +270,17 @@
           (forward-char)
 
           (dolist (candiate candiate-list)
-            (insert (format "%s\n" (string-trim-left (car candiate)))))
+            (insert (string-trim-left (nth 0 candiate)))
+            (setq candidate-content-start (point))
+            (insert (format "%s" (nth 1 candiate)))
+            (setq candidate-content-end (point))
+            (let ((candidate-content-overlay (make-overlay candidate-content-start candidate-content-end)))
+              (overlay-put candidate-content-overlay 'display "")
+              (overlay-put candidate-content-overlay
+                           'face
+                           'snails-candiate-content-face))
+            (insert "\n")
+            )
           (insert "\n"))
         (setq candiate-index (+ candiate-index 1)))
 
@@ -305,6 +326,47 @@
     (previous-line 2))
   )
 
+(defun snails-do ()
+  (interactive)
+  (with-current-buffer snails-content-buffer
+    (goto-line snails-select-line-number)
+    (end-of-line)
+    (backward-char)
+    (let ((overlays (overlays-at (point))))
+      (catch 'do
+        (while overlays
+          (let ((overlay (car overlays)))
+            (when (eq (overlay-get overlay 'face) 'snails-candiate-content-face)
+              (snails-backend-do
+               (snails-get-candidate-backend-name (point))
+               (buffer-substring (overlay-start overlay) (overlay-end overlay)))
+              (throw 'do nil)
+              ))
+          (setq overlays (cdr overlays))))
+      )))
+
+(defun snails-get-candidate-backend-name (candidate-point)
+  (catch 'backend-name
+    (dolist (header-line-overlay snails-header-line-overlays)
+      (when (> candidate-point (overlay-end header-line-overlay))
+        (throw 'backend-name (buffer-substring (overlay-start header-line-overlay) (overlay-end header-line-overlay))))
+      )))
+
+(defun snails-backend-do (backend-name candidate)
+  ;; (message "%s %s" backend-name candidate)
+
+  (catch 'backend-do
+    (dolist (backend snails-backends)
+      (let ((name (cdr (assoc "name" (eval backend))))
+            (do-func (cdr (assoc "do" (eval backend)))))
+
+        (when (equal (eval name) backend-name)
+          (snails-quit)
+          (funcall do-func candidate)
+          (throw 'backend-do nil)
+          )
+        ))))
+
 (defun snails-keep-cursor-visible ()
   (when (get-buffer-window snails-content-buffer)
     (set-window-point (get-buffer-window snails-content-buffer) (point))))
@@ -315,8 +377,7 @@
               (or
                (snails-empty-line-p)
                (snails-header-line-p)))
-    (previous-line))
-  )
+    (previous-line)))
 
 (defun snails-header-line-p ()
   (let ((overlays (overlays-at (point)))

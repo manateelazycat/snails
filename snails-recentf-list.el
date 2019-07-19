@@ -16,7 +16,7 @@
      candidates)))
 
 (defun snails-backend-do-recentf-list (candidate)
-  )
+  (find-file candidate))
 
 (defvar snails-backend-recentf-list
   '(("name" . snails-backend-name-recentf-list)
