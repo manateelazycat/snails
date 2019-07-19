@@ -91,14 +91,25 @@
 
 (defvar snails-parent-frame nil)
 
+(defvar snails-select-line-overlay nil)
+
+(defvar snails-select-line-number 0)
+
 (defcustom snails-mode-hook '()
   "snails mode hook."
   :type 'hook
   :group 'snails)
 
+(defface snails-header-line-face
+  '((t (:foreground "#3F90F7" :underline t :height 1.2)))
+  "Face for header line"
+  :group 'snails)
+
 (defvar snails-mode-map
   (let ((map (make-sparse-keymap)))
     (define-key map (kbd "C-g") 'snails-quit)
+    (define-key map (kbd "C-n") 'snails-select-next-item)
+    (define-key map (kbd "C-p") 'snails-select-prev-item)
     map)
   "Keymap used by `snails-mode'.")
 
@@ -226,6 +237,10 @@
   (with-current-buffer snails-content-buffer
     (erase-buffer)
 
+    (setq snails-select-line-number 0)
+    (setq snails-select-line-overlay (make-overlay (point) (point)))
+    (overlay-put snails-select-line-overlay 'face `(:background "#333" :foreground "#C6433B"))
+
     (let ((candiate-index 0)
           (backend-names (snails-get-backend-names))
           header-line-start
@@ -238,7 +253,9 @@
           (setq header-line-end (point))
           (let ((header-line-overlay (make-overlay header-line-start header-line-end)))
             (overlay-put header-line-overlay
-                         'face `(:foreground "#3F90F7" :underline 1 :height 1.3)))
+                         'face
+                         'snails-header-line-face
+                         ))
           (forward-char)
 
           (dolist (candiate candiate-list)
@@ -246,11 +263,67 @@
           (insert "\n"))
         (setq candiate-index (+ candiate-index 1)))
 
-      (goto-char (point-min)))))
+      (goto-char (point-min))
+      (snails-select-next-item)
+      )))
 
 (defun snails-update-list-by-index (list n val)
   (nconc (subseq list 0 n)
          (cons val (nthcdr (1+ n) list))))
+
+(defun snails-select-next-item ()
+  (interactive)
+  (with-current-buffer snails-content-buffer
+    (goto-line snails-select-line-number)
+    (snails-jump-to-next-item)
+    (setq snails-select-line-number (line-number-at-pos))
+    (move-overlay snails-select-line-overlay
+                  (point-at-bol)
+                  (point-at-eol))
+    ))
+
+(defun snails-select-prev-item ()
+  (interactive)
+  (with-current-buffer snails-content-buffer
+    (goto-line snails-select-line-number)
+    (snails-jump-to-previous-item)
+    (setq snails-select-line-number (line-number-at-pos))
+    (move-overlay snails-select-line-overlay
+                  (point-at-bol)
+                  (point-at-eol))
+    ))
+
+(defun snails-jump-to-next-item ()
+  (forward-line)
+  (while (and (not (eobp))
+              (or
+               (snails-empty-line-p)
+               (snails-header-line-p)))
+    (forward-line))
+  (when (and (eobp)
+             (snails-empty-line-p))
+    (previous-line 2)))
+
+(defun snails-jump-to-previous-item ()
+  (previous-line)
+  (while (and (not (eobp))
+              (or
+               (snails-empty-line-p)
+               (snails-header-line-p)))
+    (previous-line)))
+
+(defun snails-header-line-p ()
+  (let ((overlays (overlays-at (point)))
+        found)
+    (while overlays
+      (let ((overlay (car overlays)))
+        (if (eq (overlay-get overlay 'face) 'snails-header-line-face)
+            (setq found t)))
+      (setq overlays (cdr overlays)))
+    found))
+
+(defun snails-empty-line-p ()
+  (= (point-at-eol) (point-at-bol)))
 
 (provide 'snails)
 
