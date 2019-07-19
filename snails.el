@@ -280,7 +280,7 @@
     (move-overlay snails-select-line-overlay
                   (point-at-bol)
                   (point-at-eol))
-    ))
+    (snails-keep-cursor-visible)))
 
 (defun snails-select-prev-item ()
   (interactive)
@@ -291,7 +291,7 @@
     (move-overlay snails-select-line-overlay
                   (point-at-bol)
                   (point-at-eol))
-    ))
+    (snails-keep-cursor-visible)))
 
 (defun snails-jump-to-next-item ()
   (forward-line)
@@ -302,15 +302,21 @@
     (forward-line))
   (when (and (eobp)
              (snails-empty-line-p))
-    (previous-line 2)))
+    (previous-line 2))
+  )
+
+(defun snails-keep-cursor-visible ()
+  (when (get-buffer-window snails-content-buffer)
+    (set-window-point (get-buffer-window snails-content-buffer) (point))))
 
 (defun snails-jump-to-previous-item ()
   (previous-line)
-  (while (and (not (eobp))
+  (while (and (not (bobp))
               (or
                (snails-empty-line-p)
                (snails-header-line-p)))
-    (previous-line)))
+    (previous-line))
+  )
 
 (defun snails-header-line-p ()
   (let ((overlays (overlays-at (point)))
