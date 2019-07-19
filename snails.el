@@ -122,7 +122,7 @@
   (with-current-buffer (get-buffer-create snails-input-buffer)
     (erase-buffer)
     (snails-mode)
-    (buffer-face-set '(:background "#222" :foreground "gold" :height 180))
+    (buffer-face-set '(:background "#222" :foreground "gold" :height 250))
     (set-face-background 'hl-line "#222")
     (setq-local global-hl-line-overlay nil)
     (setq-local header-line-format nil)
@@ -238,8 +238,7 @@
           (setq header-line-end (point))
           (let ((header-line-overlay (make-overlay header-line-start header-line-end)))
             (overlay-put header-line-overlay
-                         'face `(:foreground "#3F90F7" :underline 1 :height 1.3))
-            )
+                         'face `(:foreground "#3F90F7" :underline 1 :height 1.3)))
           (forward-char)
 
           (dolist (candiate candiate-list)
