@@ -1,3 +1,4 @@
+(require 'snails-core)
 (require 'recentf)
 
 (defvar snails-backend-name-recentf-list "RECENTLY FILES")
@@ -10,11 +11,7 @@
              (string-match-p (regexp-quote input) file))
         (add-to-list 'candidates
                      (list
-                      (if (featurep 'all-the-icons)
-                          (format "%s %s"
-                                  (all-the-icons-icon-for-file file)
-                                  (string-trim-left file))
-                        file)
+                      (snails-wrap-file-icon file)
                       file) t)))
     (funcall
      update-callback

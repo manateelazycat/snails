@@ -1,19 +1,18 @@
+(require 'snails-core)
+
 (defvar snails-backend-name-buffer-list "BUFFERS")
 
 (defun snails-backend-search-buffer-list (input input-ticker update-callback)
   (let (candidates)
     (dolist (buf (buffer-list))
-      (when (or
-             (string-equal input "")
-             (string-match-p (regexp-quote input) (buffer-name buf)))
+      (when (and
+             (not (minibufferp buf))
+             (or
+              (string-equal input "")
+              (string-match-p (regexp-quote input) (buffer-name buf))))
         (add-to-list 'candidates
                      (list
-                      (if (featurep 'all-the-icons)
-                          (format "%s %s"
-                                  (with-current-buffer buf
-                                    (all-the-icons-icon-for-buffer))
-                                  (string-trim-left (buffer-name buf)))
-                        (buffer-name buf))
+                      (snails-wrap-buffer-icon buf)
                       (buffer-name buf)) t)))
     (funcall
      update-callback
