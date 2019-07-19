@@ -96,11 +96,6 @@
   :type 'hook
   :group 'snails)
 
-(defface snails-face-backend-name
-  '((t (:foreground "Gold" :bold t :height 3)))
-  "Face backend name"
-  :group 'snails)
-
 (defvar snails-mode-map
   (let ((map (make-sparse-keymap)))
     (define-key map (kbd "C-g") 'snails-quit)
@@ -173,9 +168,12 @@
       (set-frame-parameter nil 'undecorated t)
       (split-window (selected-window) (nth 3 (window-edges (selected-window))) nil t)
       (switch-to-buffer snails-input-buffer)
+      (set-window-margins (selected-window) 1 1)
       (other-window 1)
       (switch-to-buffer snails-content-buffer)
+      (set-window-margins (selected-window) 1 1)
       (other-window 1)
+
 
       (add-hook 'after-change-functions 'snails-monitor-input nil t)
       )
@@ -213,7 +211,7 @@
 (defun snails-update-callback (backend-name input-ticker candidates)
   (when (and (equal input-ticker snails-input-ticker)
              candidates)
-    (let* ((backend-names (mapcar (lambda (b) (eval (cdr (assoc "name" (eval b))))) snails-backends))
+    (let* ((backend-names (snails-get-backend-names))
            (backend-index (cl-position backend-name backend-names)))
       (when backend-index
         (setq snails-candiate-list (snails-update-list-by-index snails-candiate-list backend-index candidates))
@@ -221,19 +219,27 @@
         (setq snails-candiate-list-update-p t)
         ))))
 
+(defun snails-get-backend-names ()
+  (mapcar (lambda (b) (eval (cdr (assoc "name" (eval b))))) snails-backends))
+
 (defun snails-render-bufer ()
   (with-current-buffer snails-content-buffer
     (erase-buffer)
 
     (let ((candiate-index 0)
-          (backend-names (mapcar (lambda (b) (eval (cdr (assoc "name" (eval b))))) snails-backends)))
+          (backend-names (snails-get-backend-names)))
       (dolist (candiate-list snails-candiate-list)
         (when candiate-list
           (insert (propertize
                    (format "%s\n" (nth candiate-index backend-names))
-                   'face 'snails-face-backend-name))
+                   'face `(
+                           :foreground "#3F90F7"
+                           :weight 'bold
+                           :height 130
+                           :underline t
+                           )))
           (dolist (candiate candiate-list)
-            (insert (format " %s\n" (string-trim-left (car candiate)))))
+            (insert (format "%s\n" (string-trim-left (car candiate)))))
           (insert "\n"))
         (setq candiate-index (+ candiate-index 1)))
 
