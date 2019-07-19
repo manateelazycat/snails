@@ -5,7 +5,9 @@
 (defun snails-backend-search-recentf-list (input input-ticker update-callback)
   (let (candidates)
     (dolist (file recentf-list)
-      (when (string-match-p (regexp-quote input) file)
+      (when (or
+             (string-equal input "")
+             (string-match-p (regexp-quote input) file))
         (add-to-list 'candidates (list file file) t)))
     (funcall
      update-callback

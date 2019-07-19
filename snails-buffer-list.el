@@ -3,7 +3,9 @@
 (defun snails-backend-search-buffer-list (input input-ticker update-callback)
   (let (candidates)
     (dolist (buf (buffer-list))
-      (when (string-match-p (regexp-quote input) (buffer-name buf))
+      (when (or
+             (string-equal input "")
+             (string-match-p (regexp-quote input) (buffer-name buf)))
         (add-to-list 'candidates (list (buffer-name buf) (buffer-name buf)) t)))
     (funcall
      update-callback

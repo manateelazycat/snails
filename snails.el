@@ -96,6 +96,11 @@
   :type 'hook
   :group 'snails)
 
+(defface snails-face-backend-name
+  '((t (:foreground "Gold" :bold t :height 3)))
+  "Face backend name"
+  :group 'snails)
+
 (defvar snails-mode-map
   (let ((map (make-sparse-keymap)))
     (define-key map (kbd "C-g") 'snails-quit)
@@ -114,6 +119,7 @@
   (interactive)
   (snails-create-input-buffer)
   (snails-create-content-buffer)
+  (snails-search "")
   (snails-create-frame)
   )
 
@@ -135,8 +141,6 @@
     (setq-local header-line-format nil)
     (setq-local mode-line-format nil)
     (setq-local cursor-type nil)
-
-
     ))
 
 (defun snails-monitor-input (begin end length)
@@ -144,19 +148,7 @@
     (with-current-buffer snails-content-buffer
       (let* ((input (with-current-buffer snails-input-buffer
                       (buffer-substring (point-min) (point-max)))))
-        (erase-buffer)
-
-        (dolist (buf (buffer-list))
-          (when (string-match-p (regexp-quote input) (buffer-name buf))
-            (insert (format " %s\n" (buffer-name buf)))))
-
-        (insert "\n")
-
-        (dolist (file recentf-list)
-          (when (string-match-p (regexp-quote input) file)
-            (insert (format " %s\n" file))))
-        )
-      )))
+        (snails-search input)))))
 
 (defun snails-create-frame ()
   (let* ((edges (frame-edges))
@@ -224,10 +216,28 @@
     (let* ((backend-names (mapcar (lambda (b) (eval (cdr (assoc "name" (eval b))))) snails-backends))
            (backend-index (cl-position backend-name backend-names)))
       (when backend-index
-        (setq snails-candiate-list
-              (snails-update-list-by-index snails-candiate-list backend-index candidates))
+        (setq snails-candiate-list (snails-update-list-by-index snails-candiate-list backend-index candidates))
+        (snails-render-bufer)
         (setq snails-candiate-list-update-p t)
         ))))
+
+(defun snails-render-bufer ()
+  (with-current-buffer snails-content-buffer
+    (erase-buffer)
+
+    (let ((candiate-index 0)
+          (backend-names (mapcar (lambda (b) (eval (cdr (assoc "name" (eval b))))) snails-backends)))
+      (dolist (candiate-list snails-candiate-list)
+        (when candiate-list
+          (insert (propertize
+                   (format "%s\n" (nth candiate-index backend-names))
+                   'face 'snails-face-backend-name))
+          (dolist (candiate candiate-list)
+            (insert (format " %s\n" (string-trim-left (car candiate)))))
+          (insert "\n"))
+        (setq candiate-index (+ candiate-index 1)))
+
+      (goto-char (point-min)))))
 
 (defun snails-update-list-by-index (list n val)
   (nconc (subseq list 0 n)
