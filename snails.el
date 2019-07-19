@@ -81,14 +81,14 @@
 
 ;;; Require
 (require 'snails-core)
-(require 'snails-backend-buffer-list)
-(require 'snails-backend-recentf-list)
+(require 'snails-backend-buffer)
+(require 'snails-backend-recentf)
 
 ;;; Code:
 
 (setq snails-backends
-      '(snails-backend-buffer-list
-        snails-backend-recentf-list))
+      '(snails-backend-buffer
+        snails-backend-recentf))
 
 (provide 'snails)
 

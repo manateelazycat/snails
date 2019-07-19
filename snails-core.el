@@ -107,9 +107,14 @@
   "Face for header line"
   :group 'snails)
 
+(defface snails-candiate-name-face
+  '((t))
+  "Face for candidate name"
+  :group 'snails)
+
 (defface snails-candiate-content-face
-  '((t ))
-  "Face for header line"
+  '((t))
+  "Face for candidate content"
   :group 'snails)
 
 (defvar snails-mode-map
@@ -242,12 +247,14 @@
 
     (setq snails-select-line-number 0)
     (setq snails-select-line-overlay (make-overlay (point) (point)))
-    (overlay-put snails-select-line-overlay 'face `(:background "#333" :foreground "#C6433B"))
+    (overlay-put snails-select-line-overlay 'face `(:background "#3F90F7" :foreground "#FFF"))
 
     (let ((candiate-index 0)
           (backend-names (snails-get-backend-names))
           header-line-start
           header-line-end
+          candidate-name-start
+          candidate-name-end
           candidate-content-start
           candidate-content-end
           )
@@ -266,7 +273,13 @@
           (forward-char)
 
           (dolist (candiate candiate-list)
+            (setq candidate-name-start (point))
             (insert (nth 0 candiate))
+            (setq candidate-name-end (point))
+            (overlay-put (make-overlay candidate-name-start candidate-name-end)
+                         'face
+                         'snails-candiate-name-face)
+
             (setq candidate-content-start (point))
             (insert (format "%s" (nth 1 candiate)))
             (setq candidate-content-end (point))
@@ -398,7 +411,7 @@
 (defun snails-wrap-file-icon (file)
   (if (featurep 'all-the-icons)
       (format "%s %s"
-              (all-the-icons-icon-for-file file)
+              (all-the-icons-icon-for-file file :height 1)
               (string-trim-left file))
     file))
 
