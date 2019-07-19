@@ -6,7 +6,15 @@
       (when (or
              (string-equal input "")
              (string-match-p (regexp-quote input) (buffer-name buf)))
-        (add-to-list 'candidates (list (buffer-name buf) (buffer-name buf)) t)))
+        (add-to-list 'candidates
+                     (list
+                      (if (featurep 'all-the-icons)
+                          (format "%s %s"
+                                  (with-current-buffer buf
+                                    (all-the-icons-icon-for-buffer))
+                                  (string-trim-left (buffer-name buf)))
+                        (buffer-name buf))
+                      (buffer-name buf)) t)))
     (funcall
      update-callback
      snails-backend-name-buffer-list

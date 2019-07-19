@@ -270,7 +270,7 @@
           (forward-char)
 
           (dolist (candiate candiate-list)
-            (insert (string-trim-left (nth 0 candiate)))
+            (insert (nth 0 candiate))
             (setq candidate-content-start (point))
             (insert (format "%s" (nth 1 candiate)))
             (setq candidate-content-end (point))

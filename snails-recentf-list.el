@@ -8,7 +8,14 @@
       (when (or
              (string-equal input "")
              (string-match-p (regexp-quote input) file))
-        (add-to-list 'candidates (list file file) t)))
+        (add-to-list 'candidates
+                     (list
+                      (if (featurep 'all-the-icons)
+                          (format "%s %s"
+                                  (all-the-icons-icon-for-file file)
+                                  (string-trim-left file))
+                        file)
+                      file) t)))
     (funcall
      update-callback
      snails-backend-name-recentf-list
