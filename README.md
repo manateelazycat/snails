@@ -1,3 +1,5 @@
+<img src="./images/snails.png" width="200">
+
 # What is snails?
 Snails is modern, easy-to-expand fuzzy search framework.
 
@@ -15,6 +17,8 @@ In your `~/.emacs`, add the following two lines:
 
 ## Usage
 ```M-x snails```
+
+<img src="./images/screenshot.png">
 
 ### Keymap for view mode
 
