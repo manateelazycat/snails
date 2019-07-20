@@ -278,8 +278,8 @@ use for find candidate position to change select line.")
          (height (nth 3 edges))
          (frame-width (truncate (* 0.6 width)))
          (frame-height (truncate (* 0.5 height)))
-         (frame-x (/ (- width frame-width) 2))
-         (frame-y (/ (- height frame-height) 4)))
+         (frame-x (/ (+ x (- width frame-width)) 2))
+         (frame-y (/ (+ y (- height frame-height)) 3)))
     ;; Make popup frame, and position at center of current frame.
     (setq snails-frame
           (make-frame
