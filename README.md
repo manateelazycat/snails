@@ -30,6 +30,6 @@ In your `~/.emacs`, add the following two lines:
 | C-m        | Confirm                                                                |
 | C-g        | Quit snails                                                            |
 
-## How to write new plugins?
+## How to write new plugin?
 
 Document coming soon, please wait patiently.
