@@ -6,8 +6,8 @@
 ;; Maintainer: Andy Stewart <lazycat.manatee@gmail.com>
 ;; Copyright (C) 2019, Andy Stewart, all rights reserved.
 ;; Created: 2019-05-16 21:26:09
-;; Version: 0.1
-;; Last-Updated: 2019-05-16 21:26:09
+;; Version: 0.2
+;; Last-Updated: 2019-07-20 20:20:16
 ;;           By: Andy Stewart
 ;; URL: http://www.emacswiki.org/emacs/download/snails.el
 ;; Keywords:
@@ -64,6 +64,9 @@
 ;;
 
 ;;; Change log:
+;;
+;; 2019/07/20
+;;      * Finish document.
 ;;
 ;; 2019/05/16
 ;;      * First released.
@@ -132,6 +135,18 @@ do don't need set face attribute, such as like foreground and background."
 (defvar snails-header-line-overlays nil
   "The list overlay to render backend header line.")
 
+(defvar snails-backends nil
+  "The variables contains backends.")
+
+(defvar snails-input-ticker 0
+  "Input ticker to unique search request.
+If a search result return with old input ticker,
+search result will be drop.")
+
+(defvar snails-candiate-list nil
+  "The list to contain candidate list,
+use for find candidate position to change select line.")
+
 (defvar snails-mode-map
   (let ((map (make-sparse-keymap)))
     (define-key map (kbd "C-g") 'snails-quit)
@@ -143,41 +158,111 @@ do don't need set face attribute, such as like foreground and background."
 
 (define-derived-mode snails-mode text-mode "snails"
   (interactive)
+  ;; Kill all local variables.
   (kill-all-local-variables)
+  ;; Switch new mode.
   (setq major-mode 'snails-mode)
   (setq mode-name "snails")
+  ;; Injection keymap.
   (use-local-map snails-mode-map)
+  ;; Run hook.
   (run-hooks 'snails-mode-hook))
 
 (defun snails ()
+  "Start snails to search."
   (interactive)
+  ;; Create input and content buffer.
   (snails-create-input-buffer)
   (snails-create-content-buffer)
+  ;; Send empty search content to backends.
   (snails-search "")
-  (snails-create-frame)
-  )
+  ;; Create popup frame to show search result.
+  (snails-create-frame))
+
+(defun snails-select-next-item ()
+  "Select next candidate item."
+  (interactive)
+  (with-current-buffer snails-content-buffer
+    ;; Goto current line.
+    (goto-line snails-select-line-number)
+    ;; Jump to next candidate item position.
+    (snails-jump-to-next-item)
+    ;; Update select line
+    (snails-update-select-line)
+    ))
+
+(defun snails-select-prev-item ()
+  "Select previous candidate item."
+  (interactive)
+  (with-current-buffer snails-content-buffer
+    ;; Goto current line.
+    (goto-line snails-select-line-number)
+    ;; Jump to previous candidate item position.
+    (snails-jump-to-previous-item)
+    ;; Update select line.
+    (snails-update-select-line)
+    ))
+
+(defun snails-do ()
+  "Confirm current candidate."
+  (interactive)
+  (with-current-buffer snails-content-buffer
+    ;; Goto candidate content overlay position.
+    (goto-line snails-select-line-number)
+    (end-of-line)
+    (backward-char)
+
+    ;; Pickup candidate content and confirm by corresponding backend.
+    (let ((overlays (overlays-at (point))))
+      (catch 'do
+        (while overlays
+          (let ((overlay (car overlays)))
+            ;; Find overlay that face is `snails-candiate-content-face'.
+            (when (eq (overlay-get overlay 'face) 'snails-candiate-content-face)
+              ;; Confirm candidate with backend.
+              (snails-backend-do
+               (snails-get-candidate-backend-name (point))
+               (buffer-substring (overlay-start overlay) (overlay-end overlay)))
+              (throw 'do nil)))
+          (setq overlays (cdr overlays))))
+      )))
+
+(defun snails-quit ()
+  "Quit snails."
+  (interactive)
+  (delete-frame snails-frame))
 
 (defun snails-create-input-buffer ()
+  "Create input buffer."
   (with-current-buffer (get-buffer-create snails-input-buffer)
+    ;; Clean buffer.
     (erase-buffer)
+    ;; Switch snails mode.
     (snails-mode)
+    ;; Set input buffer face.
     (buffer-face-set '(:background "#222" :foreground "gold" :height 250))
-    (set-face-background 'hl-line "#222")
+    ;; Disable hl-line, header-line and mode-line in input buffer.
     (setq-local global-hl-line-overlay nil)
     (setq-local header-line-format nil)
     (setq-local mode-line-format nil)
     ))
 
 (defun snails-create-content-buffer ()
+  "Create content buffer."
   (with-current-buffer (get-buffer-create snails-content-buffer)
+    ;; Clean buffer.
     (erase-buffer)
+    ;; Set coent buffer face.
     (buffer-face-set '(:background "#111" :height 130))
+    ;; Disable header-line, mode-line and cursor shape in content buffer.
     (setq-local header-line-format nil)
     (setq-local mode-line-format nil)
     (setq-local cursor-type nil)
     ))
 
 (defun snails-monitor-input (begin end length)
+  "This is input monitor callback to hook `after-change-functions'."
+  ;; Send new input to all backends when user change input.
   (when (string-equal (buffer-name) snails-input-buffer)
     (with-current-buffer snails-content-buffer
       (let* ((input (with-current-buffer snails-input-buffer
@@ -185,6 +270,7 @@ do don't need set face attribute, such as like foreground and background."
         (snails-search input)))))
 
 (defun snails-create-frame ()
+  "Create popup frame."
   (let* ((edges (frame-edges))
          (x (nth 0 edges))
          (y (nth 1 edges))
@@ -194,6 +280,7 @@ do don't need set face attribute, such as like foreground and background."
          (frame-height (truncate (* 0.5 height)))
          (frame-x (/ (- width frame-width) 2))
          (frame-y (/ (- height frame-height) 4)))
+    ;; Make popup frame, and position at center of current frame.
     (setq snails-frame
           (make-frame
            '((minibuffer . nil)
@@ -201,65 +288,86 @@ do don't need set face attribute, such as like foreground and background."
              (internal-border-width . 0)
              )))
 
+    ;; Configuration frame.
     (with-selected-frame snails-frame
+      ;; Set frame position and size.
       (set-frame-position snails-frame frame-x frame-y)
       (set-frame-size snails-frame frame-width frame-height t)
+
+      ;; Disable frame decorated.
       (set-frame-parameter nil 'undecorated t)
+
+      ;; Split frame with input buffer and content buffer.
       (split-window (selected-window) (nth 3 (window-edges (selected-window))) nil t)
+
+      ;; Set input window margin and switch to input buffer.
       (switch-to-buffer snails-input-buffer)
       (set-window-margins (selected-window) 1 1)
+
+      ;; Set content window margin and switch to content buffer.
       (other-window 1)
       (switch-to-buffer snails-content-buffer)
       (set-window-margins (selected-window) 1 1)
+
+      ;; Add monitor callback in input change hook.
       (other-window 1)
-
-
       (add-hook 'after-change-functions 'snails-monitor-input nil t)
       )
 
+    ;; Set parent frame.
     (setq snails-parent-frame (selected-frame))
+
+    ;; Show popup frame.
     (make-frame-visible snails-frame)))
 
-(defun snails-quit ()
-  (interactive)
-  (delete-frame snails-frame))
-
-(defvar snails-backends nil)
-
-(defvar snails-input-ticker 0)
-
-(defvar snails-candiate-list nil)
-
-(defvar snails-candiate-list-update-p nil)
-
 (defun snails-search (input)
+  "Search input with backends."
+  ;; Update input ticker.
   (setq snails-input-ticker (+ snails-input-ticker 1))
+
+  ;; Clean candidate list.
   (setq snails-candiate-list (make-list (length snails-backends) nil))
 
+  ;; Call all backends with new input.
   (dolist (backend snails-backends)
     (let ((search-func (cdr (assoc "search" (eval backend)))))
       (funcall search-func input snails-input-ticker 'snails-update-callback))))
 
 (defun snails-update-callback (backend-name input-ticker candidates)
+  "Update candiate callback, use by backend."
+  ;; Just update candidates when input ticker is newest.
+  ;; Candidate will not render if backend return input ticker is old.
   (when (and (equal input-ticker snails-input-ticker)
              candidates)
     (let* ((backend-names (snails-get-backend-names))
            (backend-index (cl-position backend-name backend-names)))
       (when backend-index
+        ;; Update candidates by backend index.
         (setq snails-candiate-list (snails-update-list-by-index snails-candiate-list backend-index candidates))
+
+        ;; Render search content buffer.
         (snails-render-bufer)
-        (setq snails-candiate-list-update-p t)
         ))))
 
+(defun snails-update-list-by-index (list n val)
+  "Update candidates with backend index."
+  (nconc (subseq list 0 n)
+         (cons val (nthcdr (1+ n) list))))
+
 (defun snails-get-backend-names ()
+  "Get all backend names."
   (mapcar (lambda (b) (eval (cdr (assoc "name" (eval b))))) snails-backends))
 
 (defun snails-render-bufer ()
+  "Render candidates."
   (with-current-buffer snails-content-buffer
+    ;; Clean buffer first.
     (erase-buffer)
 
+    ;; Clean all header line overlays.
     (setq snails-header-line-overlays nil)
 
+    ;; Reset select line variables.
     (setq snails-select-line-number 0)
     (setq snails-select-line-overlay (make-overlay (point) (point)))
     (overlay-put snails-select-line-overlay 'face `snails-select-line-face)
@@ -271,10 +379,12 @@ do don't need set face attribute, such as like foreground and background."
           candidate-name-start
           candidate-name-end
           candidate-content-start
-          candidate-content-end
-          )
+          candidate-content-end)
+      ;; Render backend result.
       (dolist (candiate-list snails-candiate-list)
+        ;; Just render backend result when return candidate is not nil.
         (when candiate-list
+          ;; Render header line with overlay.
           (setq header-line-start (point))
           (insert (format "%s\n" (nth candiate-index backend-names)))
           (backward-char)
@@ -287,7 +397,9 @@ do don't need set face attribute, such as like foreground and background."
                          ))
           (forward-char)
 
+          ;; Render candidate list.
           (dolist (candiate candiate-list)
+            ;; Render candidate display name.
             (setq candidate-name-start (point))
             (insert (nth 0 candiate))
             (setq candidate-name-end (point))
@@ -295,6 +407,7 @@ do don't need set face attribute, such as like foreground and background."
                          'face
                          'snails-candiate-name-face)
 
+            ;; Render candidate real content.
             (setq candidate-content-start (point))
             (insert (format "%s" (nth 1 candiate)))
             (setq candidate-content-end (point))
@@ -303,73 +416,49 @@ do don't need set face attribute, such as like foreground and background."
               (overlay-put candidate-content-overlay
                            'face
                            'snails-candiate-content-face))
-            (insert "\n")
-            )
+            (insert "\n"))
+
+          ;; Insert new empty line at last candiate of backend.
           (insert "\n"))
+        ;; Update candidate index to fetch name of next backend.
         (setq candiate-index (+ candiate-index 1)))
 
+      ;; Select first line after render finish.
       (goto-char (point-min))
       (snails-select-next-item)
       )))
 
-(defun snails-update-list-by-index (list n val)
-  (nconc (subseq list 0 n)
-         (cons val (nthcdr (1+ n) list))))
-
-(defun snails-select-next-item ()
-  (interactive)
-  (with-current-buffer snails-content-buffer
-    (goto-line snails-select-line-number)
-    (snails-jump-to-next-item)
-    (setq snails-select-line-number (line-number-at-pos))
-    (move-overlay snails-select-line-overlay
-                  (point-at-bol)
-                  (point-at-eol))
-    (snails-keep-cursor-visible)))
-
-(defun snails-select-prev-item ()
-  (interactive)
-  (with-current-buffer snails-content-buffer
-    (goto-line snails-select-line-number)
-    (snails-jump-to-previous-item)
-    (setq snails-select-line-number (line-number-at-pos))
-    (move-overlay snails-select-line-overlay
-                  (point-at-bol)
-                  (point-at-eol))
-    (snails-keep-cursor-visible)))
-
 (defun snails-jump-to-next-item ()
+  "Select next candidate item."
+  ;; Forward line.
   (forward-line)
+  ;; Skip empty line and header line.
   (while (and (not (eobp))
               (or
                (snails-empty-line-p)
                (snails-header-line-p)))
     (forward-line))
+  ;; Adjust line if reach bottom line.
   (when (and (eobp)
              (snails-empty-line-p))
-    (previous-line 2))
-  )
+    (previous-line 2)))
 
-(defun snails-do ()
-  (interactive)
-  (with-current-buffer snails-content-buffer
-    (goto-line snails-select-line-number)
-    (end-of-line)
-    (backward-char)
-    (let ((overlays (overlays-at (point))))
-      (catch 'do
-        (while overlays
-          (let ((overlay (car overlays)))
-            (when (eq (overlay-get overlay 'face) 'snails-candiate-content-face)
-              (snails-backend-do
-               (snails-get-candidate-backend-name (point))
-               (buffer-substring (overlay-start overlay) (overlay-end overlay)))
-              (throw 'do nil)
-              ))
-          (setq overlays (cdr overlays))))
-      )))
+(defun snails-jump-to-previous-item ()
+  "Select previous candidate item."
+  ;; Previous line.
+  (previous-line)
+  ;; Skip empty line and header line.
+  (while (and (not (bobp))
+              (or
+               (snails-empty-line-p)
+               (snails-header-line-p)))
+    (previous-line))
+  ;; Adjust line if reach to line.
+  (when (bobp)
+    (forward-line)))
 
 (defun snails-get-candidate-backend-name (candidate-point)
+  "Get backend name at selected candidate position."
   (catch 'backend-name
     (dolist (header-line-overlay snails-header-line-overlays)
       (when (> candidate-point (overlay-end header-line-overlay))
@@ -377,32 +466,29 @@ do don't need set face attribute, such as like foreground and background."
       )))
 
 (defun snails-backend-do (backend-name candidate)
+  "Confirm candidate with special backend."
   (catch 'backend-do
     (dolist (backend snails-backends)
       (let ((name (cdr (assoc "name" (eval backend))))
             (do-func (cdr (assoc "do" (eval backend)))))
 
         (when (equal (eval name) backend-name)
+          ;; Quit frame first.
           (snails-quit)
+
+          ;; Call backend do function.
           (funcall do-func candidate)
           (throw 'backend-do nil)
           )))))
 
 (defun snails-keep-cursor-visible ()
+  "Scrol window to keep cursor in visible area of window."
+  ;; Scrol window to keep cursor in visible area of window.
   (when (get-buffer-window snails-content-buffer)
     (set-window-point (get-buffer-window snails-content-buffer) (point))))
 
-(defun snails-jump-to-previous-item ()
-  (previous-line)
-  (while (and (not (bobp))
-              (or
-               (snails-empty-line-p)
-               (snails-header-line-p)))
-    (previous-line))
-  (when (bobp)
-    (forward-line)))
-
 (defun snails-header-line-p ()
+  "Detect whether at header line."
   (let ((overlays (overlays-at (point)))
         found)
     (while overlays
@@ -413,9 +499,11 @@ do don't need set face attribute, such as like foreground and background."
     found))
 
 (defun snails-empty-line-p ()
+  "Detect current line whether empty line."
   (= (point-at-eol) (point-at-bol)))
 
 (defun snails-wrap-buffer-icon (buf)
+  "Wrap display name with buffer icon, use for buffer search backend."
   (if (featurep 'all-the-icons)
       (format "%s %s"
               (with-current-buffer buf
@@ -424,13 +512,31 @@ do don't need set face attribute, such as like foreground and background."
     (buffer-name buf)))
 
 (defun snails-wrap-file-icon (file)
+  "Wrap display name with file icon, use for file search backend."
   (if (featurep 'all-the-icons)
       (format "%s %s"
               (all-the-icons-icon-for-file file :height 1)
               (string-trim-left file))
     file))
 
+(defun snails-update-select-line ()
+  "Update select line status."
+  ;; Update current line number.
+  (setq snails-select-line-number (line-number-at-pos))
+  ;; Update select line overlay postion.
+  (move-overlay snails-select-line-overlay
+                (point-at-bol)
+                (point-at-eol))
+  ;; Scroll window to keep cursor visible.
+  (snails-keep-cursor-visible))
+
 (defmacro snails-create-backend (name candidate-search-function candiate-do-function)
+  "Macro to simple backend code.
+
+`name' is backend name, such 'Foo Bar'.
+`candidate-search-function' is function that accpet input string, and return candidate list, example format: ((display-name-1 candidate-1) (display-name-2 candidate-2))
+`candidate-do-function' is function that confirm candidate, accpet candidate search, and do anything you want.
+"
   (let* ((backend-template-name (string-join (split-string (downcase name)) "-"))
          (backend-name (intern (format "snails-backend-%s" backend-template-name)))
          (search-function (intern (format "snails-backend-%s-search" backend-template-name))))
