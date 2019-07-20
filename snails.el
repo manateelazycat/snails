@@ -83,6 +83,7 @@
 (require 'snails-core)
 (require 'snails-backend-buffer)
 (require 'snails-backend-recentf)
+(require 'snails-backend-command)
 (require 'snails-backend-awesome-tab)
 
 ;;; Code:
@@ -90,7 +91,8 @@
 (setq snails-backends
       '(snails-backend-awesome-tab-group
         snails-backend-buffer
-        snails-backend-recentf))
+        snails-backend-recentf
+        ))
 
 (provide 'snails)
 
