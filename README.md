@@ -33,3 +33,16 @@ In your `~/.emacs`, add the following two lines:
 ## How to write new plugin?
 
 Document coming soon, please wait patiently.
+
+## TODO List
+
+* Research async backend and adjust framework interface.
+* Add ```fd``` backend to search current project.
+* Add elisp library backend.
+* Write plugin document.
+* Add interactive command to jump next/previous backend.
+* Add device to disable window configuration change in poup frame.
+* Disable insert return char in input buffer.
+* Add backend list sidebar.
+
+Welcome to hacking this framework! ;)
