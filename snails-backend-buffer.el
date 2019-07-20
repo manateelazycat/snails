@@ -26,7 +26,6 @@
  (lambda (input)
    (let (candidates)
      (dolist (buf (buffer-list))
-       (message "'%s'" (buffer-name buf))
        (when (and
               (snails-backend-buffer-not-blacklist-buffer buf)
               (or
