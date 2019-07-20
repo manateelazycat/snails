@@ -3,8 +3,9 @@
 # What is snails?
 Snails is modern, easy-to-expand fuzzy search framework.
 
-Currently still in developing.
-Welcome to hacking, not recommand to use for production enviroment.
+The goal of this project is to minimize the development threshold for fuzzy search plugins.
+If you know how to write filter function, you can write a new search plugin in 5 minutes,
+regardless of the complex search framework details.
 
 ## Installation
 Clone or download this repository (path of the folder is the `<path-to-snails>` used below).
@@ -28,3 +29,7 @@ In your `~/.emacs`, add the following two lines:
 | C-p        | Select previous candidate                                              |
 | C-m        | Confirm                                                                |
 | C-g        | Quit snails                                                            |
+
+## How to write new plugins?
+
+Document coming soon, please wait patiently.
