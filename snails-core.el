@@ -117,6 +117,11 @@
   "Face for candidate content"
   :group 'snails)
 
+(defface snails-select-line-face
+  '((t (:background "#3F90F7" :foreground "#FFF")))
+  "Face for select line"
+  :group 'snails)
+
 (defvar snails-mode-map
   (let ((map (make-sparse-keymap)))
     (define-key map (kbd "C-g") 'snails-quit)
@@ -247,7 +252,7 @@
 
     (setq snails-select-line-number 0)
     (setq snails-select-line-overlay (make-overlay (point) (point)))
-    (overlay-put snails-select-line-overlay 'face `(:background "#3F90F7" :foreground "#FFF"))
+    (overlay-put snails-select-line-overlay 'face `snails-select-line-face)
 
     (let ((candiate-index 0)
           (backend-names (snails-get-backend-names))
