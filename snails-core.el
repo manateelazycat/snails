@@ -83,20 +83,6 @@
 
 ;;; Code:
 
-(defvar snails-input-buffer " *snails input*")
-
-(defvar snails-content-buffer " *snails content*")
-
-(defvar snails-frame nil)
-
-(defvar snails-parent-frame nil)
-
-(defvar snails-select-line-overlay nil)
-
-(defvar snails-select-line-number 0)
-
-(defvar snails-header-line-overlays nil)
-
 (defcustom snails-mode-hook '()
   "snails mode hook."
   :type 'hook
@@ -109,18 +95,42 @@
 
 (defface snails-candiate-name-face
   '((t))
-  "Face for candidate name"
+  "Face for candidate display name."
   :group 'snails)
 
 (defface snails-candiate-content-face
   '((t))
-  "Face for candidate content"
+  "Face for candidate content.
+Note, candidate name is display name you can see in content buffer.
+Candidate content use for confirm, it's is invisible,
+do don't need set face attribute, such as like foreground and background."
   :group 'snails)
 
 (defface snails-select-line-face
   '((t (:background "#3F90F7" :foreground "#FFF")))
-  "Face for select line"
+  "Face for select line."
   :group 'snails)
+
+(defvar snails-input-buffer " *snails input*"
+  "The buffer name of search input buffer.")
+
+(defvar snails-content-buffer " *snails content*"
+  "The buffer name of search content buffer.")
+
+(defvar snails-frame nil
+  "The popup frame use for show search result.")
+
+(defvar snails-parent-frame nil
+  "The parent frame of popup frame.")
+
+(defvar snails-select-line-overlay nil
+  "Select line overlay, use to highlight selected candidate.")
+
+(defvar snails-select-line-number 0
+  "Select line number, use to track line number of selected candidate.")
+
+(defvar snails-header-line-overlays nil
+  "The list overlay to render backend header line.")
 
 (defvar snails-mode-map
   (let ((map (make-sparse-keymap)))
