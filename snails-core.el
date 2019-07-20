@@ -415,6 +415,26 @@
               (string-trim-left file))
     file))
 
+(defmacro snails-create-backend (name candidate-search-function candiate-do-function)
+  (let* ((backend-template-name (string-join (split-string (downcase name)) "-"))
+         (backend-name (intern (format "snails-backend-%s" backend-template-name)))
+         (search-function (intern (format "snails-backend-%s-search" backend-template-name)))
+         )
+    `(defun ,search-function(input input-ticker update-callback)
+       (funcall
+        update-callback
+        ,name
+        input-ticker
+        ,candidate-search-function(input))
+       )
+    `(defvar ,backend-name
+       '(("name" . ,name)
+         ("search" . ',search-function)
+         ("do" . ,candiate-do-function)
+         ))
+    )
+  )
+
 (provide 'snails-core)
 
 ;;; snails.el ends here
