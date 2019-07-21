@@ -318,7 +318,9 @@ use for find candidate position to change select line.")
     (setq snails-parent-frame (selected-frame))
 
     ;; Show popup frame.
-    (make-frame-visible snails-frame)))
+    ;; `select-frame-set-input-focus' is necessary for gnome-shell DE.
+    (make-frame-visible snails-frame)
+    (select-frame-set-input-focus snails-frame)))
 
 (defun snails-search (input)
   "Search input with backends."
