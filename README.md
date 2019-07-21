@@ -132,9 +132,9 @@ Snails is very smart, it will manage subprocess of async backend, When the user 
 
 ## TODO List
 
-* Add device to disable window configuration change in poup frame.
-* Disable insert return char in input buffer.
 * Add backend list sidebar.
 * Make input buffer same height with font size, not fixed height.
+* Disable insert return char in input buffer.
+* Add device to disable window configuration change in poup frame.
 
 Welcome to hacking this framework! ;)
