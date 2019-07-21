@@ -538,6 +538,7 @@ use for find candidate position to change select line.")
   (snails-keep-cursor-visible))
 
 (defun snails-generate-proces-buffer-name ()
+  "Create unique buffer for subprocess buffer of async backend."
   (format "%04x-%04x-%04x-%04x-%04x-%04x-%04x"
           (random (expt 16 4))
           (random (expt 16 4))
@@ -548,22 +549,26 @@ use for find candidate position to change select line.")
           (random (expt 16 4)) ))
 
 (defun snails-update-backend-subprocess (name process)
+  "Update subprocess of async backend."
   (let ((current-process (gethash name snails-backend-subprocess-hash)))
+    ;; Kill process buffer.
     (when current-process
-      (message "Kill process buffer: %s" (process-buffer current-process))
       (kill-buffer (process-buffer current-process)))
+    ;; Kill process if deserted process still live.
     (when (and current-process
                (process-live-p current-process))
-      (message "Kill process: %s" current-process)
       (kill-process current-process))
+    ;; Update new process with backend name.
     (puthash name process snails-backend-subprocess-hash)))
 
-(defun snails-create-async-process (name input input-ticker build-command-function candidate-filter-function update-callback)
+(defun snails-create-async-process (name input input-ticker build-command candidate-filter update-callback)
+  "Create subprocess of async backend.
+And render result when subprocess finish search."
   (interactive)
-  (let ((commands (funcall build-command-function input)))
+  (let ((commands (funcall build-command input)))
+    ;; Only make subprocess when commands is not nil.
     (when commands
       (let ((process-buffer (get-buffer-create (snails-generate-proces-buffer-name))))
-        (message "Start process %s" process-buffer)
         (snails-update-backend-subprocess
          name
          (make-process
@@ -573,21 +578,24 @@ use for find candidate position to change select line.")
           :sentinel (lambda (process event)
                       (when (string= (substring event 0 -1) "finished")
                         (with-current-buffer (process-buffer process)
+                          ;; Render result to content buffer when subprocess finish.
                           (funcall
                            update-callback
                            name
                            input-ticker
                            (funcall
-                            candidate-filter-function
+                            candidate-filter
                             (butlast (split-string (buffer-string) "\n")))))
+
+                        ;; Clean process buffer.
                         (kill-buffer (process-buffer process)))
                       )))))))
 
-(defmacro snails-create-sync-backend (name candidate-search-function candiate-do-function)
+(defmacro* snails-create-sync-backend (&rest args &key name candidate-filter candiate-do)
   "Macro to create sync backend code.
 
 `name' is backend name, such 'Foo Bar'.
-`candidate-search-function' is function that accpet input string, and return candidate list, example format: ((display-name-1 candidate-1) (display-name-2 candidate-2))
+`candidate-filter' is function that accpet input string, and return candidate list, example format: ((display-name-1 candidate-1) (display-name-2 candidate-2))
 `candidate-do-function' is function that confirm candidate, accpet candidate search, and do anything you want.
 "
   (let* ((backend-template-name (string-join (split-string (downcase name)) "-"))
@@ -599,19 +607,19 @@ use for find candidate position to change select line.")
           update-callback
           ,name
           input-ticker
-          (funcall ,candidate-search-function input)))
+          (funcall ,candidate-filter input)))
 
        (defvar ,backend-name
          '(("name" . ,name)
            ("search" . ,search-function)
-           ("do" . ,candiate-do-function)
+           ("do" . ,candiate-do)
            )))))
 
-(defmacro snails-create-async-backend (name build-command-function candidate-filter-function candiate-do-function)
+(defmacro* snails-create-async-backend (&rest args &key name build-command candidate-filter candiate-do)
   "Macro to create sync backend code.
 
 `name' is backend name, such 'Foo Bar'.
-`candidate-filter-function' is function that accpet input string, and return candidate list, example format: ((display-name-1 candidate-1) (display-name-2 candidate-2))
+`candidate-filter' is function that accpet input string, and return candidate list, example format: ((display-name-1 candidate-1) (display-name-2 candidate-2))
 `candidate-do-function' is function that confirm candidate, accpet candidate search, and do anything you want.
 "
   (let* ((backend-template-name (string-join (split-string (downcase name)) "-"))
@@ -624,15 +632,15 @@ use for find candidate position to change select line.")
           ,name
           input
           input-ticker
-          ,build-command-function
-          ,candidate-filter-function
+          ,build-command
+          ,candidate-filter
           update-callback
           ))
 
        (defvar ,backend-name
          '(("name" . ,name)
            ("search" . ,search-function)
-           ("do" . ,candiate-do-function)
+           ("do" . ,candiate-do)
            )))))
 
 (provide 'snails-core)
