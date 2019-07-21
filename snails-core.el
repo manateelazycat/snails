@@ -549,6 +549,9 @@ use for find candidate position to change select line.")
 
 (defun snails-update-backend-subprocess (name process)
   (let ((current-process (gethash name snails-backend-subprocess-hash)))
+    (when current-process
+      (message "Kill process buffer: %s" (process-buffer current-process))
+      (kill-buffer (process-buffer current-process)))
     (when (and current-process
                (process-live-p current-process))
       (message "Kill process: %s" current-process)
@@ -557,28 +560,28 @@ use for find candidate position to change select line.")
 
 (defun snails-create-async-process (name input input-ticker build-command-function candidate-filter-function update-callback)
   (interactive)
-  (let ((process-buffer (get-buffer-create (snails-generate-proces-buffer-name)))
-        (commands (funcall build-command-function input)))
+  (let ((commands (funcall build-command-function input)))
     (when commands
-      (message "Start process %s" process-buffer)
-      (snails-update-backend-subprocess
-       name
-       (make-process
-        :name ""
-        :buffer process-buffer
-        :command commands
-        :sentinel (lambda (process event)
-                    (when (string= (substring event 0 -1) "finished")
-                      (with-current-buffer (process-buffer process)
-                        (funcall
-                         update-callback
-                         name
-                         input-ticker
-                         (funcall
-                          candidate-filter-function
-                          (butlast (split-string (buffer-string) "\n")))))
-                      (kill-buffer (process-buffer process)))
-                    ))))))
+      (let ((process-buffer (get-buffer-create (snails-generate-proces-buffer-name))))
+        (message "Start process %s" process-buffer)
+        (snails-update-backend-subprocess
+         name
+         (make-process
+          :name ""
+          :buffer process-buffer
+          :command commands
+          :sentinel (lambda (process event)
+                      (when (string= (substring event 0 -1) "finished")
+                        (with-current-buffer (process-buffer process)
+                          (funcall
+                           update-callback
+                           name
+                           input-ticker
+                           (funcall
+                            candidate-filter-function
+                            (butlast (split-string (buffer-string) "\n")))))
+                        (kill-buffer (process-buffer process)))
+                      )))))))
 
 (defmacro snails-create-sync-backend (name candidate-search-function candiate-do-function)
   "Macro to create sync backend code.
