@@ -1,5 +1,10 @@
 (require 'snails-core)
 
+(defvar snails-backend-command-all-commands
+  (let ((cmds  ()))
+    (mapatoms (lambda (s) (when (commandp s) (push (format "%s" s) cmds))))
+    cmds))
+
 (snails-create-backend
  ;; Backend name.
  "COMMAND"
@@ -8,9 +13,7 @@
  ;; example format: ((display-name-1 candidate-1) (display-name-2 candidate-2))
  (lambda (input)
    (let (candidates)
-     (let ((commands (let ((cmds  ()))
-                       (mapatoms (lambda (s) (when (commandp s) (push (format "%s" s) cmds))))
-                       cmds)))
+     (let ((commands snails-backend-command-all-commands))
        (dolist (command commands)
          (when (or
                 (string-equal input "")
