@@ -23,12 +23,18 @@ In your `~/.emacs`, add the following two lines:
 
 ### Keymap for view mode
 
-| Key        | Description                                                            |
-| :--------: | :----                                                                  |
-| C-n        | Select next candidate                                                  |
-| C-p        | Select previous candidate                                              |
-| C-m        | Confirm                                                                |
-| C-g        | Quit snails                                                            |
+| Key         | Description               |
+| :--------:  | :----                     |
+| C-n         | Select next candidate     |
+| C-p         | Select previous candidate |
+| M-n         | Select next candidate     |
+| M-p         | Select previous candidate |
+| M-j         | Select next backend       |
+| M-k         | Select previous backend   |
+| C-m         | Confirm                   |
+| Renturn     | Confirm                   |
+| C-g         | Quit snails               |
+| ESC ESC ESC | Quit snails               |
 
 ## How to write new plugin?
 
