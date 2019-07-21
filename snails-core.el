@@ -7,8 +7,8 @@
 ;; Maintainer: Andy Stewart <lazycat.manatee@gmail.com>
 ;; Copyright (C) 2019, Andy Stewart, all rights reserved.
 ;; Created: 2019-05-16 21:26:09
-;; Version: 0.2
-;; Last-Updated: 2019-07-20 20:20:16
+;; Version: 0.3
+;; Last-Updated: 2019-07-22 06:06:38
 ;;           By: Andy Stewart
 ;; URL: http://www.emacswiki.org/emacs/download/snails.el
 ;; Keywords:
@@ -65,6 +65,9 @@
 ;;
 
 ;;; Change log:
+;;
+;; 2019/07/22
+;;      * Delete other window first, make sure only one window in frame.
 ;;
 ;; 2019/07/20
 ;;      * Finish document.
@@ -296,6 +299,9 @@ use for find candidate position to change select line.")
 
     ;; Configuration frame.
     (with-selected-frame snails-frame
+      ;; Delete other window first, make sure only one window in frame.
+      (delete-other-windows)
+
       ;; Set frame position and size.
       (set-frame-position snails-frame frame-x frame-y)
       (set-frame-size snails-frame frame-width frame-height t)
