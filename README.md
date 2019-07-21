@@ -119,7 +119,7 @@ Let's take the example of ```snails-backend-mdfind``` plugin:
 
 * :name parameter is the name of your plugin, you must use a unqie name. Snails distinguishes the results of different plugins based on the plugin name.
 
-* :build-command is function to build command with user input, ```input``` is user input content, you need return list string that first string is shell command, rest string is argument that pass to shell command. If you don't want search continue, please return nil. 
+* :build-command is function to build command with user input, ```input``` is user input content, you need return list string that first string is shell command, rest string is argument that pass to shell command. If you don't want search continue, please return nil.
 
 * :candidate-filter is fitler function, ```candidate-list``` is list string return by shell command, you need return candidate list to snails framework, element of candidate list is format as ```(list display-name candidate-content)```, first of candidate element ```display-name``` is the string presented to the user, second of candidate elemenet ```candidate-content``` is the string pass to ```candidate-do``` callback at below. If nothing search, please renturn nil, snails will hide the backend result.
 
@@ -136,5 +136,6 @@ Snails is very smart, it will manage subprocess of async backend, When the user 
 * Add device to disable window configuration change in poup frame.
 * Disable insert return char in input buffer.
 * Add backend list sidebar.
+* Make input buffer same height with font size, not fixed height.
 
 Welcome to hacking this framework! ;)
