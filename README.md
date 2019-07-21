@@ -36,7 +36,6 @@ Document coming soon, please wait patiently.
 
 ## TODO List
 
-* Add elisp library backend.
 * Write plugin document.
 * Add interactive command to jump next/previous backend.
 * Add device to disable window configuration change in poup frame.

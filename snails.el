@@ -83,7 +83,6 @@
 (require 'snails-core)
 (require 'snails-backend-buffer)
 (require 'snails-backend-recentf)
-(require 'snails-backend-command)
 (require 'snails-backend-awesome-tab)
 (require 'snails-backend-mdfind)
 
