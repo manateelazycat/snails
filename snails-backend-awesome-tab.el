@@ -1,6 +1,6 @@
 (require 'snails-core)
 
-(snails-create-backend
+(snails-create-sync-backend
  ;; Backend name.
  "AWESOME TAB GROUP"
  ;; Search function.

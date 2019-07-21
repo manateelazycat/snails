@@ -1,4 +1,5 @@
-;;; snails.el --- A modern, easy-to-expand fuzzy search framework
+;; -*- lexical-binding: t; -*-
+;; ;;; snails.el --- A modern, easy-to-expand fuzzy search framework
 
 ;; Filename: snails.el
 ;; Description: A modern, easy-to-expand fuzzy search framework
@@ -146,6 +147,10 @@ search result will be drop.")
 (defvar snails-candiate-list nil
   "The list to contain candidate list,
 use for find candidate position to change select line.")
+
+(defvar snails-backend-subprocess-hash
+  (make-hash-table :test 'equal)
+  "The hash table contain the subprocess of async backend.")
 
 (defvar snails-mode-map
   (let ((map (make-sparse-keymap)))
@@ -532,8 +537,51 @@ use for find candidate position to change select line.")
   ;; Scroll window to keep cursor visible.
   (snails-keep-cursor-visible))
 
-(defmacro snails-create-backend (name candidate-search-function candiate-do-function)
-  "Macro to simple backend code.
+(defun snails-generate-proces-buffer-name ()
+  (format "%04x-%04x-%04x-%04x-%04x-%04x-%04x"
+          (random (expt 16 4))
+          (random (expt 16 4))
+          (random (expt 16 4))
+          (random (expt 16 4))
+          (random (expt 16 4))
+          (random (expt 16 4))
+          (random (expt 16 4)) ))
+
+(defun snails-update-backend-subprocess (name process)
+  (let ((current-process (gethash name snails-backend-subprocess-hash)))
+    (when (and current-process
+               (process-live-p current-process))
+      (message "Kill process: %s" current-process)
+      (kill-process current-process))
+    (puthash name process snails-backend-subprocess-hash)))
+
+(defun snails-create-async-process (name input input-ticker build-command-function candidate-filter-function update-callback)
+  (interactive)
+  (let ((process-buffer (get-buffer-create (snails-generate-proces-buffer-name)))
+        (commands (funcall build-command-function input)))
+    (when commands
+      (message "Start process %s" process-buffer)
+      (snails-update-backend-subprocess
+       name
+       (make-process
+        :name ""
+        :buffer process-buffer
+        :command commands
+        :sentinel (lambda (process event)
+                    (when (string= (substring event 0 -1) "finished")
+                      (with-current-buffer (process-buffer process)
+                        (funcall
+                         update-callback
+                         name
+                         input-ticker
+                         (funcall
+                          candidate-filter-function
+                          (butlast (split-string (buffer-string) "\n")))))
+                      (kill-buffer (process-buffer process)))
+                    ))))))
+
+(defmacro snails-create-sync-backend (name candidate-search-function candiate-do-function)
+  "Macro to create sync backend code.
 
 `name' is backend name, such 'Foo Bar'.
 `candidate-search-function' is function that accpet input string, and return candidate list, example format: ((display-name-1 candidate-1) (display-name-2 candidate-2))
@@ -549,6 +597,34 @@ use for find candidate position to change select line.")
           ,name
           input-ticker
           (funcall ,candidate-search-function input)))
+
+       (defvar ,backend-name
+         '(("name" . ,name)
+           ("search" . ,search-function)
+           ("do" . ,candiate-do-function)
+           )))))
+
+(defmacro snails-create-async-backend (name build-command-function candidate-filter-function candiate-do-function)
+  "Macro to create sync backend code.
+
+`name' is backend name, such 'Foo Bar'.
+`candidate-filter-function' is function that accpet input string, and return candidate list, example format: ((display-name-1 candidate-1) (display-name-2 candidate-2))
+`candidate-do-function' is function that confirm candidate, accpet candidate search, and do anything you want.
+"
+  (let* ((backend-template-name (string-join (split-string (downcase name)) "-"))
+         (backend-name (intern (format "snails-backend-%s" backend-template-name)))
+         (search-function (intern (format "snails-backend-%s-search" backend-template-name))))
+    `(progn
+       (defun ,search-function(input input-ticker update-callback)
+         (funcall
+          'snails-create-async-process
+          ,name
+          input
+          input-ticker
+          ,build-command-function
+          ,candidate-filter-function
+          update-callback
+          ))
 
        (defvar ,backend-name
          '(("name" . ,name)

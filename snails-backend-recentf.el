@@ -3,7 +3,7 @@
 
 (recentf-mode 1)
 
-(snails-create-backend
+(snails-create-sync-backend
  ;; Backend name.
  "RECENTF"
  ;; Search function.

@@ -17,7 +17,7 @@
         (throw 'failed nil)))
     t))
 
-(snails-create-backend
+(snails-create-sync-backend
  ;; Backend name.
  "BUFFER"
  ;; Search function.

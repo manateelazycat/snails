@@ -5,7 +5,7 @@
     (mapatoms (lambda (s) (when (commandp s) (push (format "%s" s) cmds))))
     cmds))
 
-(snails-create-backend
+(snails-create-sync-backend
  ;; Backend name.
  "COMMAND"
  ;; Search function.

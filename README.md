@@ -36,8 +36,6 @@ Document coming soon, please wait patiently.
 
 ## TODO List
 
-* Research async backend and adjust framework interface.
-* Add ```fd``` backend to search current project.
 * Add elisp library backend.
 * Write plugin document.
 * Add interactive command to jump next/previous backend.
