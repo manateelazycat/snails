@@ -40,7 +40,7 @@ In your `~/.emacs`, add the following two lines:
 ### Search Backend
 
 | Backend                    | Description                                     |
-| :--------:                 | :----                                           |
+| :--------                  | :----                                           |
 | snails-backend-buffer      | Search buffer                                   |
 | snails-backend-recentf     | Search recently files                           |
 | snails-backend-fd          | Use fd search files in current project          |
