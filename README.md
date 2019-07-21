@@ -132,7 +132,6 @@ Snails is very smart, it will manage subprocess of async backend, When the user 
 
 ## TODO List
 
-* Add interactive command to jump next/previous backend.
 * Add device to disable window configuration change in poup frame.
 * Disable insert return char in input buffer.
 * Add backend list sidebar.

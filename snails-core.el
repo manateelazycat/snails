@@ -7,8 +7,8 @@
 ;; Maintainer: Andy Stewart <lazycat.manatee@gmail.com>
 ;; Copyright (C) 2019, Andy Stewart, all rights reserved.
 ;; Created: 2019-05-16 21:26:09
-;; Version: 0.3
-;; Last-Updated: 2019-07-22 06:06:38
+;; Version: 0.4
+;; Last-Updated: 2019-07-22 06:38:36
 ;;           By: Andy Stewart
 ;; URL: http://www.emacswiki.org/emacs/download/snails.el
 ;; Keywords:
@@ -68,6 +68,7 @@
 ;;
 ;; 2019/07/22
 ;;      * Delete other window first, make sure only one window in frame.
+;;      * Finish `snails-select-next-backend' and `snails-select-prev-backend'
 ;;
 ;; 2019/07/20
 ;;      * Finish document.
@@ -161,7 +162,12 @@ use for find candidate position to change select line.")
     (define-key map (kbd "ESC ESC ESC") 'snails-quit)
     (define-key map (kbd "C-n") 'snails-select-next-item)
     (define-key map (kbd "C-p") 'snails-select-prev-item)
+    (define-key map (kbd "M-n") 'snails-select-next-item)
+    (define-key map (kbd "M-p") 'snails-select-prev-item)
+    (define-key map (kbd "M-j") 'snails-select-next-backend)
+    (define-key map (kbd "M-k") 'snails-select-prev-backend)
     (define-key map (kbd "C-m") 'snails-do)
+    (define-key map (kbd "RET") 'snails-do)
     map)
   "Keymap used by `snails-mode'.")
 
@@ -211,6 +217,19 @@ use for find candidate position to change select line.")
     ;; Update select line.
     (snails-update-select-line)
     ))
+
+(defun snails-select-next-backend ()
+  (interactive)
+  (with-current-buffer snails-content-buffer
+    (snails-select-backend-first-candidate
+     (snails-get-next-backend-overlay))
+    ))
+
+(defun snails-select-prev-backend ()
+  (interactive)
+  (with-current-buffer snails-content-buffer
+    (snails-select-backend-first-candidate
+     (snalis-get-prev-backend-overlay))))
 
 (defun snails-do ()
   "Confirm current candidate."
@@ -470,6 +489,31 @@ use for find candidate position to change select line.")
   ;; Adjust line if reach to line.
   (when (bobp)
     (forward-line)))
+
+(defun snails-get-next-backend-overlay ()
+  (catch 'backend-overlay
+    (let (next-backend-overaly)
+      (dolist (header-line-overlay snails-header-line-overlays)
+        (when (> (point) (overlay-end header-line-overlay))
+          (throw 'backend-overlay next-backend-overaly))
+        (setq next-backend-overaly header-line-overlay)
+        ))))
+
+(defun snalis-get-prev-backend-overlay ()
+  (catch 'backend-overlay
+    (let (found-current)
+      (dolist (header-line-overlay snails-header-line-overlays)
+        (when found-current
+          (throw 'backend-overlay header-line-overlay))
+        (setq found-current (> (point) (overlay-end header-line-overlay)))
+        ))))
+
+(defun snails-select-backend-first-candidate (backend-overlay)
+  (when backend-overlay
+    (goto-line (line-number-at-pos (overlay-start backend-overlay)))
+    (snails-jump-to-next-item)
+    (snails-update-select-line)
+    ))
 
 (defun snails-get-candidate-backend-name (candidate-point)
   "Get backend name at selected candidate position."
