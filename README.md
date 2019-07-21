@@ -35,6 +35,17 @@ In your `~/.emacs`, add the following two lines:
 | Renturn     | Confirm                   |
 | C-g         | Quit snails               |
 | ESC ESC ESC | Quit snails               |
+| M-h         | Quit snails               |
+
+### Search Backend
+
+| Backend                    | Description                                     |
+| :--------:                 | :----                                           |
+| snails-backend-buffer      | Search buffer                                   |
+| snails-backend-recentf     | Search recently files                           |
+| snails-backend-fd          | Use fd search files in current project          |
+| snails-backend-mdfind      | Use mdfind search files in local disk, only Mac |
+| snails-backend-awesome-tab | Switch group of awesome-tab                     |
 
 ## How to write new plugin?
 
