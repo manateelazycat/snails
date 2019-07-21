@@ -588,6 +588,14 @@ use for find candidate position to change select line.")
   ;; Scroll window to keep cursor visible.
   (snails-keep-cursor-visible))
 
+(defun snails-project-root-dir ()
+  "Get project's root dir.
+If not in project, use current directory."
+  (let ((project (project-current)))
+    (if project
+        (expand-file-name (cdr project))
+      default-directory)))
+
 (defun snails-generate-proces-buffer-name ()
   "Create unique buffer for subprocess buffer of async backend."
   (format "%04x-%04x-%04x-%04x-%04x-%04x-%04x"
