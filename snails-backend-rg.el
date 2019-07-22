@@ -35,9 +35,15 @@
  (lambda (candidate)
    (let ((file-info (split-string candidate ":")))
      (when (> (length file-info) 3)
+       ;; Open file and jump to position.
        (find-file (nth 0 file-info))
        (goto-line (string-to-number (nth 1 file-info)))
        (goto-column (max (- (string-to-number (nth 2 file-info)) 1) 0))
+
+       ;; Flash match line.
+       (let ((pulse-iterations 1)
+             (pulse-delay 0.3))
+         (pulse-momentary-highlight-one-line (point) 'highlight))
        ))))
 
 (provide 'snails-backend-rg)
