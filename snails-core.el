@@ -7,8 +7,8 @@
 ;; Maintainer: Andy Stewart <lazycat.manatee@gmail.com>
 ;; Copyright (C) 2019, Andy Stewart, all rights reserved.
 ;; Created: 2019-05-16 21:26:09
-;; Version: 0.7
-;; Last-Updated: 2019-07-22 10:35:30
+;; Version: 0.8
+;; Last-Updated: 2019-07-22 10:42:39
 ;;           By: Andy Stewart
 ;; URL: http://www.emacswiki.org/emacs/download/snails.el
 ;; Keywords:
@@ -72,6 +72,7 @@
 ;;      * Use setq in macro, we can update backend code later.
 ;;      * Make `snails' support customize backend.
 ;;      * Fixed error that `set-buffer' on killed buffer.
+;;      * Use `expand-file-name' expand default-directory, fd don't like unexpand directory.
 ;;
 ;; 2019/07/20
 ;;      * Finish document.
@@ -606,9 +607,10 @@ use for find candidate position to change select line.")
   "Get project's root dir.
 If not in project, use current directory."
   (let ((project (project-current)))
-    (if project
-        (expand-file-name (cdr project))
-      default-directory)))
+    (expand-file-name
+     (if project
+         (cdr project)
+       default-directory))))
 
 (defun snails-generate-proces-buffer-name ()
   "Create unique buffer for subprocess buffer of async backend."
