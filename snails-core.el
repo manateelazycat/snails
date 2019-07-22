@@ -16,7 +16,7 @@
 ;;
 ;; Features that might be required by this library:
 ;;
-;; `cl-lib' `sub-x'
+;; `cl-lib' `subr-x'
 ;;
 
 ;;; This file is NOT part of GNU Emacs
@@ -101,7 +101,7 @@
 
 ;;; Require
 (require 'cl-lib)
-(require 'sub-x)
+(require 'subr-x)
 
 ;;; Code:
 
