@@ -95,6 +95,8 @@
 
 ;;; Require
 
+(require 'cl-lib)
+
 ;;; Code:
 
 (defcustom snails-mode-hook '()
@@ -682,7 +684,7 @@ And render result when subprocess finish search."
                            )))))
          )))))
 
-(defmacro* snails-create-sync-backend (&rest args &key name candidate-filter candiate-do)
+(cl-defmacro snails-create-sync-backend (&rest args &key name candidate-filter candiate-do)
   "Macro to create sync backend code.
 
 `name' is backend name, such 'Foo Bar'.
@@ -709,7 +711,7 @@ And render result when subprocess finish search."
                )
              ))))
 
-(defmacro* snails-create-async-backend (&rest args &key name build-command candidate-filter candiate-do)
+(cl-defmacro snails-create-async-backend (&rest args &key name build-command candidate-filter candiate-do)
   "Macro to create sync backend code.
 
 `name' is backend name, such 'Foo Bar'.
