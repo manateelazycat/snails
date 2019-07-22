@@ -7,8 +7,8 @@
 ;; Maintainer: Andy Stewart <lazycat.manatee@gmail.com>
 ;; Copyright (C) 2019, Andy Stewart, all rights reserved.
 ;; Created: 2019-05-16 21:26:09
-;; Version: 0.4
-;; Last-Updated: 2019-07-22 06:38:36
+;; Version: 0.5
+;; Last-Updated: 2019-07-22 08:14:25
 ;;           By: Andy Stewart
 ;; URL: http://www.emacswiki.org/emacs/download/snails.el
 ;; Keywords:
@@ -69,6 +69,7 @@
 ;; 2019/07/22
 ;;      * Delete other window first, make sure only one window in frame.
 ;;      * Finish `snails-select-next-backend' and `snails-select-prev-backend'
+;;      * Use setq in macro, we can update backend code later.
 ;;
 ;; 2019/07/20
 ;;      * Finish document.
@@ -669,11 +670,14 @@ And render result when subprocess finish search."
           input-ticker
           (funcall ,candidate-filter input)))
 
-       (defvar ,backend-name
-         '(("name" . ,name)
-           ("search" . ,search-function)
-           ("do" . ,candiate-do)
-           )))))
+       (defvar ,backend-name nil)
+
+       (setq ,backend-name
+             '(("name" . ,name)
+               ("search" . ,search-function)
+               ("do" . ,candiate-do)
+               )
+             ))))
 
 (defmacro* snails-create-async-backend (&rest args &key name build-command candidate-filter candiate-do)
   "Macro to create sync backend code.
@@ -697,11 +701,14 @@ And render result when subprocess finish search."
           update-callback
           ))
 
-       (defvar ,backend-name
-         '(("name" . ,name)
-           ("search" . ,search-function)
-           ("do" . ,candiate-do)
-           )))))
+       (defvar ,backend-name nil)
+
+       (setq ,backend-name
+             '(("name" . ,name)
+               ("search" . ,search-function)
+               ("do" . ,candiate-do)
+               )
+             ))))
 
 (provide 'snails-core)
 
