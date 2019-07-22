@@ -7,8 +7,8 @@
 ;; Maintainer: Andy Stewart <lazycat.manatee@gmail.com>
 ;; Copyright (C) 2019, Andy Stewart, all rights reserved.
 ;; Created: 2019-05-16 21:26:09
-;; Version: 0.9
-;; Last-Updated: 2019-07-22 11:12:27
+;; Version: 1.0
+;; Last-Updated: 2019-07-22 11:33:45
 ;;           By: Andy Stewart
 ;; URL: http://www.emacswiki.org/emacs/download/snails.el
 ;; Keywords:
@@ -74,6 +74,7 @@
 ;;      * Fixed error that `set-buffer' on killed buffer.
 ;;      * Use `expand-file-name' expand default-directory, fd don't like unexpand directory.
 ;;      * Fix selected delete buffer error when call `buffer-string' in `snails-create-async-process'
+;;      * Give up creating subprocess if input ticker already expired.
 ;;
 ;; 2019/07/20
 ;;      * Finish document.
@@ -644,33 +645,42 @@ And render result when subprocess finish search."
   (let ((commands (funcall build-command input)))
     ;; Only make subprocess when commands is not nil.
     (when commands
-      (let ((process-buffer (get-buffer-create (snails-generate-proces-buffer-name))))
-        (snails-update-backend-subprocess
-         name
-         (make-process
-          :name ""
-          :buffer process-buffer
-          :command commands
-          :sentinel (lambda (process event)
-                      ;; Render result to content buffer when subprocess finish.
-                      (when (string= (substring event 0 -1) "finished")
-                        (let ((buffer (process-buffer process)))
-                          ;; Do nothing if process buffer has killed.
-                          (when (get-buffer buffer)
-                            (with-current-buffer buffer
-                              (let ((candidate-list (ignore-errors (butlast (split-string (buffer-string) "\n")))))
-                                ;; If `candidate-list' is nil, it cause by call `buffer-string' but process buffer has killed.
-                                (when candidate-list
-                                  (funcall
-                                   update-callback
-                                   name
-                                   input-ticker
-                                   (funcall candidate-filter candidate-list)
-                                   ))))
+      (run-with-timer
+       ;; We need delay 0.5 second to call make subprocess,
+       ;; avoid create many deserted subprocess when user enter character too fast like me. ;)
+       0.5 nil
+       (lambda ()
+         (when (equal input-ticker snails-input-ticker)
+           ;; Make subprocess if input ticker still is newest.
+           ;; Give up creating subprocess if input ticker already expired.
+           (let ((process-buffer (get-buffer-create (snails-generate-proces-buffer-name))))
+             (snails-update-backend-subprocess
+              name
+              (make-process
+               :name ""
+               :buffer process-buffer
+               :command commands
+               :sentinel (lambda (process event)
+                           ;; Render result to content buffer when subprocess finish.
+                           (when (string= (substring event 0 -1) "finished")
+                             (let ((buffer (process-buffer process)))
+                               ;; Do nothing if process buffer has killed.
+                               (when (get-buffer buffer)
+                                 (with-current-buffer buffer
+                                   (let ((candidate-list (ignore-errors (butlast (split-string (buffer-string) "\n")))))
+                                     ;; If `candidate-list' is nil, it cause by call `buffer-string' but process buffer has killed.
+                                     (when candidate-list
+                                       (funcall
+                                        update-callback
+                                        name
+                                        input-ticker
+                                        (funcall candidate-filter candidate-list)
+                                        ))))
 
-                            ;; Clean process buffer.
-                            (ignore-errors (kill-buffer buffer)))))
-                      )))))))
+                                 ;; Clean process buffer.
+                                 (ignore-errors (kill-buffer buffer)))))
+                           )))))
+         )))))
 
 (defmacro* snails-create-sync-backend (&rest args &key name candidate-filter candiate-do)
   "Macro to create sync backend code.
