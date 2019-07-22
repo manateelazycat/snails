@@ -18,11 +18,12 @@
  (lambda (candidate-list)
    (let (candidates)
      (dolist (candidate candidate-list)
-       (add-to-list 'candidates
-                    (list
-                     (snails-wrap-file-icon candidate)
-                     candidate)
-                    t))
+       (let ((file-info (split-string candidate ":")))
+         (add-to-list 'candidates
+                      (list
+                       (snails-wrap-file-icon-with-candidate (nth 0 file-info) candidate)
+                       candidate)
+                      t)))
      candidates))
 
  :candiate-do
