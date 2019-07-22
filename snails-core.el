@@ -7,8 +7,8 @@
 ;; Maintainer: Andy Stewart <lazycat.manatee@gmail.com>
 ;; Copyright (C) 2019, Andy Stewart, all rights reserved.
 ;; Created: 2019-05-16 21:26:09
-;; Version: 1.3
-;; Last-Updated: 2019-07-22 18:40:39
+;; Version: 1.4
+;; Last-Updated: 2019-07-22 20:33:11
 ;;           By: Andy Stewart
 ;; URL: http://www.emacswiki.org/emacs/download/snails.el
 ;; Keywords:
@@ -78,6 +78,7 @@
 ;;      * Kill all subprocess and process buffers when call `snails-quit'
 ;;      * Fix bug that select previous candidate item will select header line sometimes.
 ;;      * Add header index after header line.
+;;      * Use `run-with-idle-timer' instead `run-with-timer' to improve performance of subprocess search.
 ;;
 ;; 2019/07/20
 ;;      * Finish document.
@@ -696,10 +697,11 @@ And render result when subprocess finish search."
   (let ((commands (funcall build-command input)))
     ;; Only make subprocess when commands is not nil.
     (when commands
-      (run-with-timer
+      (run-with-idle-timer
        ;; We need delay 0.5 second to call make subprocess,
        ;; avoid create many deserted subprocess when user enter character too fast like me. ;)
-       0.5 nil
+       0.5
+       nil
        (lambda ()
          (when (equal input-ticker snails-input-ticker)
            ;; Make subprocess if input ticker still is newest.
