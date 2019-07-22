@@ -7,8 +7,8 @@
 ;; Maintainer: Andy Stewart <lazycat.manatee@gmail.com>
 ;; Copyright (C) 2019, Andy Stewart, all rights reserved.
 ;; Created: 2019-05-16 21:26:09
-;; Version: 0.5
-;; Last-Updated: 2019-07-22 08:14:25
+;; Version: 0.6
+;; Last-Updated: 2019-07-22 09:20:35
 ;;           By: Andy Stewart
 ;; URL: http://www.emacswiki.org/emacs/download/snails.el
 ;; Keywords:
@@ -70,6 +70,7 @@
 ;;      * Delete other window first, make sure only one window in frame.
 ;;      * Finish `snails-select-next-backend' and `snails-select-prev-backend'
 ;;      * Use setq in macro, we can update backend code later.
+;;      * Make `snails' support customize backend.
 ;;
 ;; 2019/07/20
 ;;      * Finish document.
@@ -141,8 +142,11 @@ do don't need set face attribute, such as like foreground and background."
 (defvar snails-header-line-overlays nil
   "The list overlay to render backend header line.")
 
+(defvar snails-default-backends nil
+  "Contain default backends.")
+
 (defvar snails-backends nil
-  "The variables contains backends.")
+  "Contain the real backends use in `snails'.")
 
 (defvar snails-input-ticker 0
   "Input ticker to unique search request.
@@ -185,9 +189,16 @@ use for find candidate position to change select line.")
   ;; Run hook.
   (run-hooks 'snails-mode-hook))
 
-(defun snails ()
+(defun snails (&optional backends)
   "Start snails to search."
   (interactive)
+  ;; Update backends.
+  ;; If `backends' is empty list, use `snails-default-backends'.
+  (if (and (listp backends)
+           (> (length backends) 0))
+      (setq snails-backends backends)
+    (setq snails-backends snails-default-backends))
+
   ;; Create input and content buffer.
   (snails-create-input-buffer)
   (snails-create-content-buffer)

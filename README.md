@@ -21,6 +21,18 @@ In your `~/.emacs`, add the following two lines:
 
 <img src="./images/screenshot.png">
 
+If you're big fans of Ivy, you can use a search backend separately in the following way:
+
+### Just search buffer
+```elisp
+(snails '(snails-backend-buffer))
+```
+
+### Search with customize backends.
+```elisp
+(snails '(snails-backend-buffer snails-backend-buffer))
+```
+
 ### Keymap for view mode
 
 | Key         | Description               |
