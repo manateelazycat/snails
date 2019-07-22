@@ -191,9 +191,7 @@ use for find candidate position to change select line.")
   (setq major-mode 'snails-mode)
   (setq mode-name "snails")
   ;; Injection keymap.
-  (use-local-map snails-mode-map)
-  ;; Run hook.
-  (run-hooks 'snails-mode-hook))
+  (use-local-map snails-mode-map))
 
 (defun snails (&optional backends)
   "Start snails to search."
