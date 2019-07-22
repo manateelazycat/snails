@@ -127,6 +127,16 @@ do don't need set face attribute, such as like foreground and background."
   "Face for select line."
   :group 'snails)
 
+(defface snails-input-buffer-face
+  '((t (:background "#222" :foreground "gold" :height 250)))
+  "Face for input area."
+  :group 'snails)
+
+(defface snails-content-buffer-face
+  '((t (:background "#111" :height 130)))
+  "Face for content area."
+  :group 'snails)
+
 (defvar snails-input-buffer " *snails input*"
   "The buffer name of search input buffer.")
 
@@ -285,7 +295,7 @@ use for find candidate position to change select line.")
     ;; Switch snails mode.
     (snails-mode)
     ;; Set input buffer face.
-    (buffer-face-set '(:background "#222" :foreground "gold" :height 250))
+    (buffer-face-set 'snails-input-buffer-face)
     ;; Disable hl-line, header-line and mode-line in input buffer.
     (setq-local global-hl-line-overlay nil)
     (setq-local header-line-format nil)
@@ -298,7 +308,7 @@ use for find candidate position to change select line.")
     ;; Clean buffer.
     (erase-buffer)
     ;; Set coent buffer face.
-    (buffer-face-set '(:background "#111" :height 130))
+    (buffer-face-set 'snails-content-buffer-face)
     ;; Disable header-line, mode-line and cursor shape in content buffer.
     (setq-local header-line-format nil)
     (setq-local mode-line-format nil)
