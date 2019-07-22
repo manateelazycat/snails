@@ -403,7 +403,7 @@ use for find candidate position to change select line.")
 
 (defun snails-update-list-by-index (list n val)
   "Update candidates with backend index."
-  (nconc (subseq list 0 n)
+  (nconc (cl-subseq list 0 n)
          (cons val (nthcdr (1+ n) list))))
 
 (defun snails-get-backend-names ()
