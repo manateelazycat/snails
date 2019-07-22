@@ -11,7 +11,7 @@
  (lambda (input)
    (when (and (executable-find "fd")
               (> (length input) 5))
-     (list "fd" "-c" "never" "-tf" input (snails-project-root-dir))
+     (list "fd" "-c" "never" "-a" "-tf" input "--search-path" (snails-project-root-dir))
      ))
 
  :candidate-filter
