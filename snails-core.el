@@ -7,8 +7,8 @@
 ;; Maintainer: Andy Stewart <lazycat.manatee@gmail.com>
 ;; Copyright (C) 2019, Andy Stewart, all rights reserved.
 ;; Created: 2019-05-16 21:26:09
-;; Version: 1.5
-;; Last-Updated: 2019-07-22 21:06:01
+;; Version: 1.6
+;; Last-Updated: 2019-07-22 21:58:44
 ;;           By: Andy Stewart
 ;; URL: http://www.emacswiki.org/emacs/download/snails.el
 ;; Keywords:
@@ -16,7 +16,7 @@
 ;;
 ;; Features that might be required by this library:
 ;;
-;;
+;; `cl-lib' `sub-x'
 ;;
 
 ;;; This file is NOT part of GNU Emacs
@@ -80,6 +80,7 @@
 ;;      * Add header index after header line.
 ;;      * Use `run-with-idle-timer' instead `run-with-timer' to improve performance of subprocess search.
 ;;      * 0.1 second is enough for `run-with-idle-timer'.
+;;      * Fix `string-join' depend.
 ;;
 ;; 2019/07/20
 ;;      * Finish document.
@@ -99,8 +100,8 @@
 ;;
 
 ;;; Require
-
 (require 'cl-lib)
+(require 'sub-x)
 
 ;;; Code:
 
