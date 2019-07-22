@@ -5,7 +5,7 @@
 
 (snails-create-async-backend
  :name
- "rg"
+ "RG"
 
  :build-command
  (lambda (input)
