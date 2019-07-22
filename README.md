@@ -167,5 +167,6 @@ Snails is very smart, it will manage subprocess of async backend, When the user 
 * Make input buffer same height with font size, not fixed height.
 * Disable insert return char in input buffer.
 * Add device to disable window configuration change in poup frame.
+* Display ansi color string from async process, such as fd, rg, mdfind.
 
 Welcome to hacking this framework! ;)
