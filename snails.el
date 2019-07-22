@@ -86,6 +86,7 @@
 (require 'snails-backend-awesome-tab)
 (require 'snails-backend-fd)
 (require 'snails-backend-mdfind)
+(require 'snails-backend-rg)
 
 ;;; Code:
 
@@ -94,6 +95,7 @@
         snails-backend-buffer
         snails-backend-recentf
         snails-backend-fd
+        snails-backend-rg
         snails-backend-mdfind
         ))
 
