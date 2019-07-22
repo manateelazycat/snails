@@ -13,7 +13,7 @@
               (> (length input) 5))
      (let ((project (project-current)))
        (when project
-         (list "rg" "--no-heading" "--column" "--color" "never" input (expand-file-name (cdr project)))
+         (list "rg" "--no-heading" "--column" "--color" "never" "--max-columns" "300" input (expand-file-name (cdr project)))
          ))))
 
  :candidate-filter
