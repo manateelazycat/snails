@@ -7,8 +7,8 @@
 ;; Maintainer: Andy Stewart <lazycat.manatee@gmail.com>
 ;; Copyright (C) 2019, Andy Stewart, all rights reserved.
 ;; Created: 2019-05-16 21:26:09
-;; Version: 1.1
-;; Last-Updated: 2019-07-22 18:00:57
+;; Version: 1.2
+;; Last-Updated: 2019-07-22 18:16:35
 ;;           By: Andy Stewart
 ;; URL: http://www.emacswiki.org/emacs/download/snails.el
 ;; Keywords:
@@ -76,6 +76,7 @@
 ;;      * Fix selected delete buffer error when call `buffer-string' in `snails-create-async-process'
 ;;      * Give up creating subprocess if input ticker already expired.
 ;;      * Kill all subprocess and process buffers when call `snails-quit'
+;;      * Fix bug that select previous candidate item will select header line sometimes.
 ;;
 ;; 2019/07/20
 ;;      * Finish document.
@@ -518,12 +519,14 @@ use for find candidate position to change select line.")
   "Select previous candidate item."
   ;; Previous line.
   (previous-line)
+  (move-beginning-of-line 1)
   ;; Skip empty line and header line.
   (while (and (not (bobp))
               (or
                (snails-empty-line-p)
                (snails-header-line-p)))
-    (previous-line))
+    (previous-line)
+    (move-beginning-of-line 1))
   ;; Adjust line if reach to line.
   (when (bobp)
     (forward-line)))

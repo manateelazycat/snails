@@ -167,6 +167,5 @@ Snails is very smart, it will manage subprocess of async backend, When the user 
 * Make input buffer same height with font size, not fixed height.
 * Disable insert return char in input buffer.
 * Add device to disable window configuration change in poup frame.
-* Bug: select previous candidate item will select header line sometimes.
 
 Welcome to hacking this framework! ;)
