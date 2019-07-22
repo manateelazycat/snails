@@ -7,8 +7,8 @@
 ;; Maintainer: Andy Stewart <lazycat.manatee@gmail.com>
 ;; Copyright (C) 2019, Andy Stewart, all rights reserved.
 ;; Created: 2019-05-16 21:26:09
-;; Version: 1.6
-;; Last-Updated: 2019-07-22 21:58:44
+;; Version: 1.7
+;; Last-Updated: 2019-07-22 22:05:56
 ;;           By: Andy Stewart
 ;; URL: http://www.emacswiki.org/emacs/download/snails.el
 ;; Keywords:
@@ -81,6 +81,7 @@
 ;;      * Use `run-with-idle-timer' instead `run-with-timer' to improve performance of subprocess search.
 ;;      * 0.1 second is enough for `run-with-idle-timer'.
 ;;      * Fix `string-join' depend.
+;;      * Disable scrollbar and fringle in new frame even user not disable them in theme.
 ;;
 ;; 2019/07/20
 ;;      * Finish document.
@@ -362,6 +363,10 @@ use for find candidate position to change select line.")
            '((minibuffer . nil)
              (visibility . nil)
              (internal-border-width . 0)
+             (left-fringe . 0)
+             (right-fringe . 0)
+             (vertical-scroll-bars . nil)
+             (horizontal-scroll-bars . nil)
              )))
 
     ;; Configuration frame.
