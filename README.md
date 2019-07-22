@@ -159,6 +159,28 @@ Taking the above plug-in as an example, when the user input "multi-term", build-
 
 Snails is very smart, it will manage subprocess of async backend, When the user modifies the input, the snails framework automatically creates a new subprocess to search for the results, while automatically killing the old running process. No matter how fast the user enters, it won't block Emacs.
 
+### FAQ
+
+#### Why snails frame doesn't work when I open a fullscreen Emacs on Mac?
+Mac will force Emacs fullscreen window to separate workspace, then any new frame create by ```make-frame``` will not float above the Emacs window as expected.
+
+If you start Emacs with fullscreen mode, you can use my workaround code to fix this problem.
+
+```elisp
+(if (featurep 'cocoa)
+    (progn
+      (setq ns-use-native-fullscreen nil)
+      (setq ns-use-fullscreen-animation nil)
+
+      (set-frame-parameter (selected-frame) 'fullscreen 'maximized)
+
+      (run-at-time "2sec" nil
+                   (lambda ()
+                     (toggle-frame-fullscreen)
+                     )))
+  (require 'fullscreen)
+  (fullscreen))
+```
 
 ## TODO List
 
