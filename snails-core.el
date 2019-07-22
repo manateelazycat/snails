@@ -726,19 +726,20 @@ And render result when subprocess finish search."
                              (let ((buffer (process-buffer process)))
                                ;; Do nothing if process buffer has killed.
                                (when (get-buffer buffer)
-                                 (with-current-buffer buffer
-                                   (let ((candidate-list (ignore-errors (butlast (split-string (buffer-string) "\n")))))
-                                     ;; If `candidate-list' is nil, it cause by call `buffer-string' but process buffer has killed.
-                                     (when candidate-list
-                                       (funcall
-                                        update-callback
-                                        name
-                                        input-ticker
-                                        (funcall candidate-filter candidate-list)
-                                        ))))
+                                 (ignore-errors
+                                   (with-current-buffer buffer
+                                     (let ((candidate-list (butlast (split-string (buffer-string) "\n"))))
+                                       ;; If `candidate-list' is nil, it cause by call `buffer-string' but process buffer has killed.
+                                       (when candidate-list
+                                         (funcall
+                                          update-callback
+                                          name
+                                          input-ticker
+                                          (funcall candidate-filter candidate-list)
+                                          ))))
 
-                                 ;; Clean process buffer.
-                                 (ignore-errors (kill-buffer buffer)))))
+                                   ;; Clean process buffer.
+                                   (kill-buffer buffer)))))
                            )))))
          )))))
 

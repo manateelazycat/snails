@@ -11,17 +11,22 @@
  (lambda (input)
    (when (and (executable-find "rg")
               (> (length input) 5))
-     (list "rg" "--no-heading" "--column" "--color" "never" input (snails-project-root-dir))
-     ))
+     (let ((project (project-current)))
+       (when project
+         (list "rg" "--no-heading" "--column" "--color" "never" input (expand-file-name (cdr project)))
+         ))))
 
  :candidate-filter
  (lambda (candidate-list)
    (let (candidates)
      (dolist (candidate candidate-list)
-       (let ((file-info (split-string candidate ":")))
+       (let ((file-info (split-string candidate ":"))
+             (project-dir (expand-file-name (cdr (project-current)))))
          (add-to-list 'candidates
                       (list
-                       (snails-wrap-file-icon-with-candidate (nth 0 file-info) candidate)
+                       (snails-wrap-file-icon-with-candidate
+                        (nth 0 file-info)
+                        (format "PDIR/%s" (nth 1 (split-string candidate project-dir))))
                        candidate)
                       t)))
      candidates))
