@@ -7,8 +7,8 @@
 ;; Maintainer: Andy Stewart <lazycat.manatee@gmail.com>
 ;; Copyright (C) 2019, Andy Stewart, all rights reserved.
 ;; Created: 2019-05-16 21:26:09
-;; Version: 1.0
-;; Last-Updated: 2019-07-22 11:33:45
+;; Version: 1.1
+;; Last-Updated: 2019-07-22 18:00:57
 ;;           By: Andy Stewart
 ;; URL: http://www.emacswiki.org/emacs/download/snails.el
 ;; Keywords:
@@ -75,6 +75,7 @@
 ;;      * Use `expand-file-name' expand default-directory, fd don't like unexpand directory.
 ;;      * Fix selected delete buffer error when call `buffer-string' in `snails-create-async-process'
 ;;      * Give up creating subprocess if input ticker already expired.
+;;      * Kill all subprocess and process buffers when call `snails-quit'
 ;;
 ;; 2019/07/20
 ;;      * Finish document.
@@ -285,7 +286,17 @@ use for find candidate position to change select line.")
 (defun snails-quit ()
   "Quit snails."
   (interactive)
-  (delete-frame snails-frame))
+  ;; Delete frame first.
+  (delete-frame snails-frame)
+  ;; Kill all subprocess and process buffers.
+  (maphash
+   (lambda (name process)
+     (when process
+       (kill-buffer (process-buffer process)))
+     (when (and process
+                (process-live-p process))
+       (kill-process process)))
+   snails-backend-subprocess-hash))
 
 (defun snails-create-input-buffer ()
   "Create input buffer."
