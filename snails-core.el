@@ -95,6 +95,8 @@
 
 ;;; Require
 
+(require 'cl-lib)
+
 ;;; Code:
 
 (defcustom snails-mode-hook '()
@@ -123,6 +125,16 @@ do don't need set face attribute, such as like foreground and background."
 (defface snails-select-line-face
   '((t (:background "#3F90F7" :foreground "#FFF")))
   "Face for select line."
+  :group 'snails)
+
+(defface snails-input-buffer-face
+  '((t (:background "#222" :foreground "gold" :height 250)))
+  "Face for input area."
+  :group 'snails)
+
+(defface snails-content-buffer-face
+  '((t (:background "#111" :height 130)))
+  "Face for content area."
   :group 'snails)
 
 (defvar snails-input-buffer " *snails input*"
@@ -189,9 +201,7 @@ use for find candidate position to change select line.")
   (setq major-mode 'snails-mode)
   (setq mode-name "snails")
   ;; Injection keymap.
-  (use-local-map snails-mode-map)
-  ;; Run hook.
-  (run-hooks 'snails-mode-hook))
+  (use-local-map snails-mode-map))
 
 (defun snails (&optional backends)
   "Start snails to search."
@@ -285,7 +295,7 @@ use for find candidate position to change select line.")
     ;; Switch snails mode.
     (snails-mode)
     ;; Set input buffer face.
-    (buffer-face-set '(:background "#222" :foreground "gold" :height 250))
+    (buffer-face-set 'snails-input-buffer-face)
     ;; Disable hl-line, header-line and mode-line in input buffer.
     (setq-local global-hl-line-overlay nil)
     (setq-local header-line-format nil)
@@ -298,7 +308,7 @@ use for find candidate position to change select line.")
     ;; Clean buffer.
     (erase-buffer)
     ;; Set coent buffer face.
-    (buffer-face-set '(:background "#111" :height 130))
+    (buffer-face-set 'snails-content-buffer-face)
     ;; Disable header-line, mode-line and cursor shape in content buffer.
     (setq-local header-line-format nil)
     (setq-local mode-line-format nil)
@@ -401,7 +411,7 @@ use for find candidate position to change select line.")
 
 (defun snails-update-list-by-index (list n val)
   "Update candidates with backend index."
-  (nconc (subseq list 0 n)
+  (nconc (cl-subseq list 0 n)
          (cons val (nthcdr (1+ n) list))))
 
 (defun snails-get-backend-names ()
@@ -682,7 +692,7 @@ And render result when subprocess finish search."
                            )))))
          )))))
 
-(defmacro* snails-create-sync-backend (&rest args &key name candidate-filter candiate-do)
+(cl-defmacro snails-create-sync-backend (&rest args &key name candidate-filter candiate-do)
   "Macro to create sync backend code.
 
 `name' is backend name, such 'Foo Bar'.
@@ -709,7 +719,7 @@ And render result when subprocess finish search."
                )
              ))))
 
-(defmacro* snails-create-async-backend (&rest args &key name build-command candidate-filter candiate-do)
+(cl-defmacro snails-create-async-backend (&rest args &key name build-command candidate-filter candiate-do)
   "Macro to create sync backend code.
 
 `name' is backend name, such 'Foo Bar'.
