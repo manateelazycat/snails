@@ -7,8 +7,8 @@
 ;; Maintainer: Andy Stewart <lazycat.manatee@gmail.com>
 ;; Copyright (C) 2019, Andy Stewart, all rights reserved.
 ;; Created: 2019-05-16 21:26:09
-;; Version: 0.6
-;; Last-Updated: 2019-07-22 09:20:35
+;; Version: 0.7
+;; Last-Updated: 2019-07-22 10:35:30
 ;;           By: Andy Stewart
 ;; URL: http://www.emacswiki.org/emacs/download/snails.el
 ;; Keywords:
@@ -71,6 +71,7 @@
 ;;      * Finish `snails-select-next-backend' and `snails-select-prev-backend'
 ;;      * Use setq in macro, we can update backend code later.
 ;;      * Make `snails' support customize backend.
+;;      * Fixed error that `set-buffer' on killed buffer.
 ;;
 ;; 2019/07/20
 ;;      * Finish document.
@@ -649,18 +650,21 @@ And render result when subprocess finish search."
           :command commands
           :sentinel (lambda (process event)
                       (when (string= (substring event 0 -1) "finished")
-                        (with-current-buffer (process-buffer process)
-                          ;; Render result to content buffer when subprocess finish.
-                          (funcall
-                           update-callback
-                           name
-                           input-ticker
-                           (funcall
-                            candidate-filter
-                            (butlast (split-string (buffer-string) "\n")))))
+                        (let ((buffer (process-buffer process)))
+                          ;; Do nothing if process buffer has killed.
+                          (when (get-buffer buffer)
+                            (with-current-buffer buffer
+                              ;; Render result to content buffer when subprocess finish.
+                              (funcall
+                               update-callback
+                               name
+                               input-ticker
+                               (funcall
+                                candidate-filter
+                                (butlast (split-string (buffer-string) "\n")))))
 
-                        ;; Clean process buffer.
-                        (kill-buffer (process-buffer process)))
+                            ;; Clean process buffer.
+                            (kill-buffer buffer))))
                       )))))))
 
 (defmacro* snails-create-sync-backend (&rest args &key name candidate-filter candiate-do)
