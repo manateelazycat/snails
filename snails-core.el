@@ -7,8 +7,8 @@
 ;; Maintainer: Andy Stewart <lazycat.manatee@gmail.com>
 ;; Copyright (C) 2019, Andy Stewart, all rights reserved.
 ;; Created: 2019-05-16 21:26:09
-;; Version: 1.2
-;; Last-Updated: 2019-07-22 18:16:35
+;; Version: 1.3
+;; Last-Updated: 2019-07-22 18:40:39
 ;;           By: Andy Stewart
 ;; URL: http://www.emacswiki.org/emacs/download/snails.el
 ;; Keywords:
@@ -77,6 +77,7 @@
 ;;      * Give up creating subprocess if input ticker already expired.
 ;;      * Kill all subprocess and process buffers when call `snails-quit'
 ;;      * Fix bug that select previous candidate item will select header line sometimes.
+;;      * Add header index after header line.
 ;;
 ;; 2019/07/20
 ;;      * Finish document.
@@ -109,6 +110,11 @@
 (defface snails-header-line-face
   '((t (:foreground "#3F90F7" :underline t :height 1.2)))
   "Face for header line"
+  :group 'snails)
+
+(defface snails-header-index-face
+  '((t (:foreground "#3F90F7" :underline t)))
+  "Face for header index"
   :group 'snails)
 
 (defface snails-candiate-name-face
@@ -444,22 +450,25 @@ use for find candidate position to change select line.")
     (setq snails-select-line-overlay (make-overlay (point) (point)))
     (overlay-put snails-select-line-overlay 'face `snails-select-line-face)
 
-    (let ((candiate-index 0)
-          (backend-names (snails-get-backend-names))
-          header-line-start
-          header-line-end
-          candidate-name-start
-          candidate-name-end
-          candidate-content-start
-          candidate-content-end)
+    (let* ((candiate-index 0)
+           (backend-names (snails-get-backend-names))
+           (effective-backend-index 1)
+           (effective-backend-number (length (cl-remove-if #'booleanp snails-candiate-list)))
+           header-line-start
+           header-line-end
+           header-index-start
+           header-index-end
+           candidate-name-start
+           candidate-name-end
+           candidate-content-start
+           candidate-content-end)
       ;; Render backend result.
       (dolist (candiate-list snails-candiate-list)
         ;; Just render backend result when return candidate is not nil.
         (when candiate-list
           ;; Render header line with overlay.
           (setq header-line-start (point))
-          (insert (format "%s\n" (nth candiate-index backend-names)))
-          (backward-char)
+          (insert (nth candiate-index backend-names))
           (setq header-line-end (point))
           (let ((header-line-overlay (make-overlay header-line-start header-line-end)))
             (add-to-list 'snails-header-line-overlays header-line-overlay)
@@ -467,7 +476,17 @@ use for find candidate position to change select line.")
                          'face
                          'snails-header-line-face
                          ))
+
+          ;; Insert backend index.
+          (setq header-index-start (point))
+          (insert (format " [%s/%s]\n" effective-backend-index effective-backend-number))
+          (backward-char)
+          (setq header-index-end (point))
+          (overlay-put (make-overlay header-index-start header-index-end)
+                       'face
+                       'snails-header-index-face)
           (forward-char)
+          (setq effective-backend-index (+ effective-backend-index 1))
 
           ;; Render candidate list.
           (dolist (candiate candiate-list)

@@ -161,7 +161,6 @@ Snails is very smart, it will manage subprocess of async backend, When the user 
 
 ## TODO List
 
-* Add backend list sidebar.
 * Use better fuzz match algorithm.
 * Highlight match keyword in candidate line.
 * Make input buffer same height with font size, not fixed height.
