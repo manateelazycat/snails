@@ -8,7 +8,7 @@
  (lambda (input)
    (when (and (featurep 'cocoa)
               (> (length input) 5))
-     (list "mdfind" (format "'%s'" input))))
+     (list "mdfind" "-name" (format "'%s'" input))))
 
  :candidate-filter
  (lambda (candidate-list)
