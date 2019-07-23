@@ -7,8 +7,8 @@
 ;; Maintainer: Andy Stewart <lazycat.manatee@gmail.com>
 ;; Copyright (C) 2019, Andy Stewart, all rights reserved.
 ;; Created: 2019-05-16 21:26:09
-;; Version: 2.0
-;; Last-Updated: 2019-07-23 16:18:21
+;; Version: 2.1
+;; Last-Updated: 2019-07-23 16:36:14
 ;;           By: Andy Stewart
 ;; URL: http://www.emacswiki.org/emacs/download/snails.el
 ;; Keywords:
@@ -70,6 +70,7 @@
 ;;      * Kill old subprocess immediately, don't wait `run-with-idle-timer'
 ;;      * Split input window with on line height.
 ;;      * Make color along with current theme.
+;;      * Quit snails if it has opened.
 ;;
 ;; 2019/07/22
 ;;      * Delete other window first, make sure only one window in frame.
@@ -223,20 +224,24 @@ use for find candidate position to change select line.")
 (defun snails (&optional backends)
   "Start snails to search."
   (interactive)
-  ;; Update backends.
-  ;; If `backends' is empty list, use `snails-default-backends'.
-  (if (and (listp backends)
-           (> (length backends) 0))
-      (setq snails-backends backends)
-    (setq snails-backends snails-default-backends))
+  (if (and snails-frame
+           (frame-live-p snails-frame))
+      ;; Quit snails if it has opened.
+      (snails-quit)
+    ;; Update backends.
+    ;; If `backends' is empty list, use `snails-default-backends'.
+    (if (and (listp backends)
+             (> (length backends) 0))
+        (setq snails-backends backends)
+      (setq snails-backends snails-default-backends))
 
-  ;; Create input and content buffer.
-  (snails-create-input-buffer)
-  (snails-create-content-buffer)
-  ;; Send empty search content to backends.
-  (snails-search "")
-  ;; Create popup frame to show search result.
-  (snails-create-frame))
+    ;; Create input and content buffer.
+    (snails-create-input-buffer)
+    (snails-create-content-buffer)
+    ;; Send empty search content to backends.
+    (snails-search "")
+    ;; Create popup frame to show search result.
+    (snails-create-frame)))
 
 (defun snails-select-next-item ()
   "Select next candidate item."
@@ -304,6 +309,7 @@ use for find candidate position to change select line.")
   (interactive)
   ;; Delete frame first.
   (delete-frame snails-frame)
+  (setq snails-frame nil)
   ;; Kill all subprocess and process buffers.
   (maphash
    (lambda (name process)
