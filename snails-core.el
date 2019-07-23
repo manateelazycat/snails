@@ -7,8 +7,8 @@
 ;; Maintainer: Andy Stewart <lazycat.manatee@gmail.com>
 ;; Copyright (C) 2019, Andy Stewart, all rights reserved.
 ;; Created: 2019-05-16 21:26:09
-;; Version: 2.4
-;; Last-Updated: 2019-07-23 22:33:29
+;; Version: 2.5
+;; Last-Updated: 2019-07-23 22:51:56
 ;;           By: Andy Stewart
 ;; URL: http://www.emacswiki.org/emacs/download/snails-core.el
 ;; Keywords:
@@ -76,6 +76,7 @@
 ;;      * Add device to disable window configuration change snail frame.
 ;;      * Exit snails when enter to minibuffer.
 ;;      * Add new command `snails-candidate-copy'
+;;      * Add parent-frame parameter, then snails frame won't hide when switch to other application.
 ;;
 ;; 2019/07/22
 ;;      * Delete other window first, make sure only one window in frame.
@@ -395,7 +396,8 @@ use for find candidate position to change select line.")
     ;; Make popup frame, and position at center of current frame.
     (setq snails-frame
           (make-frame
-           '((minibuffer . nil)
+           '((parent-frame . (window-frame))
+             (minibuffer . nil)
              (visibility . nil)
              (internal-border-width . 0)
              (left-fringe . 0)
