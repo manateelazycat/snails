@@ -210,5 +210,6 @@ If you start Emacs with fullscreen mode, you can use my workaround code to fix t
 * Implement insert candiate at point.
 * Support regexp search.
 * One space equal .* , two space equal real space, like ivy.
+* snails-candidate-copy support rg backend.
 
 Welcome to hacking this framework! ;)
