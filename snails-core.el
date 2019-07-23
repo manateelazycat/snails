@@ -338,15 +338,12 @@ use for find candidate position to change select line.")
 (defun snails-create-content-buffer ()
   "Create content buffer."
   (let* ((colors (snails-get-theme-colors))
-         (bg-color (nth 0 colors))
-         (fg-color (nth 1 colors)))
+         (bg-color (nth 0 colors)))
     (with-current-buffer (get-buffer-create snails-content-buffer)
       ;; Clean buffer.
       (erase-buffer)
       ;; Set coent buffer face.
-      (set-face-attribute 'snails-content-buffer-face nil
-                          :background bg-color
-                          :foreground fg-color)
+      (set-face-attribute 'snails-content-buffer-face nil :background bg-color)
       (buffer-face-set 'snails-content-buffer-face)
       ;; Disable header-line, mode-line and cursor shape in content buffer.
       (setq-local header-line-format nil)
