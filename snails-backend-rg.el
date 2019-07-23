@@ -1,7 +1,7 @@
 (require 'snails-core)
-(require 'exec-path-from-shell)
-
-(exec-path-from-shell-initialize)
+(when (featurep 'cocoa)
+  (require 'exec-path-from-shell)
+  (exec-path-from-shell-initialize))
 
 (snails-create-async-backend
  :name
