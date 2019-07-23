@@ -7,8 +7,8 @@
 ;; Maintainer: Andy Stewart <lazycat.manatee@gmail.com>
 ;; Copyright (C) 2019, Andy Stewart, all rights reserved.
 ;; Created: 2019-05-16 21:26:09
-;; Version: 2.5
-;; Last-Updated: 2019-07-23 22:51:56
+;; Version: 2.6
+;; Last-Updated: 2019-07-24 05:36:39
 ;;           By: Andy Stewart
 ;; URL: http://www.emacswiki.org/emacs/download/snails-core.el
 ;; Keywords:
@@ -67,6 +67,9 @@
 ;;
 
 ;;; Change log:
+;;
+;; 2019/07/24
+;;      * Don't ask user when snails kill buffer of backend process.
 ;;
 ;; 2019/07/23
 ;;      * Kill old subprocess immediately, don't wait `run-with-idle-timer'
@@ -788,6 +791,12 @@ And render result when subprocess finish search."
            ;; Make subprocess if input ticker still is newest.
            ;; Give up creating subprocess if input ticker already expired.
            (let ((process-buffer (get-buffer-create (snails-generate-proces-buffer-name))))
+             ;; Don't ask anything when snails kill process buffer.
+             (with-current-buffer process-buffer
+               (setq-local kill-buffer-query-functions
+                           (remq 'process-kill-buffer-query-function
+                                 kill-buffer-query-functions)))
+
              (snails-update-backend-subprocess
               name
               (make-process
