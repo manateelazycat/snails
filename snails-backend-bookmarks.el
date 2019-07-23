@@ -13,14 +13,12 @@
               (string-match-p (regexp-quote input) bookmark))
 
          (add-to-list 'candidates
-                      (list
-                       (snails-wrap-file-icon bookmark)
-                       bookmark)
+                      (list bookmark bookmark)
                       t)))
      candidates))
 
  :candiate-do
  (lambda (candidate)
-   (bookmark-jump candidate)))
+   (bookmark-jump candidate)))h
 
 (provide 'snails-backend-bookmarks)
