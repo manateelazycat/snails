@@ -7,8 +7,8 @@
 ;; Maintainer: Andy Stewart <lazycat.manatee@gmail.com>
 ;; Copyright (C) 2019, Andy Stewart, all rights reserved.
 ;; Created: 2019-05-16 21:26:09
-;; Version: 2.2
-;; Last-Updated: 2019-07-23 17:22:07
+;; Version: 2.3
+;; Last-Updated: 2019-07-23 20:17:16
 ;;           By: Andy Stewart
 ;; URL: http://www.emacswiki.org/emacs/download/snails-core.el
 ;; Keywords:
@@ -72,6 +72,7 @@
 ;;      * Make color along with current theme.
 ;;      * Quit snails if it has opened.
 ;;      * Add device to disable window configuration change snail frame.
+;;      * Exit snails when enter to minibuffer.
 ;;
 ;; 2019/07/22
 ;;      * Delete other window first, make sure only one window in frame.
@@ -860,6 +861,13 @@ And render result when subprocess finish search."
               (unless (equal (buffer-name (current-buffer)) snails-input-buffer)
                 (apply orig args))
               ))
+
+(defun snails-monitor-minibuffer-enter ()
+  (when (and snails-frame
+             (frame-live-p snails-frame))
+    (snails-quit)))
+
+(add-hook 'minibuffer-setup-hook 'snails-monitor-minibuffer-enter)
 
 (cl-defmacro snails-create-sync-backend (&rest args &key name candidate-filter candiate-do)
   "Macro to create sync backend code.
