@@ -7,8 +7,8 @@
 ;; Maintainer: Andy Stewart <lazycat.manatee@gmail.com>
 ;; Copyright (C) 2019, Andy Stewart, all rights reserved.
 ;; Created: 2019-05-16 21:26:09
-;; Version: 2.1
-;; Last-Updated: 2019-07-23 16:36:14
+;; Version: 2.2
+;; Last-Updated: 2019-07-23 17:22:07
 ;;           By: Andy Stewart
 ;; URL: http://www.emacswiki.org/emacs/download/snails-core.el
 ;; Keywords:
@@ -71,6 +71,7 @@
 ;;      * Split input window with on line height.
 ;;      * Make color along with current theme.
 ;;      * Quit snails if it has opened.
+;;      * Add device to disable window configuration change snail frame.
 ;;
 ;; 2019/07/22
 ;;      * Delete other window first, make sure only one window in frame.
@@ -310,6 +311,7 @@ use for find candidate position to change select line.")
   ;; Delete frame first.
   (delete-frame snails-frame)
   (setq snails-frame nil)
+  (setq snails-parent-frame nil)
   ;; Kill all subprocess and process buffers.
   (maphash
    (lambda (name process)
@@ -816,6 +818,48 @@ And render result when subprocess finish search."
                                    (kill-buffer buffer)))))
                            )))))
          )))))
+
+(defun snails-frame-is-active-p ()
+  (and snails-frame
+       snails-parent-frame
+       (frame-live-p snails-frame)
+       (eq (window-frame (selected-window)) snails-frame)))
+
+(advice-add 'other-window
+            :around
+            (lambda (orig &rest args)
+              "Disable `other-window' in snails frame."
+              (unless (snails-frame-is-active-p)
+                (apply orig args))))
+
+(advice-add 'delete-other-windows
+            :around
+            (lambda (orig &rest args)
+              "Disable `delete-other-windows' in snails frame."
+              (unless (snails-frame-is-active-p)
+                (apply orig args))))
+
+(advice-add 'delete-window
+            :around
+            (lambda (orig &rest args)
+              "Disable `delete-window' in snails frame."
+              (unless (snails-frame-is-active-p)
+                (apply orig args))))
+
+(advice-add 'delete-buffer-window
+            :around
+            (lambda (orig &rest args)
+              "Disable `delete-buffer-window' in snails frame."
+              (unless (snails-frame-is-active-p)
+                (apply orig args))))
+
+(advice-add 'kill-buffer
+            :around
+            (lambda (orig &rest args)
+              "Disable `kill-buffer' in snails frame."
+              (unless (equal (buffer-name (current-buffer)) snails-input-buffer)
+                (apply orig args))
+              ))
 
 (cl-defmacro snails-create-sync-backend (&rest args &key name candidate-filter candiate-do)
   "Macro to create sync backend code.
