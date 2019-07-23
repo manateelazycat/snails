@@ -33,7 +33,7 @@ If you're a big fan of [Ivy](https://github.com/abo-abo/swiper#ivy), you can use
 (snails '(snails-backend-buffer snails-backend-buffer))
 ```
 
-### Keymap for View Mode
+### Keymap
 
 | Key         | Description               |
 | :--------:  | :----                     |
