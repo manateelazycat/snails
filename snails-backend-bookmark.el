@@ -3,7 +3,7 @@
 
 (snails-create-sync-backend
  :name
- "BOOKMARKS"
+ "BOOKMARK"
  :candidate-filter
  (lambda (input)
    (let (candidates)
@@ -21,4 +21,4 @@
  (lambda (candidate)
    (bookmark-jump candidate)))h
 
-(provide 'snails-backend-bookmarks)
+(provide 'snails-backend-bookmark)

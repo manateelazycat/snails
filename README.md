@@ -58,6 +58,7 @@ If you're a big fan of [Ivy](https://github.com/abo-abo/swiper#ivy), you can use
 | snails-backend-fd          | Use fd search files in current project          |
 | snails-backend-mdfind      | Use mdfind search files in local disk, only Mac |
 | snails-backend-rg          | Use ripgrep search content in current project   |
+| snails-backend-bookmark    | Switch bookmark                                 |
 | snails-backend-awesome-tab | Switch group of awesome-tab                     |
 
 ## Architecture Design of Snails
