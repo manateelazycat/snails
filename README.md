@@ -204,5 +204,7 @@ If you start Emacs with fullscreen mode, you can use my workaround code to fix t
 * Use better fuzz match algorithm.
 * Highlight match keyword in candidate line.
 * Display ansi color string from async process, such as fd, rg, mdfind.
+* Implement copy candiate to clipboard.
+* Implement insert candiate at point.
 
 Welcome to hacking this framework! ;)
