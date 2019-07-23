@@ -576,9 +576,9 @@ influence of C1 on the result."
               (t (face-background 'default))))
          ;; for light themes
          (bg-dark (snails-color-blend black bg 0.1))
-         (bg-more-dark (snails-color-blend black bg 0.25))
+         (bg-more-dark (snails-color-blend black bg 0.15))
          (fg-dark (snails-color-blend fg bg-dark 0.7))
-         (fg-more-dark (snails-color-blend black fg 0.3))
+         (fg-more-dark (snails-color-blend black fg 0.2))
          ;; for dark themes
          (bg-light (snails-color-blend white bg 0.05))
          (bg-more-light (snails-color-blend white bg 0.1))
