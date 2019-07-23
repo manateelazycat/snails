@@ -122,7 +122,7 @@
        ;; Open file and jump to position.
        (find-file (nth 0 file-info))
        (goto-line (string-to-number (nth 1 file-info)))
-       (goto-column (max (- (string-to-number (nth 2 file-info)) 1) 0))
+       (move-to-column (max (- (string-to-number (nth 2 file-info)) 1) 0))
 
        ;; Flash match line.
        (let ((pulse-iterations 1)
@@ -133,5 +133,3 @@
 (provide 'snails-backend-rg)
 
 ;;; snails-backend-rg.el ends here
-
-
