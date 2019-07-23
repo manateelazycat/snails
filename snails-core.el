@@ -7,8 +7,8 @@
 ;; Maintainer: Andy Stewart <lazycat.manatee@gmail.com>
 ;; Copyright (C) 2019, Andy Stewart, all rights reserved.
 ;; Created: 2019-05-16 21:26:09
-;; Version: 1.7
-;; Last-Updated: 2019-07-22 22:05:56
+;; Version: 1.8
+;; Last-Updated: 2019-07-23 12:19:19
 ;;           By: Andy Stewart
 ;; URL: http://www.emacswiki.org/emacs/download/snails.el
 ;; Keywords:
@@ -65,6 +65,9 @@
 ;;
 
 ;;; Change log:
+;;
+;; 2019/07/23
+;;      * Kill old subprocess immediately, don't wait `run-with-idle-timer'
 ;;
 ;; 2019/07/22
 ;;      * Delete other window first, make sure only one window in frame.
@@ -684,8 +687,8 @@ If not in project, use current directory."
           (random (expt 16 4))
           (random (expt 16 4)) ))
 
-(defun snails-update-backend-subprocess (name process)
-  "Update subprocess of async backend."
+(defun snails-kill-backend-subprocess (name)
+  "Kill subprocess of async backend."
   (let ((current-process (gethash name snails-backend-subprocess-hash)))
     ;; Kill process buffer.
     (when current-process
@@ -694,8 +697,12 @@ If not in project, use current directory."
     (when (and current-process
                (process-live-p current-process))
       (kill-process current-process))
-    ;; Update new process with backend name.
-    (puthash name process snails-backend-subprocess-hash)))
+    ))
+
+(defun snails-update-backend-subprocess (name process)
+  "Update subprocess of async backend."
+  ;; Update new process with backend name.
+  (puthash name process snails-backend-subprocess-hash))
 
 (defun snails-create-async-process (name input input-ticker build-command candidate-filter update-callback)
   "Create subprocess of async backend.
@@ -704,9 +711,12 @@ And render result when subprocess finish search."
   (let ((commands (funcall build-command input)))
     ;; Only make subprocess when commands is not nil.
     (when commands
+      ;; Kill old subprocess.
+      (snails-kill-backend-subprocess name)
+
+      ;; We need delay 0.1 second to call make subprocess,
+      ;; avoid create many deserted subprocess when user enter character too fast like me. ;)
       (run-with-idle-timer
-       ;; We need delay 0.1 second to call make subprocess,
-       ;; avoid create many deserted subprocess when user enter character too fast like me. ;)
        0.1
        nil
        (lambda ()
