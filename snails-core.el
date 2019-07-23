@@ -7,8 +7,8 @@
 ;; Maintainer: Andy Stewart <lazycat.manatee@gmail.com>
 ;; Copyright (C) 2019, Andy Stewart, all rights reserved.
 ;; Created: 2019-05-16 21:26:09
-;; Version: 2.6
-;; Last-Updated: 2019-07-24 05:36:39
+;; Version: 2.7
+;; Last-Updated: 2019-07-24 07:22:59
 ;;           By: Andy Stewart
 ;; URL: http://www.emacswiki.org/emacs/download/snails-core.el
 ;; Keywords:
@@ -70,6 +70,7 @@
 ;;
 ;; 2019/07/24
 ;;      * Don't ask user when snails kill buffer of backend process.
+;;      * Test GUI environment when start snails.
 ;;
 ;; 2019/07/23
 ;;      * Kill old subprocess immediately, don't wait `run-with-idle-timer'
@@ -240,24 +241,26 @@ use for find candidate position to change select line.")
 (defun snails (&optional backends)
   "Start snails to search."
   (interactive)
-  (if (and snails-frame
-           (frame-live-p snails-frame))
-      ;; Quit snails if it has opened.
-      (snails-quit)
-    ;; Update backends.
-    ;; If `backends' is empty list, use `snails-default-backends'.
-    (if (and (listp backends)
-             (> (length backends) 0))
-        (setq snails-backends backends)
-      (setq snails-backends snails-default-backends))
+  (if (display-graphic-p)
+      (if (and snails-frame
+               (frame-live-p snails-frame))
+          ;; Quit snails if it has opened.
+          (snails-quit)
+        ;; Update backends.
+        ;; If `backends' is empty list, use `snails-default-backends'.
+        (if (and (listp backends)
+                 (> (length backends) 0))
+            (setq snails-backends backends)
+          (setq snails-backends snails-default-backends))
 
-    ;; Create input and content buffer.
-    (snails-create-input-buffer)
-    (snails-create-content-buffer)
-    ;; Send empty search content to backends.
-    (snails-search "")
-    ;; Create popup frame to show search result.
-    (snails-create-frame)))
+        ;; Create input and content buffer.
+        (snails-create-input-buffer)
+        (snails-create-content-buffer)
+        ;; Send empty search content to backends.
+        (snails-search "")
+        ;; Create popup frame to show search result.
+        (snails-create-frame))
+    (message "Snails render candidates in new frame that only can be run in a graphical environment.")))
 
 (defun snails-select-next-item ()
   "Select next candidate item."
