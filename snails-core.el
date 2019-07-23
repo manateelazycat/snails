@@ -7,8 +7,8 @@
 ;; Maintainer: Andy Stewart <lazycat.manatee@gmail.com>
 ;; Copyright (C) 2019, Andy Stewart, all rights reserved.
 ;; Created: 2019-05-16 21:26:09
-;; Version: 1.9
-;; Last-Updated: 2019-07-23 15:49:00
+;; Version: 2.0
+;; Last-Updated: 2019-07-23 16:18:21
 ;;           By: Andy Stewart
 ;; URL: http://www.emacswiki.org/emacs/download/snails.el
 ;; Keywords:
@@ -69,6 +69,7 @@
 ;; 2019/07/23
 ;;      * Kill old subprocess immediately, don't wait `run-with-idle-timer'
 ;;      * Split input window with on line height.
+;;      * Make color along with current theme.
 ;;
 ;; 2019/07/22
 ;;      * Delete other window first, make sure only one window in frame.
@@ -116,12 +117,12 @@
   :group 'snails)
 
 (defface snails-header-line-face
-  '((t (:foreground "#3F90F7" :underline t :height 1.2)))
+  '((t (:inherit font-lock-function-name-face :underline t :height 1.2)))
   "Face for header line"
   :group 'snails)
 
 (defface snails-header-index-face
-  '((t (:foreground "#3F90F7" :underline t)))
+  '((t (:inherit font-lock-function-name-face :underline t)))
   "Face for header index"
   :group 'snails)
 
@@ -139,17 +140,17 @@ do don't need set face attribute, such as like foreground and background."
   :group 'snails)
 
 (defface snails-select-line-face
-  '((t (:background "#3F90F7" :foreground "#FFF")))
+  '((t (:inherit region)))
   "Face for select line."
   :group 'snails)
 
 (defface snails-input-buffer-face
-  '((t (:background "#222" :foreground "gold" :height 250)))
+  '((t (:height 250)))
   "Face for input area."
   :group 'snails)
 
 (defface snails-content-buffer-face
-  '((t (:background "#111" :height 130)))
+  '((t (:height 130)))
   "Face for content area."
   :group 'snails)
 
@@ -315,31 +316,43 @@ use for find candidate position to change select line.")
 
 (defun snails-create-input-buffer ()
   "Create input buffer."
-  (with-current-buffer (get-buffer-create snails-input-buffer)
-    ;; Clean buffer.
-    (erase-buffer)
-    ;; Switch snails mode.
-    (snails-mode)
-    ;; Set input buffer face.
-    (buffer-face-set 'snails-input-buffer-face)
-    ;; Disable hl-line, header-line and mode-line in input buffer.
-    (setq-local global-hl-line-overlay nil)
-    (setq-local header-line-format nil)
-    (setq-local mode-line-format nil)
-    ))
+  (let* ((colors (snails-get-theme-colors))
+         (bg-color (nth 2 colors))
+         (fg-color (nth 3 colors)))
+    (with-current-buffer (get-buffer-create snails-input-buffer)
+      ;; Clean buffer.
+      (erase-buffer)
+      ;; Switch snails mode.
+      (snails-mode)
+      ;; Set input buffer face.
+      (set-face-attribute 'snails-input-buffer-face nil
+                          :background bg-color
+                          :foreground fg-color)
+      (buffer-face-set 'snails-input-buffer-face)
+      ;; Disable hl-line, header-line and mode-line in input buffer.
+      (setq-local global-hl-line-overlay nil)
+      (setq-local header-line-format nil)
+      (setq-local mode-line-format nil)
+      )))
 
 (defun snails-create-content-buffer ()
   "Create content buffer."
-  (with-current-buffer (get-buffer-create snails-content-buffer)
-    ;; Clean buffer.
-    (erase-buffer)
-    ;; Set coent buffer face.
-    (buffer-face-set 'snails-content-buffer-face)
-    ;; Disable header-line, mode-line and cursor shape in content buffer.
-    (setq-local header-line-format nil)
-    (setq-local mode-line-format nil)
-    (setq-local cursor-type nil)
-    ))
+  (let* ((colors (snails-get-theme-colors))
+         (bg-color (nth 0 colors))
+         (fg-color (nth 1 colors)))
+    (with-current-buffer (get-buffer-create snails-content-buffer)
+      ;; Clean buffer.
+      (erase-buffer)
+      ;; Set coent buffer face.
+      (set-face-attribute 'snails-content-buffer-face nil
+                          :background bg-color
+                          :foreground fg-color)
+      (buffer-face-set 'snails-content-buffer-face)
+      ;; Disable header-line, mode-line and cursor shape in content buffer.
+      (setq-local header-line-format nil)
+      (setq-local mode-line-format nil)
+      (setq-local cursor-type nil)
+      )))
 
 (defun snails-monitor-input (begin end length)
   "This is input monitor callback to hook `after-change-functions'."
@@ -530,6 +543,53 @@ use for find candidate position to change select line.")
       (goto-char (point-min))
       (snails-select-next-item)
       )))
+
+(defun snails-color-blend (c1 c2 alpha)
+  "Blend two colors C1 and C2 with ALPHA.
+C1 and C2 are hexidecimal strings.
+ALPHA is a number between 0.0 and 1.0 which corresponds to the
+influence of C1 on the result."
+  (apply #'(lambda (r g b)
+             (format "#%02x%02x%02x"
+                     (ash r -8)
+                     (ash g -8)
+                     (ash b -8)))
+         (cl-mapcar
+          (lambda (x y)
+            (round (+ (* x alpha) (* y (- 1 alpha)))))
+          (color-values c1) (color-values c2))))
+
+(defun snails-get-theme-colors ()
+  "We need adjust snails's colors when user switch new theme."
+  (let* ((white "#FFFFFF")
+         (black "#000000")
+         (bg-mode (frame-parameter nil 'background-mode))
+         (bg-unspecified (string= (face-background 'default) "unspecified-bg"))
+         (fg-unspecified (string= (face-foreground 'default) "unspecified-fg"))
+         (fg (cond
+              ((and fg-unspecified (eq bg-mode 'dark)) "gray80")
+              ((and fg-unspecified (eq bg-mode 'light)) "gray20")
+              (t (face-foreground 'default))))
+         (bg (cond
+              ((and bg-unspecified (eq bg-mode 'dark)) "gray20")
+              ((and bg-unspecified (eq bg-mode 'light)) "gray80")
+              (t (face-background 'default))))
+         ;; for light themes
+         (bg-dark (snails-color-blend black bg 0.1))
+         (bg-more-dark (snails-color-blend black bg 0.25))
+         (fg-dark (snails-color-blend fg bg-dark 0.7))
+         (fg-more-dark (snails-color-blend black fg 0.3))
+         ;; for dark themes
+         (bg-light (snails-color-blend white bg 0.05))
+         (bg-more-light (snails-color-blend white bg 0.1))
+         (fg-light (snails-color-blend fg bg 0.7))
+         (fg-more-light (snails-color-blend white fg 0.3)))
+    (cond
+     ((eq bg-mode 'dark)
+      (list bg-light fg-dark bg-more-light fg-more-light))
+     (t
+      (list bg-dark fg-light bg-more-dark fg-more-dark)
+      ))))
 
 (defun snails-jump-to-next-item ()
   "Select next candidate item."
