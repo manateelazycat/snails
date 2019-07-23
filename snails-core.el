@@ -861,6 +861,52 @@ And render result when subprocess finish search."
                 (apply orig args))
               ))
 
+;;; Fuzzy matcher
+
+(declare-function flx-score "ext:flx.el")
+(declare-function fuz-calc-score-skim "ext:fuz.el")
+
+(defvar snails--flx-cache nil)
+(with-eval-after-load 'flx
+  (setq snails--flx-cache (flx-make-string-cache)))
+
+(defun snails--build-fuzzy-regex (pattern)
+  "Create a fuzzy regexp of PATTERN."
+  (mapconcat (lambda (ch)
+               (let ((s (char-to-string ch)))
+                 (format "[^%s]*%s" s (regexp-quote s))))
+             pattern ""))
+
+(defun snails-fuzzy-flx-filter (pattern candidates)
+  (let ((fuzzy-re (snails--build-fuzzy-regex pattern))
+        retval)
+    (while candidates
+      (when (string-match-p fuzzy-re (car candidates))
+        (push (pop candidates) retval)))
+
+    (cl-sort (mapcar (lambda (it)
+                       (cons it (car (flx-score it pattern snails--flx-cache))))
+                     retval)
+             (pcase-lambda (`(,scr1 . ,cands1) `(,scr2 . ,cands2))
+                 (if (= scr1 scr2)
+                     (< (length cands1) (length cands2))
+                   (> scr1 scr2))))))
+
+(defun snails-fuzzy-fuz-filter (pattern candidates)
+  (let ((fuzzy-re (snails--build-fuzzy-regex pattern))
+        retval)
+    (while candidates
+      (when (string-match-p fuzzy-re (car candidates))
+        (push (pop candidates) retval)))
+
+    (cl-sort (mapcar (lambda (it)
+                       (cons it (fuz-calc-score-skim pattern it)))
+                     retval)
+             (pcase-lambda (`(,scr1 . ,cands1) `(,scr2 . ,cands2))
+                 (if (= scr1 scr2)
+                     (< (length cands1) (length cands2))
+                   (> scr1 scr2))))))
+
 (cl-defmacro snails-create-sync-backend (&rest args &key name candidate-filter candiate-do)
   "Macro to create sync backend code.
 
