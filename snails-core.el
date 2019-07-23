@@ -7,8 +7,8 @@
 ;; Maintainer: Andy Stewart <lazycat.manatee@gmail.com>
 ;; Copyright (C) 2019, Andy Stewart, all rights reserved.
 ;; Created: 2019-05-16 21:26:09
-;; Version: 2.7
-;; Last-Updated: 2019-07-24 07:22:59
+;; Version: 2.8
+;; Last-Updated: 2019-07-24 07:26:44
 ;;           By: Andy Stewart
 ;; URL: http://www.emacswiki.org/emacs/download/snails-core.el
 ;; Keywords:
@@ -71,6 +71,7 @@
 ;; 2019/07/24
 ;;      * Don't ask user when snails kill buffer of backend process.
 ;;      * Test GUI environment when start snails.
+;;      * Don't wrap long line in content buffer.
 ;;
 ;; 2019/07/23
 ;;      * Kill old subprocess immediately, don't wait `run-with-idle-timer'
@@ -356,9 +357,10 @@ use for find candidate position to change select line.")
       ;; Set coent buffer face.
       (set-face-attribute 'snails-content-buffer-face nil :background bg-color)
       (buffer-face-set 'snails-content-buffer-face)
-      ;; Disable header-line, mode-line and cursor shape in content buffer.
+      ;; Disable header-line, mode-line, long line and cursor shape in content buffer.
       (setq-local header-line-format nil)
       (setq-local mode-line-format nil)
+      (setq-local truncate-lines t)
       (setq-local cursor-type nil)
       )))
 
