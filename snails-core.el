@@ -1,7 +1,7 @@
 ;; -*- lexical-binding: t; -*-
-;; ;;; snails.el --- A modern, easy-to-expand fuzzy search framework
+;; ;;; snails-core.el --- A modern, easy-to-expand fuzzy search framework
 
-;; Filename: snails.el
+;; Filename: snails-core.el
 ;; Description: A modern, easy-to-expand fuzzy search framework
 ;; Author: Andy Stewart <lazycat.manatee@gmail.com>
 ;; Maintainer: Andy Stewart <lazycat.manatee@gmail.com>
@@ -10,7 +10,7 @@
 ;; Version: 2.1
 ;; Last-Updated: 2019-07-23 16:36:14
 ;;           By: Andy Stewart
-;; URL: http://www.emacswiki.org/emacs/download/snails.el
+;; URL: http://www.emacswiki.org/emacs/download/snails-core.el
 ;; Keywords:
 ;; Compatibility: GNU Emacs 26.1.92
 ;;
@@ -877,4 +877,4 @@ And render result when subprocess finish search."
 
 (provide 'snails-core)
 
-;;; snails.el ends here
+;;; snails-core.el ends here
