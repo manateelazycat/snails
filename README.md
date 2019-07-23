@@ -45,8 +45,9 @@ If you're a big fan of [Ivy](https://github.com/abo-abo/swiper#ivy), you can use
 | M-v         | Select previous backend   |
 | M-j         | Select next backend       |
 | M-k         | Select previous backend   |
-| C-m         | Confirm                   |
-| RET         | Confirm                   |
+| C-m         | Confirm candiate          |
+| RET         | Confirm candiate          |
+| M-w         | Copy candidate            |
 | C-g         | Quit snails               |
 | ESC ESC ESC | Quit snails               |
 | M-h         | Quit snails               |
@@ -206,7 +207,6 @@ If you start Emacs with fullscreen mode, you can use my workaround code to fix t
 * Use better fuzz match algorithm.
 * Highlight match keyword in candidate line.
 * Display ansi color string from async process, such as fd, rg, mdfind.
-* Implement copy candiate to clipboard.
 * Implement insert candiate at point.
 
 Welcome to hacking this framework! ;)

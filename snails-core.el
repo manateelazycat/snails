@@ -7,9 +7,9 @@
 ;; Maintainer: Andy Stewart <lazycat.manatee@gmail.com>
 ;; Copyright (C) 2019, Andy Stewart, all rights reserved.
 ;; Created: 2019-05-16 21:26:09
-;; Version: 2.3
-;; Last-Updated: Tue Jul 23 09:10:30 2019 (-0400)
-;;           By: Mingde (Matthew) Zeng
+;; Version: 2.4
+;; Last-Updated: 2019-07-23 22:33:29
+;;           By: Andy Stewart
 ;; URL: http://www.emacswiki.org/emacs/download/snails-core.el
 ;; Keywords:
 ;; Compatibility: GNU Emacs 26.1.92
@@ -75,6 +75,7 @@
 ;;      * Quit snails if it has opened.
 ;;      * Add device to disable window configuration change snail frame.
 ;;      * Exit snails when enter to minibuffer.
+;;      * Add new command `snails-candidate-copy'
 ;;
 ;; 2019/07/22
 ;;      * Delete other window first, make sure only one window in frame.
@@ -159,6 +160,11 @@ need to set face attribute, such as foreground and background."
   "Face for content area."
   :group 'snails)
 
+(defface snails-copy-candidate-face
+  '((t (:foreground "Gold" :bold t)))
+  "Face copy candidate."
+  :group 'snails)
+
 (defvar snails-input-buffer " *snails input*"
   "The buffer name of search input buffer.")
 
@@ -212,8 +218,9 @@ use for find candidate position to change select line.")
     (define-key map (kbd "M-v") 'snails-select-prev-backend)
     (define-key map (kbd "M-j") 'snails-select-next-backend)
     (define-key map (kbd "M-k") 'snails-select-prev-backend)
-    (define-key map (kbd "C-m") 'snails-do)
-    (define-key map (kbd "RET") 'snails-do)
+    (define-key map (kbd "C-m") 'snails-candidate-do)
+    (define-key map (kbd "RET") 'snails-candidate-do)
+    (define-key map (kbd "M-w") 'snails-candidate-copy)
     map)
   "Keymap used by `snails-mode'.")
 
@@ -286,29 +293,30 @@ use for find candidate position to change select line.")
     (snails-select-backend-first-candidate
      (snalis-get-prev-backend-overlay))))
 
-(defun snails-do ()
+(defun snails-candidate-do ()
   "Confirm current candidate."
   (interactive)
-  (with-current-buffer snails-content-buffer
-    ;; Goto candidate content overlay position.
-    (goto-line snails-select-line-number)
-    (end-of-line)
-    (backward-char)
+  (let ((candidate-info (snails-candidate-get-info)))
+    (when candidate-info
+      (snails-backend-do
+       (nth 0 candidate-info)
+       (nth 1 candidate-info)))))
 
-    ;; Pickup candidate content and confirm by corresponding backend.
-    (let ((overlays (overlays-at (point))))
-      (catch 'do
-        (while overlays
-          (let ((overlay (car overlays)))
-            ;; Find overlay that face is `snails-candiate-content-face'.
-            (when (eq (overlay-get overlay 'face) 'snails-candiate-content-face)
-              ;; Confirm candidate with backend.
-              (snails-backend-do
-               (snails-get-candidate-backend-name (point))
-               (buffer-substring (overlay-start overlay) (overlay-end overlay)))
-              (throw 'do nil)))
-          (setq overlays (cdr overlays))))
-      )))
+(defun snails-candidate-copy ()
+  "Copy current candiate."
+  (interactive)
+  (let ((candidate-info (snails-candidate-get-info)))
+    (when candidate-info
+      ;; Quit snails first.
+      (snails-quit)
+
+      ;; Notify user copy candiate.
+      (message "%s [ %s ]"
+               (propertize "Copy" 'face 'snails-copy-candidate-face)
+               (nth 1 candidate-info))
+
+      ;; Copy candiate.
+      (kill-new (nth 1 candidate-info)))))
 
 (defun snails-quit ()
   "Quit snails."
@@ -829,6 +837,27 @@ And render result when subprocess finish search."
        snails-parent-frame
        (frame-live-p snails-frame)
        (eq (window-frame (selected-window)) snails-frame)))
+
+(defun snails-candidate-get-info ()
+  (with-current-buffer snails-content-buffer
+    ;; Goto candidate content overlay position.
+    (goto-line snails-select-line-number)
+    (end-of-line)
+    (backward-char)
+
+    ;; Pickup candidate content and confirm by corresponding backend.
+    (let ((overlays (overlays-at (point))))
+      (catch 'candidate
+        (while overlays
+          (let ((overlay (car overlays)))
+            ;; Find overlay that face is `snails-candiate-content-face'.
+            (when (eq (overlay-get overlay 'face) 'snails-candiate-content-face)
+              (throw 'candidate
+                     (list
+                      (snails-get-candidate-backend-name (point))
+                      (buffer-substring (overlay-start overlay) (overlay-end overlay))))))
+          (setq overlays (cdr overlays))))
+      )))
 
 (advice-add 'other-window
             :around
