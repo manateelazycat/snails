@@ -140,7 +140,7 @@
   '((t))
   "Face for candidate content.
 Note, candidate name is display name you can see in content buffer.
-Candidate content use for confirm, it's is invisible, it doesn't
+Candidate content use for confirm, it's invisible, it doesn't
 need to set face attribute, such as foreground and background."
   :group 'snails)
 
