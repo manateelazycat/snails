@@ -9,7 +9,7 @@ regardless of how complex the search framework is.
 
 ## Installation
 1. Clone or download this repository (path of the folder is the `<path-to-snails>` used below).
-2. Install [exec-path-from-shell](https://github.com/purcell/exec-path-from-shell) dependency.
+2. If you are using Mac, install [exec-path-from-shell](https://github.com/purcell/exec-path-from-shell) dependency.
 3. In your `~/.emacs`, add the following two lines:
 ```elisp
 (add-to-list 'load-path "<path-to-snails>") ; add snails to your load-path
