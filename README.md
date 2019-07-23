@@ -41,6 +41,8 @@ If you're a big fan of [Ivy](https://github.com/abo-abo/swiper#ivy), you can use
 | C-p         | Select previous candidate |
 | M-n         | Select next candidate     |
 | M-p         | Select previous candidate |
+| C-v         | Select next backend       |
+| M-v         | Select previous backend   |
 | M-j         | Select next backend       |
 | M-k         | Select previous backend   |
 | C-m         | Confirm                   |
