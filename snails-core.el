@@ -7,8 +7,8 @@
 ;; Maintainer: Andy Stewart <lazycat.manatee@gmail.com>
 ;; Copyright (C) 2019, Andy Stewart, all rights reserved.
 ;; Created: 2019-05-16 21:26:09
-;; Version: 1.8
-;; Last-Updated: 2019-07-23 12:19:19
+;; Version: 1.9
+;; Last-Updated: 2019-07-23 15:49:00
 ;;           By: Andy Stewart
 ;; URL: http://www.emacswiki.org/emacs/download/snails.el
 ;; Keywords:
@@ -68,6 +68,7 @@
 ;;
 ;; 2019/07/23
 ;;      * Kill old subprocess immediately, don't wait `run-with-idle-timer'
+;;      * Split input window with on line height.
 ;;
 ;; 2019/07/22
 ;;      * Delete other window first, make sure only one window in frame.
@@ -384,12 +385,12 @@ use for find candidate position to change select line.")
       ;; Disable frame decorated.
       (set-frame-parameter nil 'undecorated t)
 
-      ;; Split frame with input buffer and content buffer.
-      (split-window (selected-window) (nth 3 (window-edges (selected-window))) nil t)
-
       ;; Set input window margin and switch to input buffer.
       (switch-to-buffer snails-input-buffer)
       (set-window-margins (selected-window) 1 1)
+
+      ;; Split window with one line height of input buffer.
+      (split-window (selected-window) (line-pixel-height) nil t)
 
       ;; Set content window margin and switch to content buffer.
       (other-window 1)
