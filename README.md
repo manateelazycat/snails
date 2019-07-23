@@ -203,7 +203,6 @@ If you start Emacs with fullscreen mode, you can use my workaround code to fix t
 
 * Use better fuzz match algorithm.
 * Highlight match keyword in candidate line.
-* Disable insert return char in input buffer.
 * Display ansi color string from async process, such as fd, rg, mdfind.
 
 Welcome to hacking this framework! ;)
