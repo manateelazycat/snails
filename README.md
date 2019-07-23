@@ -8,9 +8,9 @@ If you know how to write a filter function, you can write a new search plugin in
 regardless of how complex the search framework is.
 
 ## Installation
-Clone or download this repository (path of the folder is the `<path-to-snails>` used below).
-
-In your `~/.emacs`, add the following two lines:
+1. Clone or download this repository (path of the folder is the `<path-to-snails>` used below).
+2. Install [exec-path-from-shell](https://github.com/purcell/exec-path-from-shell) dependency.
+3. In your `~/.emacs`, add the following two lines:
 ```elisp
 (add-to-list 'load-path "<path-to-snails>") ; add snails to your load-path
 (require 'snails)
@@ -44,7 +44,7 @@ If you're a big fan of [Ivy](https://github.com/abo-abo/swiper#ivy), you can use
 | M-j         | Select next backend       |
 | M-k         | Select previous backend   |
 | C-m         | Confirm                   |
-| Return      | Confirm                   |
+| RET         | Confirm                   |
 | C-g         | Quit snails               |
 | ESC ESC ESC | Quit snails               |
 | M-h         | Quit snails               |
