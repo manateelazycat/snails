@@ -207,9 +207,7 @@ If you start Emacs with fullscreen mode, you can use my workaround code to fix t
 * Use better fuzz match algorithm.
 * Highlight match keyword in candidate line.
 * Display ansi color string from async process, such as fd, rg, mdfind.
-* Implement insert candiate at point.
 * Support regexp search.
 * One space equal .* , two space equal real space, like ivy.
-* snails-candidate-copy support rg backend.
 
 Welcome to hacking this framework! ;)

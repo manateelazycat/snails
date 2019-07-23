@@ -221,7 +221,6 @@ use for find candidate position to change select line.")
     (define-key map (kbd "M-k") 'snails-select-prev-backend)
     (define-key map (kbd "C-m") 'snails-candidate-do)
     (define-key map (kbd "RET") 'snails-candidate-do)
-    (define-key map (kbd "M-w") 'snails-candidate-copy)
     map)
   "Keymap used by `snails-mode'.")
 
@@ -302,22 +301,6 @@ use for find candidate position to change select line.")
       (snails-backend-do
        (nth 0 candidate-info)
        (nth 1 candidate-info)))))
-
-(defun snails-candidate-copy ()
-  "Copy current candiate."
-  (interactive)
-  (let ((candidate-info (snails-candidate-get-info)))
-    (when candidate-info
-      ;; Quit snails first.
-      (snails-quit)
-
-      ;; Notify user copy candiate.
-      (message "%s [ %s ]"
-               (propertize "Copy" 'face 'snails-copy-candidate-face)
-               (nth 1 candidate-info))
-
-      ;; Copy candiate.
-      (kill-new (nth 1 candidate-info)))))
 
 (defun snails-quit ()
   "Quit snails."
