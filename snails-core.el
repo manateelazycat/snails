@@ -50,7 +50,7 @@
 ;; It's set in your ~/.emacs like this:
 ;; (add-to-list 'load-path (expand-file-name "~/elisp"))
 ;;
-;; Install exec-path-from-shell from https://github.com/purcell/exec-path-from-shell.
+;; If you are using Mac, install exec-path-from-shell from https://github.com/purcell/exec-path-from-shell.
 ;;
 ;; And the following to your ~/.emacs startup file.
 ;;
