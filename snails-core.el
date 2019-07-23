@@ -8,8 +8,8 @@
 ;; Copyright (C) 2019, Andy Stewart, all rights reserved.
 ;; Created: 2019-05-16 21:26:09
 ;; Version: 2.3
-;; Last-Updated: 2019-07-23 20:17:16
-;;           By: Andy Stewart
+;; Last-Updated: Tue Jul 23 09:10:30 2019 (-0400)
+;;           By: Mingde (Matthew) Zeng
 ;; URL: http://www.emacswiki.org/emacs/download/snails-core.el
 ;; Keywords:
 ;; Compatibility: GNU Emacs 26.1.92
@@ -49,6 +49,8 @@
 ;; The load-path is usually ~/elisp/.
 ;; It's set in your ~/.emacs like this:
 ;; (add-to-list 'load-path (expand-file-name "~/elisp"))
+;;
+;; Install exec-path-from-shell from https://github.com/purcell/exec-path-from-shell.
 ;;
 ;; And the following to your ~/.emacs startup file.
 ;;
@@ -115,7 +117,7 @@
 ;;; Code:
 
 (defcustom snails-mode-hook '()
-  "snails mode hook."
+  "Snails mode hook."
   :type 'hook
   :group 'snails)
 
@@ -138,8 +140,8 @@
   '((t))
   "Face for candidate content.
 Note, candidate name is display name you can see in content buffer.
-Candidate content use for confirm, it's is invisible,
-do don't need set face attribute, such as like foreground and background."
+Candidate content use for confirm, it's invisible, it doesn't
+need to set face attribute, such as foreground and background."
   :group 'snails)
 
 (defface snails-select-line-face
@@ -206,6 +208,8 @@ use for find candidate position to change select line.")
     (define-key map (kbd "C-p") 'snails-select-prev-item)
     (define-key map (kbd "M-n") 'snails-select-next-item)
     (define-key map (kbd "M-p") 'snails-select-prev-item)
+    (define-key map (kbd "C-v") 'snails-select-next-backend)
+    (define-key map (kbd "M-v") 'snails-select-prev-backend)
     (define-key map (kbd "M-j") 'snails-select-next-backend)
     (define-key map (kbd "M-k") 'snails-select-prev-backend)
     (define-key map (kbd "C-m") 'snails-do)
