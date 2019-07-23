@@ -60,6 +60,22 @@ If you're a big fan of [Ivy](https://github.com/abo-abo/swiper#ivy), you can use
 | snails-backend-rg          | Use ripgrep search content in current project   |
 | snails-backend-awesome-tab | Switch group of awesome-tab                     |
 
+## Architecture Design of Snails
+
+<img src="./images/framework.png">
+
+snails-core.el is framework code, it only do:
+1. Monitor user input, generate input ticker and send a search request to the backend.
+2. Check backend's search result with input ticker.
+3. Render search result if input ticker is newest.
+
+Sync backend search action is trigger by framework when user type new character.
+Async backend search action only trigger by framework when user release keyboard key.
+
+Input ticker is the label of the input event，backend's input ticker will expired when user type new character in input buffer.
+
+When backend search finish, framework will drop search result if input ticker is expired.
+
 ## How to Write a New Plugin?
 
 Writing a plugin for snails is very simple.
