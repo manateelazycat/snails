@@ -38,7 +38,7 @@ Snails use normal match algorithm default.
 
 Snails will use fuzz match algorithm once you install [fuz](https://github.com/cireu/fuz.el) and add fuz in load-path.
 
-To install fuz.el, take Mac as an example:
+To install fuz.el , please follow below steps:
 1. Install [Rust](https://rustup.rs/)
 2. Download fuz.el repo: git clone https://github.com/cireu/fuz.el
 3. Build fuz-core.so: ```cargo build --release```
