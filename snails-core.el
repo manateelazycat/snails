@@ -7,8 +7,8 @@
 ;; Maintainer: Andy Stewart <lazycat.manatee@gmail.com>
 ;; Copyright (C) 2019, Andy Stewart, all rights reserved.
 ;; Created: 2019-05-16 21:26:09
-;; Version: 2.8
-;; Last-Updated: 2019-07-24 07:26:44
+;; Version: 2.9
+;; Last-Updated: 2019-07-24 22:09:43
 ;;           By: Andy Stewart
 ;; URL: http://www.emacswiki.org/emacs/download/snails-core.el
 ;; Keywords:
@@ -72,6 +72,7 @@
 ;;      * Don't ask user when snails kill buffer of backend process.
 ;;      * Test GUI environment when start snails.
 ;;      * Don't wrap long line in content buffer.
+;;      * Call `exec-path-from-shell' at snails-core.el
 ;;
 ;; 2019/07/23
 ;;      * Kill old subprocess immediately, don't wait `run-with-idle-timer'
@@ -120,6 +121,10 @@
 ;;; Require
 (require 'cl-lib)
 (require 'subr-x)
+
+(when (featurep 'cocoa)
+  (require 'exec-path-from-shell)
+  (exec-path-from-shell-initialize))
 
 ;;; Code:
 

@@ -81,9 +81,6 @@
 
 ;;; Require
 (require 'snails-core)
-(when (featurep 'cocoa)
-  (require 'exec-path-from-shell)
-  (exec-path-from-shell-initialize))
 
 ;;; Code:
 
