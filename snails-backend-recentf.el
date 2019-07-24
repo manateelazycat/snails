@@ -97,12 +97,13 @@
      (dolist (file recentf-list)
        (when (or
               (string-equal input "")
-              (string-match-p (regexp-quote input) file))
+              (snails-match-input-p input file))
          (add-to-list 'candidates
                       (list
                        (snails-wrap-file-icon file)
                        file)
                       t)))
+     (snails-sort-candidates input candidates)
      candidates))
 
  :candiate-do

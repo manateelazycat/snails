@@ -95,12 +95,13 @@
        (dolist (group (awesome-tab-get-groups))
          (when (or
                 (string-equal input "")
-                (string-match-p (regexp-quote input) group))
+                (snails-match-input-p input group))
            (add-to-list 'candidates
                         (list
                          group
                          group)
                         t))))
+     (snails-sort-candidates input candidates)
      candidates))
 
  :candiate-do

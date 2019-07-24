@@ -113,11 +113,15 @@
               (snails-backend-buffer-not-blacklist-buffer buf)
               (or
                (string-equal input "")
-               (string-match-p (regexp-quote input) (buffer-name buf))))
+               (snails-match-input-p input (buffer-name buf))
+               ))
+
          (add-to-list 'candidates
                       (list
                        (snails-wrap-buffer-icon buf)
-                       (buffer-name buf)) t)))
+                       (buffer-name buf)) t)
+         ))
+     (snails-sort-candidates input candidates)
      candidates))
 
  :candiate-do

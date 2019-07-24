@@ -33,7 +33,12 @@ If you're a big fan of [Ivy](https://github.com/abo-abo/swiper#ivy), you can use
 (snails '(snails-backend-buffer snails-backend-buffer))
 ```
 
-### Keymap
+## Fuzz match
+Snails use normal match algorithm to match input.
+
+Snails will use fuzz match algorithm once you install [fuz](https://github.com/cireu/fuz.el) and add fuz in load-path.
+
+## Keymap
 
 | Key         | Description               |
 | :--------:  | :----                     |
@@ -52,7 +57,7 @@ If you're a big fan of [Ivy](https://github.com/abo-abo/swiper#ivy), you can use
 | ESC ESC ESC | Quit snails               |
 | M-h         | Quit snails               |
 
-### Search Backend
+## Search Backend
 
 | Backend                    | Description                                     |
 | :--------                  | :----                                           |
@@ -179,9 +184,9 @@ Taking the above plug-in as an example, when the user inputs "multi-term", build
 
 Snails is very smart; it will manage subprocesses of the async backend. When the user modifies the input, the snails framework automatically creates a new subprocess to search for the results, while automatically killing the old running process. No matter how fast the user enters, it won't block Emacs.
 
-### FAQ
+## FAQ
 
-#### Why doesn't snails frame work when I open a fullscreen Emacs on Mac?
+### Why doesn't snails frame work when I open a fullscreen Emacs on Mac?
 Mac will force the fullscreen Emacs window to a separate workspace, and then any new frame created by ```make-frame``` will not float above the Emacs window as expected.
 
 If you start Emacs with fullscreen mode, you can use my workaround code to fix this problem:
@@ -204,7 +209,6 @@ If you start Emacs with fullscreen mode, you can use my workaround code to fix t
 
 ## TODO List
 
-* Use better fuzz match algorithm.
 * Highlight match keyword in candidate line.
 * Display ansi color string from async process, such as fd, rg, mdfind.
 * Support regexp search.

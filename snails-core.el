@@ -7,8 +7,8 @@
 ;; Maintainer: Andy Stewart <lazycat.manatee@gmail.com>
 ;; Copyright (C) 2019, Andy Stewart, all rights reserved.
 ;; Created: 2019-05-16 21:26:09
-;; Version: 2.9
-;; Last-Updated: 2019-07-24 22:09:43
+;; Version: 3.0
+;; Last-Updated: 2019-07-24 23:40:08
 ;;           By: Andy Stewart
 ;; URL: http://www.emacswiki.org/emacs/download/snails-core.el
 ;; Keywords:
@@ -73,6 +73,7 @@
 ;;      * Test GUI environment when start snails.
 ;;      * Don't wrap long line in content buffer.
 ;;      * Call `exec-path-from-shell' at snails-core.el
+;;      * Use fuzz match algorithm provide by `fuz' libary.
 ;;
 ;; 2019/07/23
 ;;      * Kill old subprocess immediately, don't wait `run-with-idle-timer'
@@ -215,6 +216,13 @@ use for find candidate position to change select line.")
 (defvar snails-backend-subprocess-hash
   (make-hash-table :test 'equal)
   "The hash table contain the subprocess of async backend.")
+
+(defvar snails-fuz-library-load-status "uncheck"
+  "The variable use for check `fuz' library is load.
+
+Init status with `uncheck'.
+If `fuz' library is not found, set with `uncheck'.
+If `fuz' library has load, set with `check'.")
 
 (defvar snails-mode-map
   (let ((map (make-sparse-keymap)))
@@ -863,6 +871,54 @@ And render result when subprocess finish search."
                       (buffer-substring (overlay-start overlay) (overlay-end overlay))))))
           (setq overlays (cdr overlays))))
       )))
+
+(defun snails-fuz-library-load-p ()
+  "Test `fuz' libary is load."
+  (cond ((string-equal snails-fuz-library-load-status "uncheck")
+         (if (ignore-errors (load-library "fuz"))
+             (progn
+               (setq snails-fuz-library-load-status "load")
+               t)
+           (setq snails-fuz-library-load-status "unload")
+           nil))
+        ((string-equal snails-fuz-library-load-status "load")
+         t)
+        (t
+         nil)))
+
+(defun snails-build-fuzzy-regex (pattern)
+  "Create a fuzzy regexp of PATTERN."
+  (mapconcat (lambda (ch)
+               (let ((s (char-to-string ch)))
+                 (format "[^%s]*%s" s (regexp-quote s))))
+             pattern ""))
+
+(defun snails-sort-candidates (pattern candidates)
+  "If `fuz' library load, sort candidates with fuzz scrore.
+If `fuz' library not found, not sorting."
+  (when (snails-fuz-library-load-p)
+    (let ((fuzzy-re (snails-build-fuzzy-regex pattern))
+          retval)
+      (message "'%s'" (nth 1 (car candidates)))
+
+      (while candidates
+        (when (string-match-p fuzzy-re (nth 1 (car candidates)))
+          (push (pop candidates) retval)))
+
+      (cl-sort (mapcar (lambda (it)
+                         (cons it (fuz-calc-score-skim pattern (nth 1 it))))
+                       retval)
+               (pcase-lambda (`(,scr1 . ,cands1) `(,scr2 . ,cands2))
+                 (if (string= (nth 1 scr1) (nth 1 scr2))
+                     (< (length (nth 1 cands1)) (length (nth 1 cands2)))
+                   (string> (nth 1 scr1) (nth 1 scr2))))))))
+
+(defun snails-match-input-p (input candidate-content)
+  "If `fuz' library load, use fuzz match algorithm.
+If `fuz' not found, use normal match algorithm."
+  (if (snails-fuz-library-load-p)
+      (string-match-p (snails-build-fuzzy-regex input) candidate-content)
+    (string-match-p (regexp-quote input) candidate-content)))
 
 (advice-add 'other-window
             :around
