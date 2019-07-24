@@ -34,7 +34,7 @@ If you're a big fan of [Ivy](https://github.com/abo-abo/swiper#ivy), you can use
 ```
 
 ## Fuzz match
-Snails use normal match algorithm to match input.
+Snails use normal match algorithm default.
 
 Snails will use fuzz match algorithm once you install [fuz](https://github.com/cireu/fuz.el) and add fuz in load-path.
 
