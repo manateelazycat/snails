@@ -97,7 +97,7 @@
      (dolist (file recentf-list)
        (when (or
               (string-equal input "")
-              (string-match-p (regexp-quote input) file))
+              (snails-regexp-filter input file))
          (add-to-list 'candidates
                       (list
                        (snails-wrap-file-icon file)

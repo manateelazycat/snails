@@ -95,7 +95,7 @@
      (dolist (bookmark (bookmark-all-names))
        (when (or
               (string-equal input "")
-              (string-match-p (regexp-quote input) bookmark))
+              (snails-regexp-filter input bookmark))
 
          (add-to-list 'candidates
                       (list bookmark bookmark)

@@ -965,6 +965,73 @@ And render result when subprocess finish search."
                )
              ))))
 
+
+(defun snails-regex-p (object)
+  "Return OBJECT if it is a valid regular expression, else nil. Copy from ivy.el."
+  (ignore-errors (string-match-p object "") object))
+
+(defun snails-regex-or-literal (str)
+  "If STR isn't a legal regexp, escape it. Copy from ivy.el."
+  (or (snails-regex-p str) (regexp-quote str)))
+
+(defun snails-split-str (str)
+  "Split STR into list of substrings bounded by spaces.
+Single spaces act as splitting points.  Consecutive spaces
+\"quote\" their preceding spaces, i.e., guard them from being
+split.  This allows the literal interpretation of N spaces by
+inputting N+1 spaces.  Any substring not constituting a valid
+regexp is passed to `regexp-quote'. Copy from ivy.el."
+  (let ((len (length str))
+        start0
+        (start1 0)
+        res s
+        match-len)
+    (while (and (string-match " +" str start1)
+                (< start1 len))
+      (if (and (> (match-beginning 0) 2)
+               (string= "[^" (substring
+                              str
+                              (- (match-beginning 0) 2)
+                              (match-beginning 0))))
+          (progn
+            (setq start0 start1)
+            (setq start1 (match-end 0)))
+        (setq match-len (- (match-end 0) (match-beginning 0)))
+        (if (= match-len 1)
+            (progn
+              (when start0
+                (setq start1 start0)
+                (setq start0 nil))
+              (push (substring str start1 (match-beginning 0)) res)
+              (setq start1 (match-end 0)))
+          (setq str (replace-match
+                     (make-string (1- match-len) ?\ )
+                     nil nil str))
+          (setq start0 (or start0 start1))
+          (setq start1 (1- (match-end 0))))))
+    (if start0
+        (push (substring str start0) res)
+      (setq s (substring str start1))
+      (unless (= (length s) 0)
+        (push s res)))
+    (mapcar #'snails-regex-or-literal (nreverse res))))
+
+(defun snails-regexp-filter (input candidate)
+  "Return t if candidate match regexp made by input.
+input is split by space and add `.*' between each word.
+For example: `snails regexp' means `snails.*regexp'."
+  (let ((regexp (mapconcat
+                 (lambda (x)
+                   (if (string-match-p "\\`\\\\([^?].*\\\\)\\'" x)
+                       x
+                     (format "\\(%s\\)" x)))
+                 (snails-split-str input)
+                 ".*")))
+    (if (string-match-p regexp candidate)
+        t
+      nil
+      )))
+
 (provide 'snails-core)
 
 ;;; snails-core.el ends here

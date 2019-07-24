@@ -113,7 +113,7 @@
               (snails-backend-buffer-not-blacklist-buffer buf)
               (or
                (string-equal input "")
-               (string-match-p (regexp-quote input) (buffer-name buf))))
+               (snails-regexp-filter input (buffer-name buf))))
          (add-to-list 'candidates
                       (list
                        (snails-wrap-buffer-icon buf)
