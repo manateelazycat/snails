@@ -388,6 +388,7 @@ use for find candidate position to change select line.")
     (setq snails-frame
           (make-frame
            '((parent-frame . (window-frame))
+             (skip-taskbar . t)
              (minibuffer . nil)
              (visibility . nil)
              (internal-border-width . 0)
