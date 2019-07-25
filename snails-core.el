@@ -451,9 +451,6 @@ This function hook in `focus-in-hook' on default frame of Emacs."
       (add-hook 'after-change-functions 'snails-monitor-input nil t)
       )
 
-    ;; Try to raise snails frame when focus default frame by alt + tab switcher of OS.
-    (add-hook 'focus-in-hook 'snails-try-raise)
-
     ;; Set active flag, use for advice-add detect.
     (setq snails-frame-active-p t)
 
