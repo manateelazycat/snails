@@ -115,11 +115,7 @@
                (string-equal input "")
                (snails-match-input-p input (buffer-name buf))
                ))
-
-         (add-to-list 'candidates
-                      (list
-                       (snails-wrap-buffer-icon buf)
-                       (buffer-name buf)) t)
+         (snails-add-candiate 'candidates (snails-wrap-buffer-icon buf) (buffer-name buf))
          ))
      (snails-sort-candidates input candidates)
      candidates))

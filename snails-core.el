@@ -907,6 +907,10 @@ And render result when subprocess finish search."
                  (format "[^%s]*%s" s (regexp-quote s))))
              pattern ""))
 
+(defun snails-add-candiate (candidate-list candidate-name candidate-content)
+  "Append candiate display name and content to candiate list."
+  (add-to-list candidate-list (list candidate-name candidate-content) t))
+
 (defun snails-sort-candidates (pattern candidates)
   "If `fuz' library load, sort candidates with fuzz scrore.
 If `fuz' library not found, not sorting."

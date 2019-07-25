@@ -96,11 +96,7 @@
          (when (or
                 (string-equal input "")
                 (snails-match-input-p input group))
-           (add-to-list 'candidates
-                        (list
-                         group
-                         group)
-                        t))))
+           (snails-add-candiate 'candidates group group))))
      (snails-sort-candidates input candidates)
      candidates))
 

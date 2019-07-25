@@ -103,13 +103,12 @@
      (dolist (candidate candidate-list)
        (let ((file-info (split-string candidate ":"))
              (project-dir (expand-file-name (cdr (project-current)))))
-         (add-to-list 'candidates
-                      (list
-                       (snails-wrap-file-icon-with-candidate
-                        (nth 0 file-info)
-                        (format "PDIR/%s" (nth 1 (split-string candidate project-dir))))
-                       candidate)
-                      t)))
+         (snails-add-candiate
+          'candidates
+          (snails-wrap-file-icon-with-candidate
+           (nth 0 file-info)
+           (format "PDIR/%s" (nth 1 (split-string candidate project-dir))))
+          candidate)))
      candidates))
 
  :candiate-do

@@ -96,10 +96,7 @@
        (when (or
               (string-equal input "")
               (snails-match-input-p input bookmark))
-
-         (add-to-list 'candidates
-                      (list bookmark bookmark)
-                      t)))
+         (snails-add-candiate 'candidates bookmark bookmark)))
      (snails-sort-candidates input candidates)
      candidates))
 

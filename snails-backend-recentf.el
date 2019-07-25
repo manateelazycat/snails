@@ -98,11 +98,7 @@
        (when (or
               (string-equal input "")
               (snails-match-input-p input file))
-         (add-to-list 'candidates
-                      (list
-                       (snails-wrap-file-icon file)
-                       file)
-                      t)))
+         (snails-add-candiate 'candidates (snails-wrap-file-icon file) file)))
      (snails-sort-candidates input candidates)
      candidates))
 

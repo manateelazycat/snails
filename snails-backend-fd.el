@@ -99,11 +99,7 @@
  (lambda (candidate-list)
    (let (candidates)
      (dolist (candidate candidate-list)
-       (add-to-list 'candidates
-                    (list
-                     (snails-wrap-file-icon candidate)
-                     candidate)
-                    t))
+       (snails-add-candiate 'candidates (snails-wrap-file-icon candidate) candidate))
      candidates))
 
  :candiate-do
