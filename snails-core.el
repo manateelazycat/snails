@@ -7,8 +7,8 @@
 ;; Maintainer: Andy Stewart <lazycat.manatee@gmail.com>
 ;; Copyright (C) 2019, Andy Stewart, all rights reserved.
 ;; Created: 2019-05-16 21:26:09
-;; Version: 3.0
-;; Last-Updated: 2019-07-24 23:40:08
+;; Version: 3.1
+;; Last-Updated: 2019-07-25 08:14:08
 ;;           By: Andy Stewart
 ;; URL: http://www.emacswiki.org/emacs/download/snails-core.el
 ;; Keywords:
@@ -67,6 +67,9 @@
 ;;
 
 ;;; Change log:
+;;
+;; 2019/07/25
+;;      * Set undecorated parameter in `make-frame' function.
 ;;
 ;; 2019/07/24
 ;;      * Don't ask user when snails kill buffer of backend process.
@@ -409,6 +412,7 @@ If `fuz' library has load, set with `check'.")
              (right-fringe . 0)
              (vertical-scroll-bars . nil)
              (horizontal-scroll-bars . nil)
+             (undecorated . t)
              )))
 
     ;; Configuration frame.
@@ -419,9 +423,6 @@ If `fuz' library has load, set with `check'.")
       ;; Set frame position and size.
       (set-frame-position snails-frame frame-x frame-y)
       (set-frame-size snails-frame frame-width frame-height t)
-
-      ;; Disable frame decorated.
-      (set-frame-parameter nil 'undecorated t)
 
       ;; Set input window margin and switch to input buffer.
       (switch-to-buffer snails-input-buffer)
