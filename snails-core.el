@@ -7,8 +7,8 @@
 ;; Maintainer: Andy Stewart <lazycat.manatee@gmail.com>
 ;; Copyright (C) 2019, Andy Stewart, all rights reserved.
 ;; Created: 2019-05-16 21:26:09
-;; Version: 3.6
-;; Last-Updated: 2019-07-26 07:13:55
+;; Version: 3.7
+;; Last-Updated: 2019-07-26 07:32:08
 ;;           By: Andy Stewart
 ;; URL: http://www.emacswiki.org/emacs/download/snails-core.el
 ;; Keywords:
@@ -70,6 +70,7 @@
 ;;
 ;; 2019/07/26
 ;;      * Foucs out to hide snails frame on Mac.
+;;      * Snails will search symbol around point when you press prefix key before call snails.
 ;;
 ;; 2019/07/25
 ;;      * Set undecorated parameter in `make-frame' function.
@@ -260,9 +261,9 @@ If `fuz' library has load, set with `check'.")
   ;; Injection keymap.
   (use-local-map snails-mode-map))
 
-(defun snails (&optional backends)
+(defun snails (&optional prefix backends)
   "Start snails to search."
-  (interactive)
+  (interactive "P")
   (if (display-graphic-p)
       (if (and snails-frame
                (frame-live-p snails-frame))
@@ -278,10 +279,18 @@ If `fuz' library has load, set with `check'.")
         ;; Create input and content buffer.
         (snails-create-input-buffer)
         (snails-create-content-buffer)
-        ;; Send empty search content to backends.
-        (snails-search "")
         ;; Create popup frame to show search result.
-        (snails-create-frame))
+        (snails-create-frame)
+        ;; Search.
+        (if (null prefix)
+            ;; Send empty search content to backends.
+            (snails-search "")
+          ;; Search symbol around current pointer if user press C-u before call `snails'.
+          (let ((search-string (or (snails-pointer-string) "")))
+            (with-current-buffer snails-input-buffer
+              (insert search-string))
+            (snails-search search-string)
+            )))
     (message "Snails render candidates in new frame that only can be run in a graphical environment.")))
 
 (defun snails-select-next-item ()
@@ -580,6 +589,58 @@ If `fuz' library has load, set with `check'.")
       (goto-char (point-min))
       (snails-select-next-item)
       )))
+
+(defun snails-pointer-string ()
+  "Get string around cursor."
+  (if (use-region-p)
+      ;; Get region string if mark is set.
+      (buffer-substring-no-properties (region-beginning) (region-end))
+    ;; Get current symbol or string, and remove prefix char before return.
+    (let* ((current-string (if (snails-in-string-p)
+                               (buffer-substring-no-properties
+                                (1+ (car (snails-string-start+end-points)))
+                                (cdr (snails-string-start+end-points)))
+                             ""))
+           (current-symbol (if (or (string-empty-p current-string)
+                                   (string-match-p "[[:space:]]" current-string))
+                               ;; Get symbol around point if string around point is empty or include spaces.
+                               (thing-at-point 'symbol)
+                             ;; Otherwise, get string around point.
+                             current-string)))
+      (cond ((string-prefix-p "." current-symbol)
+             (string-remove-prefix "." current-symbol))
+            ((string-prefix-p "#" current-symbol)
+             (string-remove-prefix "#" current-symbol))
+            (t current-symbol)))
+    ))
+
+(defun snails-string-start+end-points (&optional state)
+  "Return a cons of the points of open and close quotes of the string.
+The string is determined from the parse state STATE, or the parse state
+  from the beginning of the defun to the point.
+This assumes that `snails-in-string-p' has already returned true, i.e.
+  that the point is already within a string."
+  (save-excursion
+    (let ((start (nth 8 (or state (snails-current-parse-state)))))
+      (goto-char start)
+      (forward-sexp 1)
+      (cons start (1- (point))))))
+
+(defun snails-current-parse-state ()
+  "Return parse state of point from beginning of defun."
+  (let ((point (point)))
+    (beginning-of-defun)
+    (parse-partial-sexp (point) point)))
+
+(defun snails-in-string-p (&optional state)
+  (or (nth 3 (or state (snails-current-parse-state)))
+      (and
+       (eq (get-text-property (point) 'face) 'font-lock-string-face)
+       (eq (get-text-property (- (point) 1) 'face) 'font-lock-string-face))
+      (and
+       (eq (get-text-property (point) 'face) 'font-lock-doc-face)
+       (eq (get-text-property (- (point) 1) 'face) 'font-lock-doc-face))
+      ))
 
 (defun snails-color-blend (c1 c2 alpha)
   "Blend two colors C1 and C2 with ALPHA.
