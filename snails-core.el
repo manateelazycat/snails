@@ -7,8 +7,8 @@
 ;; Maintainer: Andy Stewart <lazycat.manatee@gmail.com>
 ;; Copyright (C) 2019, Andy Stewart, all rights reserved.
 ;; Created: 2019-05-16 21:26:09
-;; Version: 3.7
-;; Last-Updated: 2019-07-26 07:32:08
+;; Version: 3.8
+;; Last-Updated: 2019-07-26 07:37:49
 ;;           By: Andy Stewart
 ;; URL: http://www.emacswiki.org/emacs/download/snails-core.el
 ;; Keywords:
@@ -71,6 +71,7 @@
 ;; 2019/07/26
 ;;      * Foucs out to hide snails frame on Mac.
 ;;      * Snails will search symbol around point when you press prefix key before call snails.
+;;      * Make async process buffer's name starts with " *" to hide process buffer tab when search.
 ;;
 ;; 2019/07/25
 ;;      * Set undecorated parameter in `make-frame' function.
@@ -828,7 +829,7 @@ influence of C1 on the result."
 
 (defun snails-generate-proces-buffer-name ()
   "Create unique buffer for subprocess buffer of async backend."
-  (format "%04x-%04x-%04x-%04x-%04x-%04x-%04x"
+  (format " *%04x-%04x-%04x-%04x-%04x-%04x-%04x"
           (random (expt 16 4))
           (random (expt 16 4))
           (random (expt 16 4))
