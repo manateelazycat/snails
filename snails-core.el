@@ -331,7 +331,7 @@ If `fuz' library has load, set with `check'.")
   "Quit snails."
   (interactive)
   ;; Delete frame first.
-  (delete-frame snails-frame)
+  (delete-frame snails-frame t)
   (setq snails-frame nil)
   (setq snails-frame-active-p nil)
   ;; Kill all subprocess and process buffers.
