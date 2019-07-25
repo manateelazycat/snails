@@ -899,8 +899,6 @@ If `fuz' library not found, not sorting."
   (when (snails-fuz-library-load-p)
     (let ((fuzzy-re (snails-build-fuzzy-regex pattern))
           retval)
-      (message "'%s'" (nth 1 (car candidates)))
-
       (while candidates
         (when (string-match-p fuzzy-re (nth 1 (car candidates)))
           (push (pop candidates) retval)))
