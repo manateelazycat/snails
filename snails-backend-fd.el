@@ -99,16 +99,15 @@
  (lambda (candidate-list)
    (let (candidates)
      (dolist (candidate candidate-list)
-       (let ((color-candidate (ansi-color-apply candidate)))
-         (snails-add-candiate
-          'candidates
-          (snails-wrap-file-icon-with-candidate color-candidate candidate)
-          color-candidate)))
+       (snails-add-candiate
+        'candidates
+        (snails-wrap-file-icon-with-candidate candidate candidate)
+        candidate))
      candidates))
 
  :candiate-do
  (lambda (candidate)
-   (find-file candidate)
+   (find-file (ansi-color-apply candidate))
    ))
 
 (provide 'snails-backend-fd)

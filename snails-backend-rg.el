@@ -101,20 +101,17 @@
  (lambda (candidate-list)
    (let (candidates)
      (dolist (candidate candidate-list)
-       (let* ((color-candidate (ansi-color-apply candidate))
-              (file (nth 0 (split-string color-candidate ":")))
-              (project-dir (expand-file-name (cdr (project-current)))))
-         (snails-add-candiate
-          'candidates
-          (snails-wrap-file-icon-with-candidate
-           file
-           candidate)
-          color-candidate)))
+       (snails-add-candiate
+        'candidates
+        (snails-wrap-file-icon-with-candidate
+         (nth 0 (split-string (ansi-color-apply candidate) ":"))
+         candidate)
+        candidate))
      candidates))
 
  :candiate-do
  (lambda (candidate)
-   (let ((file-info (split-string candidate ":")))
+   (let ((file-info (split-string (ansi-color-apply candidate) ":")))
      (when (> (length file-info) 3)
        ;; Open file and jump to position.
        (find-file (nth 0 file-info))

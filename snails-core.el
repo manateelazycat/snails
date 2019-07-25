@@ -7,8 +7,8 @@
 ;; Maintainer: Andy Stewart <lazycat.manatee@gmail.com>
 ;; Copyright (C) 2019, Andy Stewart, all rights reserved.
 ;; Created: 2019-05-16 21:26:09
-;; Version: 3.4
-;; Last-Updated: 2019-07-25 20:04:21
+;; Version: 3.5
+;; Last-Updated: 2019-07-25 22:40:17
 ;;           By: Andy Stewart
 ;; URL: http://www.emacswiki.org/emacs/download/snails-core.el
 ;; Keywords:
@@ -73,6 +73,7 @@
 ;;      * Try to raise snails frame when focus default frame by alt + tab switcher of OS.
 ;;      * Quit snails when lost input focus.
 ;;      * Support ansi color from asynchronous backend process.
+;;      * Adjust ansi color code.
 ;;
 ;; 2019/07/24
 ;;      * Don't ask user when snails kill buffer of backend process.
@@ -509,8 +510,6 @@ If `fuz' library has load, set with `check'.")
            header-line-end
            header-index-start
            header-index-end
-           candidate-name-start
-           candidate-name-end
            candidate-content-start
            candidate-content-end)
       ;; Render backend result.
@@ -542,10 +541,7 @@ If `fuz' library has load, set with `check'.")
           ;; Render candidate list.
           (dolist (candiate candiate-list)
             ;; Render candidate display name.
-            (setq candidate-name-start (point))
             (insert (nth 0 candiate))
-            (setq candidate-name-end (point))
-            (ansi-color-apply-on-region candidate-name-start candidate-name-end)
 
             ;; Render candidate real content.
             (setq candidate-content-start (point))
@@ -562,6 +558,9 @@ If `fuz' library has load, set with `check'.")
           (insert "\n"))
         ;; Update candidate index to fetch name of next backend.
         (setq candiate-index (+ candiate-index 1)))
+
+      ;; Convert ansi color in buffer.
+      (ansi-color-apply-on-region (point-min) (point-max))
 
       ;; Select first line after render finish.
       (goto-char (point-min))
@@ -737,7 +736,7 @@ influence of C1 on the result."
   "Wrap display name with file icon, use for file search backend."
   (if (featurep 'all-the-icons)
       (format "%s %s"
-              (all-the-icons-icon-for-file (ansi-color-apply file) :height 1)
+              (all-the-icons-icon-for-file (format "hello.%s" (file-name-extension file)) :height 1)
               (string-trim-left candidate))
     candidate))
 
