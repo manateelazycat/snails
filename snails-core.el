@@ -7,8 +7,8 @@
 ;; Maintainer: Andy Stewart <lazycat.manatee@gmail.com>
 ;; Copyright (C) 2019, Andy Stewart, all rights reserved.
 ;; Created: 2019-05-16 21:26:09
-;; Version: 3.2
-;; Last-Updated: 2019-07-25 08:54:03
+;; Version: 3.3
+;; Last-Updated: 2019-07-25 18:14:31
 ;;           By: Andy Stewart
 ;; URL: http://www.emacswiki.org/emacs/download/snails-core.el
 ;; Keywords:
@@ -71,6 +71,7 @@
 ;; 2019/07/25
 ;;      * Set undecorated parameter in `make-frame' function.
 ;;      * Try to raise snails frame when focus default frame by alt + tab switcher of OS.
+;;      * Quit snails when lost input focus.
 ;;
 ;; 2019/07/24
 ;;      * Don't ask user when snails kill buffer of backend process.
@@ -343,14 +344,6 @@ If `fuz' library has load, set with `check'.")
        (kill-process process)))
    snails-backend-subprocess-hash))
 
-(defun snails-try-raise ()
-  "When snails is frame is live, try to raise snails frame.
-This function hook in `focus-in-hook' on default frame of Emacs."
-  (when (and snails-frame
-             (frame-live-p snails-frame))
-    (raise-frame snails-frame)
-    (select-frame-set-input-focus snails-frame)))
-
 (defun snails-create-input-buffer ()
   "Create input buffer."
   (let* ((colors (snails-get-theme-colors))
@@ -449,6 +442,7 @@ This function hook in `focus-in-hook' on default frame of Emacs."
       ;; Add monitor callback in input change hook.
       (other-window 1)
       (add-hook 'after-change-functions 'snails-monitor-input nil t)
+      (add-hook 'focus-out-hook 'snails-quit)
       )
 
     ;; Set active flag, use for advice-add detect.
