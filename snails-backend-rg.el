@@ -92,10 +92,9 @@
  (lambda (input)
    (when (and (executable-find "rg")
               (> (length input) 5))
-     (let ((project (project-current)))
-       (when project
-         (list "rg" "--no-heading" "--column" "--color" "always" "--max-columns" "300" input (expand-file-name (cdr project)))
-         ))))
+     (when snails-project-root-dir
+       (list "rg" "--no-heading" "--column" "--color" "always" "--max-columns" "300" input snails-project-root-dir)
+       )))
 
  :candidate-filter
  (lambda (candidate-list)

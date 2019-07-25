@@ -92,7 +92,7 @@
  (lambda (input)
    (when (and (executable-find "fd")
               (> (length input) 5))
-     (list "fd" "-c" "always" "-a" "-tf" input "--search-path" (snails-project-root-dir))
+     (list "fd" "-c" "always" "-a" "-tf" input "--search-path" (or snails-project-root-dir (expand-file-name default-directory)))
      ))
 
  :candidate-filter

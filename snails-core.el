@@ -161,7 +161,7 @@ need to set face attribute, such as foreground and background."
   :group 'snails)
 
 (defface snails-select-line-face
-  '((t (:inherit region)))
+  '((t))
   "Face for select line."
   :group 'snails)
 
@@ -226,6 +226,9 @@ use for find candidate position to change select line.")
 Init status with `uncheck'.
 If `fuz' library is not found, set with `uncheck'.
 If `fuz' library has load, set with `check'.")
+
+(defvar snails-project-root-dir nil
+  "The project dir when start snails.")
 
 (defvar snails-mode-map
   (let ((map (make-sparse-keymap)))
@@ -332,6 +335,7 @@ If `fuz' library has load, set with `check'.")
   (delete-frame snails-frame t)
   (setq snails-frame nil)
   (setq snails-frame-active-p nil)
+  (setq snails-project-root-dir nil)
   ;; Kill all subprocess and process buffers.
   (maphash
    (lambda (name process)
@@ -400,6 +404,13 @@ If `fuz' library has load, set with `check'.")
          (frame-height (truncate (* 0.5 height)))
          (frame-x (/ (+ x (- width frame-width)) 2))
          (frame-y (/ (+ y (- height frame-height)) 3)))
+    ;; Set project directory.
+    (setq snails-project-root-dir
+          (let ((project (project-current)))
+            (when project
+              (expand-file-name (cdr project))
+              )))
+
     ;; Make popup frame, and position at center of current frame.
     (setq snails-frame
           (make-frame
@@ -498,9 +509,13 @@ If `fuz' library has load, set with `check'.")
     (setq snails-header-line-overlays nil)
 
     ;; Reset select line variables.
-    (setq snails-select-line-number 0)
-    (setq snails-select-line-overlay (make-overlay (point) (point) (current-buffer) t))
-    (overlay-put snails-select-line-overlay 'face `snails-select-line-face)
+    (let* ((colors (snails-get-theme-colors))
+           (bg-color (nth 2 colors)))
+      (setq snails-select-line-number 0)
+      (setq snails-select-line-overlay (make-overlay (point) (point) (current-buffer) t))
+      (set-face-attribute 'snails-select-line-face nil
+                          :background bg-color)
+      (overlay-put snails-select-line-overlay 'face `snails-select-line-face))
 
     (let* ((candiate-index 0)
            (backend-names (snails-get-backend-names))
@@ -750,15 +765,6 @@ influence of C1 on the result."
                 (point-at-eol))
   ;; Scroll window to keep cursor visible.
   (snails-keep-cursor-visible))
-
-(defun snails-project-root-dir ()
-  "Get project's root dir.
-If not in project, use current directory."
-  (let ((project (project-current)))
-    (expand-file-name
-     (if project
-         (cdr project)
-       default-directory))))
 
 (defun snails-generate-proces-buffer-name ()
   "Create unique buffer for subprocess buffer of async backend."
