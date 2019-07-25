@@ -94,21 +94,22 @@
               (> (length input) 5))
      (let ((project (project-current)))
        (when project
-         (list "rg" "--no-heading" "--column" "--color" "never" "--max-columns" "300" input (expand-file-name (cdr project)))
+         (list "rg" "--no-heading" "--column" "--color" "always" "--max-columns" "300" input (expand-file-name (cdr project)))
          ))))
 
  :candidate-filter
  (lambda (candidate-list)
    (let (candidates)
      (dolist (candidate candidate-list)
-       (let ((file-info (split-string candidate ":"))
-             (project-dir (expand-file-name (cdr (project-current)))))
+       (let* ((color-candidate (ansi-color-apply candidate))
+              (file (nth 0 (split-string color-candidate ":")))
+              (project-dir (expand-file-name (cdr (project-current)))))
          (snails-add-candiate
           'candidates
           (snails-wrap-file-icon-with-candidate
-           (nth 0 file-info)
-           (format "PDIR/%s" (nth 1 (split-string candidate project-dir))))
-          candidate)))
+           file
+           candidate)
+          color-candidate)))
      candidates))
 
  :candiate-do

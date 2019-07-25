@@ -7,8 +7,8 @@
 ;; Maintainer: Andy Stewart <lazycat.manatee@gmail.com>
 ;; Copyright (C) 2019, Andy Stewart, all rights reserved.
 ;; Created: 2019-05-16 21:26:09
-;; Version: 3.3
-;; Last-Updated: 2019-07-25 18:14:31
+;; Version: 3.4
+;; Last-Updated: 2019-07-25 20:04:21
 ;;           By: Andy Stewart
 ;; URL: http://www.emacswiki.org/emacs/download/snails-core.el
 ;; Keywords:
@@ -72,6 +72,7 @@
 ;;      * Set undecorated parameter in `make-frame' function.
 ;;      * Try to raise snails frame when focus default frame by alt + tab switcher of OS.
 ;;      * Quit snails when lost input focus.
+;;      * Support ansi color from asynchronous backend process.
 ;;
 ;; 2019/07/24
 ;;      * Don't ask user when snails kill buffer of backend process.
@@ -127,6 +128,7 @@
 ;;; Require
 (require 'cl-lib)
 (require 'subr-x)
+(require 'ansi-color)
 
 (when (featurep 'cocoa)
   (require 'exec-path-from-shell)
@@ -147,11 +149,6 @@
 (defface snails-header-index-face
   '((t (:inherit font-lock-function-name-face :underline t)))
   "Face for header index"
-  :group 'snails)
-
-(defface snails-candiate-name-face
-  '((t))
-  "Face for candidate display name."
   :group 'snails)
 
 (defface snails-candiate-content-face
@@ -502,7 +499,7 @@ If `fuz' library has load, set with `check'.")
 
     ;; Reset select line variables.
     (setq snails-select-line-number 0)
-    (setq snails-select-line-overlay (make-overlay (point) (point)))
+    (setq snails-select-line-overlay (make-overlay (point) (point) (current-buffer) t))
     (overlay-put snails-select-line-overlay 'face `snails-select-line-face)
 
     (let* ((candiate-index 0)
@@ -549,9 +546,7 @@ If `fuz' library has load, set with `check'.")
             (setq candidate-name-start (point))
             (insert (nth 0 candiate))
             (setq candidate-name-end (point))
-            (overlay-put (make-overlay candidate-name-start candidate-name-end)
-                         'face
-                         'snails-candiate-name-face)
+            (ansi-color-apply-on-region candidate-name-start candidate-name-end)
 
             ;; Render candidate real content.
             (setq candidate-content-start (point))
@@ -743,7 +738,7 @@ influence of C1 on the result."
   "Wrap display name with file icon, use for file search backend."
   (if (featurep 'all-the-icons)
       (format "%s %s"
-              (all-the-icons-icon-for-file file :height 1)
+              (all-the-icons-icon-for-file (ansi-color-apply file) :height 1)
               (string-trim-left candidate))
     candidate))
 

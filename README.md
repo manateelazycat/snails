@@ -214,10 +214,3 @@ If you start Emacs with fullscreen mode, you can use my workaround code to fix t
   (require 'fullscreen)
   (fullscreen))
 ```
-
-## TODO List
-
-* Highlight match keyword in candidate line.
-* Display ansi color string from async process, such as fd, rg, mdfind.
-
-Welcome to hacking this framework! ;)

@@ -92,14 +92,18 @@
  (lambda (input)
    (when (and (executable-find "fd")
               (> (length input) 5))
-     (list "fd" "-c" "never" "-a" "-tf" input "--search-path" (snails-project-root-dir))
+     (list "fd" "-c" "always" "-a" "-tf" input "--search-path" (snails-project-root-dir))
      ))
 
  :candidate-filter
  (lambda (candidate-list)
    (let (candidates)
      (dolist (candidate candidate-list)
-       (snails-add-candiate 'candidates (snails-wrap-file-icon candidate) candidate))
+       (let ((color-candidate (ansi-color-apply candidate)))
+         (snails-add-candiate
+          'candidates
+          (snails-wrap-file-icon-with-candidate color-candidate candidate)
+          color-candidate)))
      candidates))
 
  :candiate-do
