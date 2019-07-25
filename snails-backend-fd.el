@@ -92,7 +92,7 @@
  (lambda (input)
    (when (and (executable-find "fd")
               (> (length input) 5))
-     (list "fd" "-c" "always" "-a" "-tf" input "--search-path" (or snails-project-root-dir (expand-file-name default-directory)))
+     (list "fd" "-c" "never" "-a" "-tf" input "--search-path" (or snails-project-root-dir (expand-file-name default-directory)))
      ))
 
  :candidate-filter
@@ -107,7 +107,7 @@
 
  :candiate-do
  (lambda (candidate)
-   (find-file (ansi-color-apply candidate))
+   (find-file candidate)
    ))
 
 (provide 'snails-backend-fd)

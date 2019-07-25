@@ -129,7 +129,6 @@
 ;;; Require
 (require 'cl-lib)
 (require 'subr-x)
-(require 'ansi-color)
 
 (when (featurep 'cocoa)
   (require 'exec-path-from-shell)
@@ -161,7 +160,7 @@ need to set face attribute, such as foreground and background."
   :group 'snails)
 
 (defface snails-select-line-face
-  '((t))
+  '((t (:inherit region)))
   "Face for select line."
   :group 'snails)
 
@@ -509,13 +508,9 @@ If `fuz' library has load, set with `check'.")
     (setq snails-header-line-overlays nil)
 
     ;; Reset select line variables.
-    (let* ((colors (snails-get-theme-colors))
-           (bg-color (nth 2 colors)))
-      (setq snails-select-line-number 0)
-      (setq snails-select-line-overlay (make-overlay (point) (point) (current-buffer) t))
-      (set-face-attribute 'snails-select-line-face nil
-                          :background bg-color)
-      (overlay-put snails-select-line-overlay 'face `snails-select-line-face))
+    (setq snails-select-line-number 0)
+    (setq snails-select-line-overlay (make-overlay (point) (point) (current-buffer) t))
+    (overlay-put snails-select-line-overlay 'face `snails-select-line-face)
 
     (let* ((candiate-index 0)
            (backend-names (snails-get-backend-names))
@@ -573,9 +568,6 @@ If `fuz' library has load, set with `check'.")
           (insert "\n"))
         ;; Update candidate index to fetch name of next backend.
         (setq candiate-index (+ candiate-index 1)))
-
-      ;; Convert ansi color in buffer.
-      (ansi-color-apply-on-region (point-min) (point-max))
 
       ;; Select first line after render finish.
       (goto-char (point-min))

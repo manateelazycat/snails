@@ -93,7 +93,7 @@
    (when (and (executable-find "rg")
               (> (length input) 5))
      (when snails-project-root-dir
-       (list "rg" "--no-heading" "--column" "--color" "always" "--max-columns" "300" input snails-project-root-dir)
+       (list "rg" "--no-heading" "--column" "--color" "never" "--max-columns" "300" input snails-project-root-dir)
        )))
 
  :candidate-filter
@@ -103,14 +103,14 @@
        (snails-add-candiate
         'candidates
         (snails-wrap-file-icon-with-candidate
-         (nth 0 (split-string (ansi-color-apply candidate) ":"))
-         candidate)
+         (nth 0 (split-string candidate ":"))
+         (string-remove-prefix (or snails-project-root-dir "") candidate))
         candidate))
      candidates))
 
  :candiate-do
  (lambda (candidate)
-   (let ((file-info (split-string (ansi-color-apply candidate) ":")))
+   (let ((file-info (split-string candidate ":")))
      (when (> (length file-info) 3)
        ;; Open file and jump to position.
        (find-file (nth 0 file-info))

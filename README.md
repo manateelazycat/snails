@@ -214,3 +214,13 @@ If you start Emacs with fullscreen mode, you can use my workaround code to fix t
   (require 'fullscreen)
   (fullscreen))
 ```
+
+### Why not support match highlight?
+Search tools such as fd and rg has --color option.
+It's easy use `ansi-color' library to render match color.
+
+But the reason why Snails doesn't show highlights is because rendering colors can cause very large performance problems, causing Emacs to get stuck.
+
+The biggest goal of Snails project is fast, although I know that highlighting is very meaningful, so I am willing to sacrifice this feature for fluency.
+
+If you know how to keep fluency when adding highlights, please contribute your patch. ;)
