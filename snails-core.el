@@ -439,7 +439,6 @@ If `fuz' library has load, set with `check'.")
       ;; Add monitor callback in input change hook.
       (other-window 1)
       (add-hook 'after-change-functions 'snails-monitor-input nil t)
-      (add-hook 'focus-out-hook 'snails-quit)
       )
 
     ;; Set active flag, use for advice-add detect.
