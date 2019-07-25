@@ -7,8 +7,8 @@
 ;; Maintainer: Andy Stewart <lazycat.manatee@gmail.com>
 ;; Copyright (C) 2019, Andy Stewart, all rights reserved.
 ;; Created: 2019-05-16 21:26:09
-;; Version: 3.5
-;; Last-Updated: 2019-07-25 22:40:17
+;; Version: 3.6
+;; Last-Updated: 2019-07-26 07:13:55
 ;;           By: Andy Stewart
 ;; URL: http://www.emacswiki.org/emacs/download/snails-core.el
 ;; Keywords:
@@ -67,6 +67,9 @@
 ;;
 
 ;;; Change log:
+;;
+;; 2019/07/26
+;;      * Foucs out to hide snails frame on Mac.
 ;;
 ;; 2019/07/25
 ;;      * Set undecorated parameter in `make-frame' function.
@@ -450,6 +453,10 @@ If `fuz' library has load, set with `check'.")
       ;; Add monitor callback in input change hook.
       (other-window 1)
       (add-hook 'after-change-functions 'snails-monitor-input nil t)
+
+      ;; Focus out to hide snails frame on Mac.
+      (when (featurep 'cocoa)
+        (add-hook 'focus-out-hook 'snails-quit))
       )
 
     ;; Set active flag, use for advice-add detect.
