@@ -189,7 +189,7 @@ need to set face attribute, such as foreground and background."
 (defvar snails-frame nil
   "The popup frame use for show search result.")
 
-(defvar snails-parent-frame nil
+(defvar snails-frame-active-p nil
   "The parent frame of popup frame.")
 
 (defvar snails-select-line-overlay nil
@@ -331,7 +331,7 @@ If `fuz' library has load, set with `check'.")
   ;; Delete frame first.
   (delete-frame snails-frame)
   (setq snails-frame nil)
-  (setq snails-parent-frame nil)
+  (setq snails-frame-active-p nil)
   ;; Kill all subprocess and process buffers.
   (maphash
    (lambda (name process)
@@ -413,6 +413,7 @@ If `fuz' library has load, set with `check'.")
              (vertical-scroll-bars . nil)
              (horizontal-scroll-bars . nil)
              (undecorated . t)
+             (unsplittable . t)
              )))
 
     ;; Configuration frame.
@@ -441,8 +442,8 @@ If `fuz' library has load, set with `check'.")
       (add-hook 'after-change-functions 'snails-monitor-input nil t)
       )
 
-    ;; Set parent frame.
-    (setq snails-parent-frame (selected-frame))
+    ;; Set active flag, use for advice-add detect.
+    (setq snails-frame-active-p t)
 
     ;; Show popup frame.
     ;; `select-frame-set-input-focus' is necessary for gnome-shell DE.
@@ -848,8 +849,8 @@ And render result when subprocess finish search."
 
 (defun snails-frame-is-active-p ()
   (and snails-frame
-       snails-parent-frame
        (frame-live-p snails-frame)
+       snails-frame-active-p
        (eq (window-frame (selected-window)) snails-frame)))
 
 (defun snails-candidate-get-info ()
