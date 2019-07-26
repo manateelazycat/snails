@@ -455,6 +455,9 @@ If `fuz' library has load, set with `check'.")
       ;; Delete other window first, make sure only one window in frame.
       (delete-other-windows)
 
+      ;; Disable menu in snails frame.
+      (set-frame-parameter snails-frame 'menu-bar-lines 0)
+
       ;; Set frame position and size.
       (set-frame-position snails-frame frame-x frame-y)
       (set-frame-size snails-frame frame-width frame-height t)
