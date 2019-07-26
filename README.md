@@ -23,21 +23,26 @@ regardless of how complex the search framework is.
 
 If you're a big fan of [Ivy](https://github.com/abo-abo/swiper#ivy), you can use a search backend separately in the following way:
 
-### Search Symbol
-Snails will search symbol around point when you press prefix key before call snails.
-
-Binding `snails' on your favorite key, such as ```s-y```
-Then press ```C-u s-y``` will search current symbol with backends.
-
-### Just Search Buffer
+### Just search buffer
 ```elisp
 (snails '(snails-backend-buffer))
 ```
 
-### Search with Customized Backends
+### Search with customized backends
 ```elisp
 (snails '(snails-backend-buffer snails-backend-buffer))
 ```
+
+### Search symbol
+```elisp
+(snails nil t)
+```
+
+### Search symbol with customized backends.
+```elisp
+(snails '(snails-backend-buffer snails-backend-buffer) t)
+```
+
 
 ## Fuzz match
 Snails use normal match algorithm default.

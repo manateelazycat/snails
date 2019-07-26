@@ -7,8 +7,8 @@
 ;; Maintainer: Andy Stewart <lazycat.manatee@gmail.com>
 ;; Copyright (C) 2019, Andy Stewart, all rights reserved.
 ;; Created: 2019-05-16 21:26:09
-;; Version: 3.8
-;; Last-Updated: 2019-07-26 07:37:49
+;; Version: 3.9
+;; Last-Updated: 2019-07-26 10:17:14
 ;;           By: Andy Stewart
 ;; URL: http://www.emacswiki.org/emacs/download/snails-core.el
 ;; Keywords:
@@ -72,6 +72,7 @@
 ;;      * Foucs out to hide snails frame on Mac.
 ;;      * Snails will search symbol around point when you press prefix key before call snails.
 ;;      * Make async process buffer's name starts with " *" to hide process buffer tab when search.
+;;      * Make `snails' support backends and search-symbol arguments.
 ;;
 ;; 2019/07/25
 ;;      * Set undecorated parameter in `make-frame' function.
@@ -265,14 +266,15 @@ If `fuz' library has load, set with `check'.")
   ;; Injection keymap.
   (use-local-map snails-mode-map))
 
-(defun snails (&optional prefix backends)
+(defun snails (&optional backends search-symbol)
   "Start snails to search."
-  (interactive "P")
+  (interactive)
   (if (display-graphic-p)
       (if (and snails-frame
                (frame-live-p snails-frame))
           ;; Quit snails if it has opened.
           (snails-quit)
+
         ;; Update backends.
         ;; If `backends' is empty list, use `snails-default-backends'.
         (if (and (listp backends)
@@ -286,18 +288,20 @@ If `fuz' library has load, set with `check'.")
         ;; Create input and content buffer.
         (snails-create-input-buffer)
         (snails-create-content-buffer)
+
         ;; Create popup frame to show search result.
         (snails-create-frame)
+
         ;; Search.
-        (if (null prefix)
-            ;; Send empty search content to backends.
-            (snails-search "")
-          ;; Search symbol around current pointer if user press C-u before call `snails'.
-          (let ((search-string (or (snails-pointer-string) "")))
-            (with-current-buffer snails-input-buffer
-              (insert search-string))
-            (snails-search search-string)
-            )))
+        (if search-symbol
+            ;; Search symbol around current pointer if user press C-u before call `snails'.
+            (let ((search-string (or (snails-pointer-string) "")))
+              (with-current-buffer snails-input-buffer
+                (insert search-string))
+              (snails-search search-string)
+              )
+          ;; Send empty search content to backends.
+          (snails-search "")))
     (message "Snails render candidates in new frame that only can be run in a graphical environment.")))
 
 (defun snails-select-next-item ()
