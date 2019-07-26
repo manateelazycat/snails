@@ -7,8 +7,8 @@
 ;; Maintainer: Andy Stewart <lazycat.manatee@gmail.com>
 ;; Copyright (C) 2019, Andy Stewart, all rights reserved.
 ;; Created: 2019-05-16 21:26:09
-;; Version: 4.3
-;; Last-Updated: 2019-07-26 16:58:55
+;; Version: 4.4
+;; Last-Updated: 2019-07-26 17:31:30
 ;;           By: Andy Stewart
 ;; URL: http://www.emacswiki.org/emacs/download/snails-core.el
 ;; Keywords:
@@ -76,6 +76,7 @@
 ;;      * Add new command `snails-search-point'.
 ;;      * Add `snails-flash-line'.
 ;;      * Improve `snails-sort-candidates'
+;;      * Add option `snails-fame-width-proportion' and `snails-fame-height-proportion'.
 ;;
 ;; 2019/07/25
 ;;      * Set undecorated parameter in `make-frame' function.
@@ -148,6 +149,16 @@
 (defcustom snails-mode-hook '()
   "Snails mode hook."
   :type 'hook
+  :group 'snails)
+
+(defcustom snails-fame-width-proportion 0.618
+  "The width of snails frame, width ratio of the parent frame."
+  :type 'integer
+  :group 'snails)
+
+(defcustom snails-fame-height-proportion 0.618
+  "The height of snails frame, height ratio of the parent frame."
+  :type 'integer
   :group 'snails)
 
 (defface snails-header-line-face
@@ -431,10 +442,11 @@ If `fuz' library has load, set with `check'.")
          (y (nth 1 edges))
          (width (nth 2 edges))
          (height (nth 3 edges))
-         (frame-width (truncate (* 0.6 width)))
-         (frame-height (truncate (* 0.5 height)))
+         (frame-width (truncate (* snails-fame-width-proportion width)))
+         (frame-height (truncate (* snails-fame-height-proportion height)))
          (frame-x (/ (+ x (- width frame-width)) 2))
          (frame-y (/ (+ y (- height frame-height)) 3)))
+
     ;; Set project directory.
     (setq snails-project-root-dir
           (let ((project (project-current)))
