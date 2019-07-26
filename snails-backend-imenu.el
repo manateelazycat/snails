@@ -99,9 +99,10 @@
                   (equal snails-backend-imenu-cached-buffer buffer)))
             snails-backend-imenu-cached-candidates
           (setq snails-backend-imenu-cached-candidates
-                (let ((index (imenu--make-index-alist t)))
-                  (snails-backend-imenu-build-candidates
-                   (delete (assoc "*Rescan*" index) index)))))
+                (let ((index (ignore-errors (imenu--make-index-alist t))))
+                  (when index
+                    (snails-backend-imenu-build-candidates
+                     (delete (assoc "*Rescan*" index) index))))))
       (setq snails-backend-imenu-cached-buffer buffer))))
 
 (defun snails-backend-imenu-build-candidates (alist)
