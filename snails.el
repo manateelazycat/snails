@@ -86,6 +86,7 @@
 (require 'snails-backend-awesome-tab)
 (require 'snails-backend-fd)
 (require 'snails-backend-mdfind)
+(require 'snails-backend-imenu)
 (require 'snails-backend-bookmark)
 (require 'snails-backend-rg)
 
@@ -95,6 +96,7 @@
       '(snails-backend-awesome-tab-group
         snails-backend-buffer
         snails-backend-recentf
+        snails-backend-imenu
         snails-backend-bookmark
         snails-backend-fd
         snails-backend-rg

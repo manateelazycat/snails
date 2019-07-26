@@ -193,6 +193,9 @@ need to set face attribute, such as foreground and background."
 (defvar snails-frame nil
   "The popup frame use for show search result.")
 
+(defvar snails-start-buffer nil
+  "The buffer before snails start.")
+
 (defvar snails-frame-active-p nil
   "The parent frame of popup frame.")
 
@@ -277,6 +280,9 @@ If `fuz' library has load, set with `check'.")
             (setq snails-backends backends)
           (setq snails-backends snails-default-backends))
 
+        ;; Record buffer before start snails.
+        (setq snails-start-buffer (current-buffer))
+
         ;; Create input and content buffer.
         (snails-create-input-buffer)
         (snails-create-content-buffer)
@@ -348,6 +354,7 @@ If `fuz' library has load, set with `check'.")
   (setq snails-frame nil)
   (setq snails-frame-active-p nil)
   (setq snails-project-root-dir nil)
+  (setq snails-start-buffer nil)
   ;; Kill all subprocess and process buffers.
   (maphash
    (lambda (name process)
@@ -968,17 +975,18 @@ If `fuz' library not found, not sorting."
   (when (snails-fuz-library-load-p)
     (let ((fuzzy-re (snails-build-fuzzy-regex pattern))
           retval)
+
       (while candidates
-        (when (string-match-p fuzzy-re (nth 1 (car candidates)))
+        (when (string-match-p fuzzy-re (nth 0 (car candidates)))
           (push (pop candidates) retval)))
 
       (cl-sort (mapcar (lambda (it)
-                         (cons it (fuz-calc-score-skim pattern (nth 1 it))))
+                         (cons it (fuz-calc-score-skim pattern (nth 0 it))))
                        retval)
-               (pcase-lambda (`(,scr1 . ,cands1) `(,scr2 . ,cands2))
-                 (if (string= (nth 1 scr1) (nth 1 scr2))
-                     (< (length (nth 1 cands1)) (length (nth 1 cands2)))
-                   (string> (nth 1 scr1) (nth 1 scr2))))))))
+               (pcase-lambda (`(,candidate1 . ,fuzz-score1) `(,candidate2 . ,fuzz-score2))
+                 (if (equal fuzz-score1 fuzz-score2)
+                     (string> (nth 1 candidate1) (nth 1 candidate2))
+                   (< fuzz-score1 fuzz-score2)))))))
 
 (defun snails-match-input-p (input candidate-content)
   "If `fuz' library load, use fuzz match algorithm.
