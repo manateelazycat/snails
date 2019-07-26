@@ -97,7 +97,7 @@
                 (string-equal input "")
                 (snails-match-input-p input group))
            (snails-add-candiate 'candidates group group))))
-     (snails-sort-candidates input candidates)
+     (snails-sort-candidates input candidates 0 0)
      candidates))
 
  :candiate-do

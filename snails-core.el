@@ -7,8 +7,8 @@
 ;; Maintainer: Andy Stewart <lazycat.manatee@gmail.com>
 ;; Copyright (C) 2019, Andy Stewart, all rights reserved.
 ;; Created: 2019-05-16 21:26:09
-;; Version: 4.1
-;; Last-Updated: 2019-07-26 10:49:40
+;; Version: 4.3
+;; Last-Updated: 2019-07-26 16:58:55
 ;;           By: Andy Stewart
 ;; URL: http://www.emacswiki.org/emacs/download/snails-core.el
 ;; Keywords:
@@ -75,6 +75,7 @@
 ;;      * Make `snails' support backends and search-symbol arguments.
 ;;      * Add new command `snails-search-point'.
 ;;      * Add `snails-flash-line'.
+;;      * Improve `snails-sort-candidates'
 ;;
 ;; 2019/07/25
 ;;      * Set undecorated parameter in `make-frame' function.
@@ -972,34 +973,40 @@ And render result when subprocess finish search."
         (t
          nil)))
 
-(defun snails-build-fuzzy-regex (pattern)
+(defun snails-build-fuzzy-regex (input)
   "Create a fuzzy regexp of PATTERN."
   (mapconcat (lambda (ch)
                (let ((s (char-to-string ch)))
                  (format "[^%s]*%s" s (regexp-quote s))))
-             pattern ""))
+             input ""))
 
 (defun snails-add-candiate (candidate-list candidate-name candidate-content)
   "Append candiate display name and content to candiate list."
   (add-to-list candidate-list (list candidate-name candidate-content) t))
 
-(defun snails-sort-candidates (pattern candidates)
+(defun snails-sort-candidates (input candidates match-index content-index)
   "If `fuz' library load, sort candidates with fuzz scrore.
-If `fuz' library not found, not sorting."
-  (when (snails-fuz-library-load-p)
-    (let ((fuzzy-re (snails-build-fuzzy-regex pattern))
+If `fuz' library not found, not sorting.
+
+`input' is user input string to build match regex.
+`candidates' is candidate list need sort.
+`match-index' is index to fetch match part from candiate, use for calculate sort score.
+`content-index' is index to content part from candiate, use for compare content when fuzz score is same."
+  (when (and (snails-fuz-library-load-p)
+             candidates)
+    (let ((fuzzy-re (snails-build-fuzzy-regex input))
           retval)
 
       (while candidates
-        (when (string-match-p fuzzy-re (nth 0 (car candidates)))
+        (when (string-match-p fuzzy-re (nth match-index (car candidates)))
           (push (pop candidates) retval)))
 
       (cl-sort (mapcar (lambda (it)
-                         (cons it (fuz-calc-score-skim pattern (nth 0 it))))
+                         (cons it (fuz-calc-score-skim input (nth match-index it))))
                        retval)
                (pcase-lambda (`(,candidate1 . ,fuzz-score1) `(,candidate2 . ,fuzz-score2))
                  (if (equal fuzz-score1 fuzz-score2)
-                     (string> (nth 1 candidate1) (nth 1 candidate2))
+                     (string> (nth content-index candidate1) (nth content-index candidate2))
                    (< fuzz-score1 fuzz-score2)))))))
 
 (defun snails-match-input-p (input candidate-content)

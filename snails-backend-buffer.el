@@ -117,7 +117,7 @@
                ))
          (snails-add-candiate 'candidates (snails-wrap-buffer-icon buf) (buffer-name buf))
          ))
-     (snails-sort-candidates input candidates)
+     (snails-sort-candidates input candidates 1 1)
      candidates))
 
  :candiate-do
