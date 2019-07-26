@@ -7,8 +7,8 @@
 ;; Maintainer: Andy Stewart <lazycat.manatee@gmail.com>
 ;; Copyright (C) 2019, Andy Stewart, all rights reserved.
 ;; Created: 2019-05-16 21:26:09
-;; Version: 3.9
-;; Last-Updated: 2019-07-26 10:17:14
+;; Version: 4.0
+;; Last-Updated: 2019-07-26 10:41:46
 ;;           By: Andy Stewart
 ;; URL: http://www.emacswiki.org/emacs/download/snails-core.el
 ;; Keywords:
@@ -73,6 +73,7 @@
 ;;      * Snails will search symbol around point when you press prefix key before call snails.
 ;;      * Make async process buffer's name starts with " *" to hide process buffer tab when search.
 ;;      * Make `snails' support backends and search-symbol arguments.
+;;      * Add new command `snails-search-point'.
 ;;
 ;; 2019/07/25
 ;;      * Set undecorated parameter in `make-frame' function.
@@ -303,6 +304,11 @@ If `fuz' library has load, set with `check'.")
           ;; Send empty search content to backends.
           (snails-search "")))
     (message "Snails render candidates in new frame that only can be run in a graphical environment.")))
+
+(defun snails-search-point ()
+  "Search symbol at point"
+  (interactive)
+  (snails nil t))
 
 (defun snails-select-next-item ()
   "Select next candidate item."

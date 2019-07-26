@@ -17,7 +17,7 @@ regardless of how complex the search framework is.
 ```
 
 ## Usage
-```M-x snails```
+```M-x snails``` or ```M-x snails-search-point```
 
 <img src="./images/screenshot.png">
 
@@ -31,11 +31,6 @@ If you're a big fan of [Ivy](https://github.com/abo-abo/swiper#ivy), you can use
 ### Search with customized backends
 ```elisp
 (snails '(snails-backend-buffer snails-backend-buffer))
-```
-
-### Search symbol
-```elisp
-(snails nil t)
 ```
 
 ### Search symbol with customized backends.
