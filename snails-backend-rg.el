@@ -118,9 +118,7 @@
        (move-to-column (max (- (string-to-number (nth 2 file-info)) 1) 0))
 
        ;; Flash match line.
-       (let ((pulse-iterations 1)
-             (pulse-delay 0.3))
-         (pulse-momentary-highlight-one-line (point) 'highlight))
+       (snails-flash-line)
        ))))
 
 (provide 'snails-backend-rg)

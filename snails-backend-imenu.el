@@ -153,7 +153,9 @@
 
  :candiate-do
  (lambda (candidate)
-   (goto-char (string-to-number candidate))))
+   (goto-char (string-to-number candidate))
+
+   (snails-flash-line)))
 
 (provide 'snails-backend-imenu)
 

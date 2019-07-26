@@ -7,8 +7,8 @@
 ;; Maintainer: Andy Stewart <lazycat.manatee@gmail.com>
 ;; Copyright (C) 2019, Andy Stewart, all rights reserved.
 ;; Created: 2019-05-16 21:26:09
-;; Version: 4.0
-;; Last-Updated: 2019-07-26 10:41:46
+;; Version: 4.1
+;; Last-Updated: 2019-07-26 10:49:40
 ;;           By: Andy Stewart
 ;; URL: http://www.emacswiki.org/emacs/download/snails-core.el
 ;; Keywords:
@@ -74,6 +74,7 @@
 ;;      * Make async process buffer's name starts with " *" to hide process buffer tab when search.
 ;;      * Make `snails' support backends and search-symbol arguments.
 ;;      * Add new command `snails-search-point'.
+;;      * Add `snails-flash-line'.
 ;;
 ;; 2019/07/25
 ;;      * Set undecorated parameter in `make-frame' function.
@@ -1007,6 +1008,11 @@ If `fuz' not found, use normal match algorithm."
   (if (snails-fuz-library-load-p)
       (string-match-p (snails-build-fuzzy-regex input) candidate-content)
     (string-match-p (regexp-quote input) candidate-content)))
+
+(defun snails-flash-line ()
+  (let ((pulse-iterations 1)
+        (pulse-delay 0.3))
+    (pulse-momentary-highlight-one-line (point) 'highlight)))
 
 (advice-add 'other-window
             :around
