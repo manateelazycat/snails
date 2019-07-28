@@ -7,8 +7,8 @@
 ;; Maintainer: Andy Stewart <lazycat.manatee@gmail.com>
 ;; Copyright (C) 2019, Andy Stewart, all rights reserved.
 ;; Created: 2019-05-16 21:26:09
-;; Version: 4.6
-;; Last-Updated: 2019-07-28 20:43:58
+;; Version: 4.7
+;; Last-Updated: 2019-07-28 20:52:48
 ;;           By: Andy Stewart
 ;; URL: http://www.emacswiki.org/emacs/download/snails-core.el
 ;; Keywords:
@@ -71,6 +71,7 @@
 ;; 2019/07/28
 ;;      * Optimize performance: fixed rendering every 100 milliseconds, instead of rendering once backend return candidates, avoiding rendering computation waste.
 ;;      * `snails-select-line-number' is not need anymore, `snails-select-line-overlay' is enough.
+;;      * Add `snails-render-bufer' to timer when first start.
 ;;
 ;; 2019/07/26
 ;;      * Foucs out to hide snails frame on Mac.
@@ -553,7 +554,9 @@ If `fuz' library has load, set with `check'.")
   "Get all backend names."
   (mapcar (lambda (b) (eval (cdr (assoc "name" (eval b))))) snails-backends))
 
-(run-with-timer 0 0.1 'snails-render-bufer)
+;; Add `snails-render-bufer' to timer when first start.
+(when (not (featurep 'snails))
+  (run-with-timer 0 0.1 'snails-render-bufer))
 
 (defun snails-render-bufer ()
   "Render candidates."
