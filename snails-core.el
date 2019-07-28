@@ -7,8 +7,8 @@
 ;; Maintainer: Andy Stewart <lazycat.manatee@gmail.com>
 ;; Copyright (C) 2019, Andy Stewart, all rights reserved.
 ;; Created: 2019-05-16 21:26:09
-;; Version: 4.8
-;; Last-Updated: 2019-07-28 22:25:57
+;; Version: 4.9
+;; Last-Updated: 2019-07-29 00:00:03
 ;;           By: Andy Stewart
 ;; URL: http://www.emacswiki.org/emacs/download/snails-core.el
 ;; Keywords:
@@ -73,6 +73,7 @@
 ;;      * `snails-select-line-number' is not need anymore, `snails-select-line-overlay' is enough.
 ;;      * Add `snails-render-bufer' to timer when first start.
 ;;      * Keep offset of selected candidate.
+;;      * Optimize start performance: delay 50 milliseconds to start search backend.
 ;;
 ;; 2019/07/26
 ;;      * Foucs out to hide snails frame on Mac.
@@ -217,6 +218,9 @@ need to set face attribute, such as foreground and background."
 (defvar snails-start-buffer nil
   "The buffer before snails start.")
 
+(defvar snails-start-buffer-lines nil
+  "The line number of start buffer.")
+
 (defvar snails-frame-active-p nil
   "The parent frame of popup frame.")
 
@@ -301,7 +305,6 @@ If `fuz' library has load, set with `check'.")
           ;; Quit snails if it has opened.
           (snails-quit)
 
-        ;; Update backends.
         ;; If `backends' is empty list, use `snails-default-backends'.
         (if (and (listp backends)
                  (> (length backends) 0))
@@ -310,6 +313,7 @@ If `fuz' library has load, set with `check'.")
 
         ;; Record buffer before start snails.
         (setq snails-start-buffer (current-buffer))
+        (setq snails-start-buffer-lines (line-number-at-pos (point-max)))
 
         ;; Create input and content buffer.
         (snails-create-input-buffer)
@@ -318,17 +322,24 @@ If `fuz' library has load, set with `check'.")
         ;; Create popup frame to show search result.
         (snails-create-frame)
 
-        ;; Search.
-        (if search-symbol
-            ;; Search symbol around current pointer if user press C-u before call `snails'.
-            (let ((search-string (or (snails-pointer-string) "")))
-              (with-current-buffer snails-input-buffer
-                (insert search-string))
-              (snails-search search-string)
-              )
-          ;; Send empty search content to backends.
-          (snails-search "")))
+        ;; First search.
+        (snails-first-search search-symbol))
     (message "Snails render candidates in new frame that only can be run in a graphical environment.")))
+
+(defun snails-first-search (search-symbol)
+  "First search need delay, make snails frame display as soon as possible."
+  (run-with-timer
+   0.05 nil
+   (lambda ()
+     (if search-symbol
+         ;; Search symbol around point.
+         (let ((search-string (or (with-current-buffer snails-start-buffer
+                                    (snails-pointer-string)) "")))
+           (with-current-buffer snails-input-buffer
+             (insert search-string))
+           (snails-search search-string))
+       ;; Send empty search content to backends.
+       (snails-search "")))))
 
 (defun snails-search-point ()
   "Search symbol at point"
@@ -406,41 +417,32 @@ If `fuz' library has load, set with `check'.")
 
 (defun snails-create-input-buffer ()
   "Create input buffer."
-  (let* ((colors (snails-get-theme-colors))
-         (bg-color (nth 2 colors))
-         (fg-color (nth 3 colors)))
-    (with-current-buffer (get-buffer-create snails-input-buffer)
-      ;; Clean buffer.
-      (erase-buffer)
-      ;; Switch snails mode.
-      (snails-mode)
-      ;; Set input buffer face.
-      (set-face-attribute 'snails-input-buffer-face nil
-                          :background bg-color
-                          :foreground fg-color)
-      (buffer-face-set 'snails-input-buffer-face)
-      ;; Disable hl-line, header-line and mode-line in input buffer.
-      (setq-local global-hl-line-overlay nil)
-      (setq-local header-line-format nil)
-      (setq-local mode-line-format nil)
-      )))
+  (with-current-buffer (get-buffer-create snails-input-buffer)
+    ;; Clean buffer.
+    (erase-buffer)
+    ;; Switch snails mode.
+    (snails-mode)
+    ;; Set input buffer face.
+    (buffer-face-set 'snails-input-buffer-face)
+    ;; Disable hl-line, header-line and mode-line in input buffer.
+    (setq-local global-hl-line-overlay nil)
+    (setq-local header-line-format nil)
+    (setq-local mode-line-format nil)
+    ))
 
 (defun snails-create-content-buffer ()
   "Create content buffer."
-  (let* ((colors (snails-get-theme-colors))
-         (bg-color (nth 0 colors)))
-    (with-current-buffer (get-buffer-create snails-content-buffer)
-      ;; Clean buffer.
-      (erase-buffer)
-      ;; Set coent buffer face.
-      (set-face-attribute 'snails-content-buffer-face nil :background bg-color)
-      (buffer-face-set 'snails-content-buffer-face)
-      ;; Disable header-line, mode-line, long line and cursor shape in content buffer.
-      (setq-local header-line-format nil)
-      (setq-local mode-line-format nil)
-      (setq-local truncate-lines t)
-      (setq-local cursor-type nil)
-      )))
+  (with-current-buffer (get-buffer-create snails-content-buffer)
+    ;; Clean buffer.
+    (erase-buffer)
+    ;; Set coent buffer face.
+    (buffer-face-set 'snails-content-buffer-face)
+    ;; Disable header-line, mode-line, long line and cursor shape in content buffer.
+    (setq-local header-line-format nil)
+    (setq-local mode-line-format nil)
+    (setq-local truncate-lines t)
+    (setq-local cursor-type nil)
+    ))
 
 (defun snails-monitor-input (begin end length)
   "This is input monitor callback to hook `after-change-functions'."
@@ -787,6 +789,23 @@ influence of C1 on the result."
       (list bg-dark fg-light bg-more-dark fg-more-dark)
       ))))
 
+(defun snails-init-face-with-theme ()
+  (let* ((colors (snails-get-theme-colors))
+         (content-bg-color (nth 0 colors))
+         (input-bg-color (nth 2 colors))
+         (input-fg-color (nth 3 colors)))
+    ;; Set input buffer face.
+    (set-face-attribute 'snails-input-buffer-face nil
+                        :background input-bg-color
+                        :foreground input-fg-color)
+    ;; Set coent buffer face.
+    (set-face-attribute 'snails-content-buffer-face nil
+                        :background content-bg-color)
+    ))
+
+(when (not (featurep 'snails))
+  (snails-init-face-with-theme))
+
 (defun snails-jump-to-next-item ()
   "Select next candidate item."
   ;; Forward line.
@@ -915,6 +934,10 @@ influence of C1 on the result."
                 (string-trim-left candidate)
                 ))
     candidate))
+
+(defun snails-format-line-number (line-number max-line-number)
+  "Format line number with same width."
+  (concat (make-string (- (length (format "%s" max-line-number)) (length line-number)) ?\ ) line-number))
 
 (defun snails-update-select-line ()
   "Update select line status."

@@ -101,13 +101,13 @@
  (lambda (candidate-list)
    (let (candidates)
      (dolist (candidate candidate-list)
-       (snails-add-candiate
-        'candidates
-        (snails-wrap-file-icon-with-candidate
-         (buffer-file-name snails-start-buffer)
-         (string-join (cddr (split-string candidate ":")))
-         t)
-        candidate))
+       (let ((candidate-info (split-string candidate ":")))
+         (snails-add-candiate
+          'candidates
+          (format "%s: %s"
+                  (snails-format-line-number (nth 0 candidate-info) snails-start-buffer-lines)
+                  (string-join (cddr candidate-info)))
+          candidate)))
      candidates))
 
  :candiate-do
