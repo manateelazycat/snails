@@ -561,7 +561,7 @@ If `fuz' library has load, set with `check'.")
   (run-with-timer 0 0.1 'snails-render-bufer))
 
 (defun snails-render-bufer ()
-  "Render candidates."
+  "Render candidates when `snails-need-render' flag is set."
   (when snails-need-render
     (with-current-buffer snails-content-buffer
       ;; Clean buffer first.
