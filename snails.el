@@ -82,8 +82,9 @@
 ;;; Require
 (require 'snails-core)
 (require 'snails-backend-buffer)
+(require 'snails-backend-current-buffer)
 (require 'snails-backend-recentf)
-(require 'snails-backend-awesome-tab)
+(require 'snails-backend-awesome-tab-group)
 (require 'snails-backend-fd)
 (require 'snails-backend-mdfind)
 (require 'snails-backend-imenu)
@@ -97,6 +98,7 @@
         snails-backend-buffer
         snails-backend-recentf
         snails-backend-imenu
+        snails-backend-current-buffer
         snails-backend-bookmark
         snails-backend-fd
         snails-backend-rg
