@@ -856,12 +856,15 @@ influence of C1 on the result."
               (string-trim-left file))
     file))
 
-(defun snails-wrap-file-icon-with-candidate (file candidate)
+(defun snails-wrap-file-icon-with-candidate (file candidate &optional no-trim)
   "Wrap display name with file icon, use for file search backend."
   (if (featurep 'all-the-icons)
       (format "%s %s"
               (all-the-icons-icon-for-file (format "hello.%s" (file-name-extension file)) :height 1)
-              (string-trim-left candidate))
+              (if no-trim
+                  candidate
+                (string-trim-left candidate)
+                ))
     candidate))
 
 (defun snails-update-select-line ()
