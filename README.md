@@ -78,11 +78,11 @@ To install fuz.el , please follow below steps:
 | snails-backend-awesome-tab-group | Switch group of awesome-tab                     |
 | snails-backend-buffer            | Search buffer list                              |
 | snails-backend-recentf           | Search recently files                           |
+| snails-backend-bookmark          | Switch bookmark                                 |
 | snails-backend-imenu             | Jump to function or variable definition         |
 | snails-backend-current-buffer    | Search current buffer content                   |
-| snails-backend-bookmark          | Switch bookmark                                 |
-| snails-backend-fd                | Use fd search files in current project          |
 | snails-backend-rg                | Use ripgrep search content in current project   |
+| snails-backend-fd                | Use fd search files in current project          |
 | snails-backend-mdfind            | Use mdfind search files in local disk, only Mac |
 
 ## Architecture Design of Snails
