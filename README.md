@@ -234,6 +234,5 @@ The biggest goal of Snails project is fast, although I know that highlighting is
 If you know how to keep fluency when adding highlights, please contribute your patch. ;)
 
 ## Todo
-* Keep selected status when render candidates if input ticker is same
 * Try test filter function instead sentinel function.
 * Improve start speed.

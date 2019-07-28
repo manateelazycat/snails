@@ -7,8 +7,8 @@
 ;; Maintainer: Andy Stewart <lazycat.manatee@gmail.com>
 ;; Copyright (C) 2019, Andy Stewart, all rights reserved.
 ;; Created: 2019-05-16 21:26:09
-;; Version: 4.7
-;; Last-Updated: 2019-07-28 20:52:48
+;; Version: 4.8
+;; Last-Updated: 2019-07-28 22:25:57
 ;;           By: Andy Stewart
 ;; URL: http://www.emacswiki.org/emacs/download/snails-core.el
 ;; Keywords:
@@ -72,6 +72,7 @@
 ;;      * Optimize performance: fixed rendering every 100 milliseconds, instead of rendering once backend return candidates, avoiding rendering computation waste.
 ;;      * `snails-select-line-number' is not need anymore, `snails-select-line-overlay' is enough.
 ;;      * Add `snails-render-bufer' to timer when first start.
+;;      * Keep offset of selected candidate.
 ;;
 ;; 2019/07/26
 ;;      * Foucs out to hide snails frame on Mac.
@@ -257,6 +258,12 @@ If `fuz' library has load, set with `check'.")
 (defvar snails-need-render nil
   "Mark if you need to re-render after the word selection.")
 
+(defvar snails-select-backend-name nil
+  "Record backend name of selected candidate.")
+
+(defvar snails-select-candidate-offset nil
+  "Record candidate offset of selected candidate.")
+
 (defvar snails-mode-map
   (let ((map (make-sparse-keymap)))
     (define-key map (kbd "C-g") 'snails-quit)
@@ -385,6 +392,8 @@ If `fuz' library has load, set with `check'.")
   (setq snails-start-buffer nil)
   (setq snails-select-line-overlay nil)
   (setq snails-need-render nil)
+  (setq snails-select-backend-name nil)
+  (setq snails-select-candidate-offset nil)
   ;; Kill all subprocess and process buffers.
   (maphash
    (lambda (name process)
@@ -564,6 +573,9 @@ If `fuz' library has load, set with `check'.")
   "Render candidates when `snails-need-render' flag is set."
   (when snails-need-render
     (with-current-buffer snails-content-buffer
+      ;; Record select line offset.
+      (snails-record-select-line-offset)
+
       ;; Clean buffer first.
       (erase-buffer)
 
@@ -629,15 +641,52 @@ If `fuz' library has load, set with `check'.")
             ;; Insert new empty line at last candiate of backend.
             (insert "\n"))
           ;; Update candidate index to fetch name of next backend.
-          (setq candiate-index (+ candiate-index 1)))
+          (setq candiate-index (+ candiate-index 1))))
 
-        ;; Select first line after render finish.
-        (goto-char (point-min))
-        (snails-select-next-item)
-        ))
+      ;; Restore select line offset.
+      (snails-restore-select-line-offset)
+      )
 
     ;; Reset render flag.
     (setq snails-need-render nil)))
+
+(defun snails-record-select-line-offset ()
+  "Record select line offset."
+  (if snails-select-line-overlay
+      ;; Record select line offset when `snails-select-line-overlay' is non-nil.
+      (catch 'line-offset
+        (dolist (header-line-overlay snails-header-line-overlays)
+          (when (> (overlay-end snails-select-line-overlay) (overlay-end header-line-overlay))
+            (setq snails-select-backend-name (buffer-substring (overlay-start header-line-overlay) (overlay-end header-line-overlay)))
+            (setq snails-select-candidate-offset
+                  (- (line-number-at-pos (overlay-end snails-select-line-overlay))
+                     (line-number-at-pos (overlay-start header-line-overlay))))
+
+            (throw 'line-offset nil))
+          ))
+    ;; Select first candiate offset if `snails-select-line-overlay' is nil.
+    (setq snails-select-backend-name (nth 0 (snails-get-backend-names)))
+    (setq snails-select-candidate-offset 1)
+    ))
+
+(defun snails-restore-select-line-offset ()
+  "Restore select line offset."
+  (unless (catch 'restore-line-offset
+            (dolist (header-line-overlay snails-header-line-overlays)
+              ;; Restore select line offset before render content buffer.
+              (when (string-equal snails-select-backend-name (buffer-substring (overlay-start header-line-overlay) (overlay-end header-line-overlay)))
+                (goto-char (overlay-start header-line-overlay))
+                (forward-line snails-select-candidate-offset)
+                (snails-update-select-line)
+
+                (throw 'restore-line-offset t)
+                ))
+            nil)
+    ;; Select first candidate if backend not exists when restore select line offset.
+    (goto-char (point-min))
+    (snails-select-next-item)
+    (snails-update-select-line)
+    ))
 
 (defun snails-pointer-string ()
   "Get string around cursor."
