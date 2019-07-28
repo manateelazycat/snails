@@ -132,11 +132,7 @@ Let's take the example of ```snails-backend-recentf``` plugin:
        (when (or
               (string-equal input "")
               (string-match-p (regexp-quote input) file))
-         (add-to-list 'candidates
-                      (list
-                       (snails-wrap-file-icon file)
-                       file)
-                      t)))
+         (snails-add-candiate 'candidates (snails-wrap-file-icon file) file)))
      candidates))
 
  :candiate-do
@@ -174,11 +170,7 @@ Let's take the example of ```snails-backend-mdfind``` plugin:
  (lambda (candidate-list)
    (let (candidates)
      (dolist (candidate candidate-list)
-       (add-to-list 'candidates
-                    (list
-                     (snails-wrap-file-icon candidate)
-                     candidate)
-                    t))
+       (snails-add-candiate 'candidates (snails-wrap-file-icon candidate) candidate))
      candidates))
 
  :candiate-do
