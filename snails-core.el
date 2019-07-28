@@ -7,8 +7,8 @@
 ;; Maintainer: Andy Stewart <lazycat.manatee@gmail.com>
 ;; Copyright (C) 2019, Andy Stewart, all rights reserved.
 ;; Created: 2019-05-16 21:26:09
-;; Version: 4.5
-;; Last-Updated: 2019-07-28 20:35:46
+;; Version: 4.6
+;; Last-Updated: 2019-07-28 20:43:58
 ;;           By: Andy Stewart
 ;; URL: http://www.emacswiki.org/emacs/download/snails-core.el
 ;; Keywords:
@@ -70,6 +70,7 @@
 ;;
 ;; 2019/07/28
 ;;      * Optimize performance: fixed rendering every 100 milliseconds, instead of rendering once backend return candidates, avoiding rendering computation waste.
+;;      * `snails-select-line-number' is not need anymore, `snails-select-line-overlay' is enough.
 ;;
 ;; 2019/07/26
 ;;      * Foucs out to hide snails frame on Mac.
@@ -220,9 +221,6 @@ need to set face attribute, such as foreground and background."
 (defvar snails-select-line-overlay nil
   "Select line overlay, use to highlight selected candidate.")
 
-(defvar snails-select-line-number 0
-  "Select line number, use to track line number of selected candidate.")
-
 (defvar snails-header-line-overlays nil
   "The list overlay to render backend header line.")
 
@@ -334,7 +332,7 @@ If `fuz' library has load, set with `check'.")
   (interactive)
   (with-current-buffer snails-content-buffer
     ;; Goto current line.
-    (goto-line snails-select-line-number)
+    (goto-char (overlay-start snails-select-line-overlay))
     ;; Jump to next candidate item position.
     (snails-jump-to-next-item)
     ;; Update select line
@@ -346,7 +344,7 @@ If `fuz' library has load, set with `check'.")
   (interactive)
   (with-current-buffer snails-content-buffer
     ;; Goto current line.
-    (goto-line snails-select-line-number)
+    (goto-char (overlay-start snails-select-line-overlay))
     ;; Jump to previous candidate item position.
     (snails-jump-to-previous-item)
     ;; Update select line.
@@ -568,7 +566,6 @@ If `fuz' library has load, set with `check'.")
       (setq snails-header-line-overlays nil)
 
       ;; Reset select line variables.
-      (setq snails-select-line-number 0)
       (setq snails-select-line-overlay (make-overlay (point) (point) (current-buffer) t))
       (overlay-put snails-select-line-overlay 'face `snails-select-line-face)
 
@@ -864,8 +861,6 @@ influence of C1 on the result."
 
 (defun snails-update-select-line ()
   "Update select line status."
-  ;; Update current line number.
-  (setq snails-select-line-number (line-number-at-pos))
   ;; Update select line overlay postion.
   (move-overlay snails-select-line-overlay
                 (point-at-bol)
@@ -965,7 +960,7 @@ And render result when subprocess finish search."
 (defun snails-candidate-get-info ()
   (with-current-buffer snails-content-buffer
     ;; Goto candidate content overlay position.
-    (goto-line snails-select-line-number)
+    (goto-char (overlay-start snails-select-line-overlay))
     (end-of-line)
     (backward-char)
 
