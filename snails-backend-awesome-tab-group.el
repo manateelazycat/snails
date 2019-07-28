@@ -1,6 +1,6 @@
-;;; snails-backend-awesome-tab.el --- awesome-tab group backend for snails
+;;; snails-backend-awesome-tab-group.el --- awesome-tab group backend for snails
 
-;; Filename: snails-backend-awesome-tab.el
+;; Filename: snails-backend-awesome-tab-group.el
 ;; Description: awesome-tab group backend for snails
 ;; Author: Andy Stewart <lazycat.manatee@gmail.com>
 ;; Maintainer: Andy Stewart <lazycat.manatee@gmail.com>
@@ -9,7 +9,7 @@
 ;; Version: 0.1
 ;; Last-Updated: 2019-07-23 16:46:17
 ;;           By: Andy Stewart
-;; URL: http://www.emacswiki.org/emacs/download/snails-backend-awesome-tab.el
+;; URL: http://www.emacswiki.org/emacs/download/snails-backend-awesome-tab-group.el
 ;; Keywords:
 ;; Compatibility: GNU Emacs 26.2
 ;;
@@ -44,14 +44,14 @@
 
 ;;; Installation:
 ;;
-;; Put snails-backend-awesome-tab.el to your load-path.
+;; Put snails-backend-awesome-tab-group.el to your load-path.
 ;; The load-path is usually ~/elisp/.
 ;; It's set in your ~/.emacs like this:
 ;; (add-to-list 'load-path (expand-file-name "~/elisp"))
 ;;
 ;; And the following to your ~/.emacs startup file.
 ;;
-;; (require 'snails-backend-awesome-tab)
+;; (require 'snails-backend-awesome-tab-group)
 ;;
 ;; No need more.
 
@@ -60,7 +60,7 @@
 ;;
 ;;
 ;; All of the above can customize by:
-;;      M-x customize-group RET snails-backend-awesome-tab RET
+;;      M-x customize-group RET snails-backend-awesome-tab-group RET
 ;;
 
 ;;; Change log:
@@ -104,6 +104,6 @@
  (lambda (candidate)
    (awesome-tab-switch-group candidate)))
 
-(provide 'snails-backend-awesome-tab)
+(provide 'snails-backend-awesome-tab-group)
 
-;;; snails-backend-awesome-tab.el ends here
+;;; snails-backend-awesome-tab-group.el ends here
