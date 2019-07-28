@@ -97,11 +97,11 @@
       '(snails-backend-awesome-tab-group
         snails-backend-buffer
         snails-backend-recentf
+        snails-backend-bookmark
         snails-backend-imenu
         snails-backend-current-buffer
-        snails-backend-bookmark
-        snails-backend-fd
         snails-backend-rg
+        snails-backend-fd
         snails-backend-mdfind
         ))
 
