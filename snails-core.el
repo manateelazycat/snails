@@ -383,6 +383,8 @@ If `fuz' library has load, set with `check'.")
   (setq snails-frame-active-p nil)
   (setq snails-project-root-dir nil)
   (setq snails-start-buffer nil)
+  (setq snails-select-line-overlay nil)
+  (setq snails-need-render nil)
   ;; Kill all subprocess and process buffers.
   (maphash
    (lambda (name process)
