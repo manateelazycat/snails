@@ -458,12 +458,12 @@ If `fuz' library has load, set with `check'.")
   (let* ((edges (frame-edges))
          (x (nth 0 edges))
          (y (nth 1 edges))
-         (width (nth 2 edges))
+         (width  (- (nth 2 edges) x))
          (height (nth 3 edges))
          (frame-width (truncate (* snails-fame-width-proportion width)))
          (frame-height (truncate (* snails-fame-height-proportion height)))
-         (frame-x (/ (+ x (- width frame-width)) 2))
-         (frame-y (/ (+ y (- height frame-height)) 3)))
+         (frame-x (+ x (/ (- width frame-width) 2)))
+         (frame-y (+ y (/ (- height frame-height) 3))))
 
     ;; Set project directory.
     (setq snails-project-root-dir
