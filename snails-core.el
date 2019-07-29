@@ -422,6 +422,8 @@ If `fuz' library has load, set with `check'.")
     (erase-buffer)
     ;; Switch snails mode.
     (snails-mode)
+    (if (fboundp 'evil-insert)
+      (evil-insert 1))
     ;; Set input buffer face.
     (buffer-face-set 'snails-input-buffer-face)
     ;; Disable hl-line, header-line and mode-line in input buffer.
