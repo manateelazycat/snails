@@ -106,7 +106,7 @@
       (setq snails-backend-imenu-cached-buffer buffer))))
 
 (defun snails-backend-imenu-build-candidates (alist)
-  (remove-if
+  (cl-remove-if
    (lambda (c)
      (or (string-equal (car c) "Types")
          (string-equal (car c) "Variables")
