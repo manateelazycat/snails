@@ -90,6 +90,7 @@
 (require 'snails-backend-imenu)
 (require 'snails-backend-bookmark)
 (require 'snails-backend-rg)
+(require 'snails-backend-everything)
 
 ;;; Code:
 
@@ -103,6 +104,7 @@
         snails-backend-rg
         snails-backend-fd
         snails-backend-mdfind
+        snails-backend-everything
         ))
 
 (provide 'snails)
