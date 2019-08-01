@@ -426,8 +426,7 @@ If `fuz' library has load, set with `check'.")
     (erase-buffer)
     ;; Switch snails mode.
     (snails-mode)
-    (if (and (fboundp 'evil-insert)
-             (not (eq evil-default-state 'emacs)))
+    (if (fboundp 'evil-insert)
       (evil-insert 1))
     ;; Set input buffer face.
     (buffer-face-set 'snails-input-buffer-face)
