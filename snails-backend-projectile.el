@@ -6,8 +6,6 @@
 
 ;;; Requires
 (require 'snails-core)
-(require 'projectile)
-
 ;;; Code:
 
 
@@ -18,11 +16,12 @@
       (projectile-project-root (file-name-directory filename)))))
 
 
-(defun snails-backend-projectile--files ()
+(defun snails-backend-projectile-candidates ()
   "List project files."
-  (let ((project-root (snails-backend-projectile--project-root)))
-    (when project-root
-      (projectile-project-files project-root))))
+  (when (featurep 'projectile)
+    (let ((project-root (snails-backend-projectile--project-root)))
+      (when project-root
+        (projectile-project-files project-root)))))
 
 
 (snails-create-sync-backend
@@ -32,7 +31,7 @@
  :candidate-filter
  (lambda (input)
    (let ((candidates)
-         (project-files (snails-backend-projectile--files)))
+         (project-files (snails-backend-projectile-candidates)))
      (when project-files
        (dolist (file project-files)
          (when (or
