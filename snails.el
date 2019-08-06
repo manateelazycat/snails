@@ -91,6 +91,7 @@
 (require 'snails-backend-bookmark)
 (require 'snails-backend-rg)
 (require 'snails-backend-everything)
+(require 'snails-backend-projectile)
 
 ;;; Code:
 
@@ -105,6 +106,7 @@
         snails-backend-fd
         snails-backend-mdfind
         snails-backend-everything
+        snails-backend-projectile
         ))
 
 (provide 'snails)
