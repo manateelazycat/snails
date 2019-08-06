@@ -73,18 +73,19 @@ To install fuz.el , please follow below steps:
 
 ## Search Backend
 
-| Backend                          | Description                                             |
-| :--------                        | :----                                                   |
-| snails-backend-awesome-tab-group | Switch group of awesome-tab                             |
-| snails-backend-buffer            | Search buffer list                                      |
-| snails-backend-recentf           | Search recently files                                   |
-| snails-backend-bookmark          | Switch bookmark                                         |
-| snails-backend-imenu             | Jump to function or variable definition                 |
-| snails-backend-current-buffer    | Search current buffer content                           |
-| snails-backend-rg                | Use ripgrep search content in current project           |
-| snails-backend-fd                | Use fd search files in current project                  |
-| snails-backend-mdfind            | Use mdfind search files in local disk, only Mac         |
-| snails-backend-everything        | Use everything search files in local disk, only Windows |
+| Backend                          | Description                                                            |
+| :--------                        | :----                                                                  |
+| snails-backend-awesome-tab-group | Switch group of awesome-tab, need install plugin ```awesome-tab```     |
+| snails-backend-buffer            | Search buffer list                                                     |
+| snails-backend-recentf           | Search recently files                                                  |
+| snails-backend-bookmark          | Switch bookmark                                                        |
+| snails-backend-imenu             | Jump to function or variable definition                                |
+| snails-backend-current-buffer    | Search current buffer content                                          |
+| snails-backend-rg                | Use ripgrep search content in current project                          |
+| snails-backend-projectile        | Search files in current project, need install plugin ```projectitle``` |
+| snails-backend-fd                | Use fd search files in current project                                 |
+| snails-backend-mdfind            | Use mdfind search files in local disk, only Mac                        |
+| snails-backend-everything        | Use everything search files in local disk, only Windows                |
 
 ## Architecture Design of Snails
 

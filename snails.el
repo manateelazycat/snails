@@ -103,10 +103,10 @@
         snails-backend-imenu
         snails-backend-current-buffer
         snails-backend-rg
+        snails-backend-projectile
         snails-backend-fd
         snails-backend-mdfind
         snails-backend-everything
-        snails-backend-projectile
         ))
 
 (provide 'snails)
