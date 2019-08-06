@@ -10,13 +10,19 @@
 
 ;;; Code:
 
-(defun snails-backend-projectile-files ()
-  "List project files."
+
+(defun snails-backend-projectile--project-root ()
+  "Find projectile root."
   (let ((filename (buffer-file-name snails-start-buffer)))
     (when filename
-      (let ((project-root (projectile-project-root (file-name-directory filename))))
-        (when project-root
-           (projectile-project-files project-root))))))
+      (projectile-project-root (file-name-directory filename)))))
+
+
+(defun snails-backend-projectile--files ()
+  "List project files."
+  (let ((project-root (snails-backend-projectile--project-root)))
+    (when project-root
+      (projectile-project-files project-root))))
 
 
 (snails-create-sync-backend
@@ -26,7 +32,7 @@
  :candidate-filter
  (lambda (input)
    (let ((candidates)
-         (project-files (snails-backend-projectile-files)))
+         (project-files (snails-backend-projectile--files)))
      (when project-files
        (dolist (file project-files)
          (when (or
@@ -38,7 +44,8 @@
 
  :candiate-do
  (lambda (candidate)
-   (find-file candidate)))
+  (let ((project-root (snails-backend-projectile--project-root)))
+   (find-file (expand-file-name candidate project-root)))))
 
 
 (provide 'snails-backend-projectile)
