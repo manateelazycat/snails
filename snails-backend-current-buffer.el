@@ -93,8 +93,8 @@
    (let ((buffer-filename (buffer-file-name snails-start-buffer)))
      (when (and (executable-find "rg")
                 (> (length input) 5)
-                (buffer-file-name snails-start-buffer))
-       (list "rg" "--no-heading" "--column" "--color" "never" "--max-columns" "300" input (buffer-file-name snails-start-buffer))
+                buffer-filename)
+       (list "rg" "--no-heading" "--column" "--color" "never" "--max-columns" "300" input buffer-filename)
        )))
 
  :candidate-filter
