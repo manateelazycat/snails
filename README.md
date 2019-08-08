@@ -226,3 +226,7 @@ But the reason why Snails doesn't show highlights is because rendering colors ca
 The biggest goal of Snails project is fast, although I know that highlighting is very meaningful, so I am willing to sacrifice this feature for fluency.
 
 If you know how to keep fluency when adding highlights, please contribute your patch. ;)
+
+### Manage Evil state
+I personally never use the evil plugin, if you want manage evil state in input buffer of snails.
+You should customize your own code with `snails-mode-hook'

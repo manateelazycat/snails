@@ -7,8 +7,8 @@
 ;; Maintainer: Andy Stewart <lazycat.manatee@gmail.com>
 ;; Copyright (C) 2019, Andy Stewart, all rights reserved.
 ;; Created: 2019-05-16 21:26:09
-;; Version: 5.1
-;; Last-Updated: 2019-07-29 21:14:09
+;; Version: 5.2
+;; Last-Updated: 2019-08-08 21:10:15
 ;;           By: Andy Stewart
 ;; URL: http://www.emacswiki.org/emacs/download/snails-core.el
 ;; Keywords:
@@ -67,6 +67,9 @@
 ;;
 
 ;;; Change log:
+;;
+;; 2019/08/08
+;;      * Run snails-mode-hook in `snails-create-input-buffer', evil users should be hook evil code after `snails-mode-hook'.
 ;;
 ;; 2019/07/29
 ;;      * Make `snails-mode-hook' works, sorry i forgot add `run-hooks'.
@@ -297,8 +300,7 @@ If `fuz' library has load, set with `check'.")
   (setq major-mode 'snails-mode)
   (setq mode-name "snails")
   ;; Injection keymap.
-  (use-local-map snails-mode-map)
-  (run-hooks 'snails-mode-hook))
+  (use-local-map snails-mode-map))
 
 (defun snails (&optional backends search-symbol)
   "Start snails to search."
@@ -426,10 +428,7 @@ If `fuz' library has load, set with `check'.")
     (erase-buffer)
     ;; Switch snails mode.
     (snails-mode)
-    (if (fboundp 'evil-insert)
-      (evil-insert 1))
-    (if (fboundp 'evil-emacs-state)
-        (evil-emacs-state))
+    (run-hooks 'snails-mode-hook)
     ;; Set input buffer face.
     (buffer-face-set 'snails-input-buffer-face)
     ;; Disable hl-line, header-line and mode-line in input buffer.
