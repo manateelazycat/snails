@@ -17,27 +17,47 @@ regardless of how complex the search framework is.
 ```
 
 ## Usage
-```M-x snails``` or ```M-x snails-search-point```
+```M-x snails``` or ```M-x snails-search-point```, it automatically utilize all available backends.
 
 <img src="./images/screenshot.png">
 
-If you're a big fan of [Ivy](https://github.com/abo-abo/swiper#ivy), you can use a search backend separately in the following way:
+### Use Snails With Custom Backends
+If you feel like there are too many backends available all at once... you can customize the exact backends you want to use! (similar to [Ivy](https://github.com/abo-abo/swiper#ivy))
 
-### Just search buffer
+You can either write your own backend (see below) or assemble all available backends like the following:
+
+#### Just search opened buffers (use snails with 1 backend only!)
 ```elisp
 (snails '(snails-backend-buffer))
 ```
 
-### Search with customized backends
+#### Search opened buffers and recently opened files (use snails with 2 backends!)
 ```elisp
 (snails '(snails-backend-buffer snails-backend-recentf))
 ```
 
-### Search symbol with customized backends.
+#### Search symbol at point of opened buffers and recently opened files (use snails with 2 backends!)
 ```elisp
 (snails '(snails-backend-buffer snails-backend-recentf) t)
 ```
 
+And so on...
+
+## Currently Available Backends
+
+| Backend                          | Description                                                            |
+| :--------                        | :----                                                                  |
+| snails-backend-awesome-tab-group | Switch group of awesome-tab, need install plugin ```awesome-tab```     |
+| snails-backend-buffer            | Search buffer list                                                     |
+| snails-backend-recentf           | Search recently files                                                  |
+| snails-backend-bookmark          | Switch bookmark                                                        |
+| snails-backend-imenu             | Jump to function or variable definition                                |
+| snails-backend-current-buffer    | Search current buffer content                                          |
+| snails-backend-rg                | Use ripgrep search content in current project                          |
+| snails-backend-projectile        | Search files in current project, need install plugin ```projectitle``` |
+| snails-backend-fd                | Use fd search files in current project                                 |
+| snails-backend-mdfind            | Use mdfind search files in local disk, only Mac                        |
+| snails-backend-everything        | Use everything search files in local disk, only Windows                |
 
 ## Fuzz match
 Snails use normal match algorithm default.
@@ -50,7 +70,6 @@ To install fuz.el , please follow below steps:
 3. Build fuz-core.so: ```cargo build --release```
 4. Rename ```target/release/libfuz_core.so``` or ```target/release/libfuz_core.dylib``` to ```fuz-core.so```
 5. Make sure ```fuz-core.so``` and all files in https://github.com/cireu/fuz.el add to your ```load-path```
-
 
 ## Keymap
 
@@ -70,22 +89,6 @@ To install fuz.el , please follow below steps:
 | C-g         | Quit snails               |
 | ESC ESC ESC | Quit snails               |
 | M-h         | Quit snails               |
-
-## Search Backend
-
-| Backend                          | Description                                                            |
-| :--------                        | :----                                                                  |
-| snails-backend-awesome-tab-group | Switch group of awesome-tab, need install plugin ```awesome-tab```     |
-| snails-backend-buffer            | Search buffer list                                                     |
-| snails-backend-recentf           | Search recently files                                                  |
-| snails-backend-bookmark          | Switch bookmark                                                        |
-| snails-backend-imenu             | Jump to function or variable definition                                |
-| snails-backend-current-buffer    | Search current buffer content                                          |
-| snails-backend-rg                | Use ripgrep search content in current project                          |
-| snails-backend-projectile        | Search files in current project, need install plugin ```projectitle``` |
-| snails-backend-fd                | Use fd search files in current project                                 |
-| snails-backend-mdfind            | Use mdfind search files in local disk, only Mac                        |
-| snails-backend-everything        | Use everything search files in local disk, only Windows                |
 
 ## Architecture Design of Snails
 
