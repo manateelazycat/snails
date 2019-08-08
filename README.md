@@ -30,12 +30,12 @@ If you're a big fan of [Ivy](https://github.com/abo-abo/swiper#ivy), you can use
 
 ### Search with customized backends
 ```elisp
-(snails '(snails-backend-buffer snails-backend-buffer))
+(snails '(snails-backend-buffer snails-backend-recentf))
 ```
 
 ### Search symbol with customized backends.
 ```elisp
-(snails '(snails-backend-buffer snails-backend-buffer) t)
+(snails '(snails-backend-buffer snails-backend-recentf) t)
 ```
 
 
