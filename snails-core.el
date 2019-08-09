@@ -259,8 +259,8 @@ use for find candidate position to change select line.")
   "The variable use for check `fuz' library is load.
 
 Init status with `uncheck'.
-If `fuz' library is not found, set with `uncheck'.
-If `fuz' library has load, set with `check'.")
+If `fuz' library is not found, set with `unload'.
+If `fuz' library has load, set with `load'.")
 
 (defvar snails-project-root-dir nil
   "The project dir when start snails.")
