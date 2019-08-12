@@ -233,3 +233,6 @@ If you know how to keep fluency when adding highlights, please contribute your p
 ### Manage Evil state
 I personally never use the evil plugin, if you want manage evil state in input buffer of snails.
 You should customize your own code with `snails-mode-hook'
+
+## Todo
+* Think about search suffix, default search buffer, use suffix switch with special backend, or use suffix switch with regexp ^ and $.
