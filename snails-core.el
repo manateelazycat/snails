@@ -7,8 +7,8 @@
 ;; Maintainer: Andy Stewart <lazycat.manatee@gmail.com>
 ;; Copyright (C) 2019, Andy Stewart, all rights reserved.
 ;; Created: 2019-05-16 21:26:09
-;; Version: 5.2
-;; Last-Updated: 2019-08-08 21:10:15
+;; Version: 5.3
+;; Last-Updated: 2019-08-20 20:34:01
 ;;           By: Andy Stewart
 ;; URL: http://www.emacswiki.org/emacs/download/snails-core.el
 ;; Keywords:
@@ -67,6 +67,9 @@
 ;;
 
 ;;; Change log:
+;;
+;; 2019/08/20
+;;      * Call `snails-init-face-with-theme' when user execute snails command.
 ;;
 ;; 2019/08/08
 ;;      * Run snails-mode-hook in `snails-create-input-buffer', evil users should be hook evil code after `snails-mode-hook'.
@@ -320,6 +323,9 @@ If `fuz' library has load, set with `load'.")
         ;; Record buffer before start snails.
         (setq snails-start-buffer (current-buffer))
         (setq snails-start-buffer-lines (line-number-at-pos (point-max)))
+
+        ;; Init face with theme.
+        (snails-init-face-with-theme)
 
         ;; Create input and content buffer.
         (snails-create-input-buffer)
@@ -809,9 +815,6 @@ influence of C1 on the result."
     (set-face-attribute 'snails-content-buffer-face nil
                         :background content-bg-color)
     ))
-
-(when (not (featurep 'snails))
-  (snails-init-face-with-theme))
 
 (defun snails-jump-to-next-item ()
   "Select next candidate item."
