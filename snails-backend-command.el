@@ -1,15 +1,15 @@
-;;; snails.el --- A modern, easy-to-expand fuzzy search framework
+;;; snails-backend-command.el --- Command backend for snails
 
-;; Filename: snails.el
-;; Description: A modern, easy-to-expand fuzzy search framework
+;; Filename: snails-backend-command.el
+;; Description: Command backend for snails
 ;; Author: Andy Stewart <lazycat.manatee@gmail.com>
 ;; Maintainer: Andy Stewart <lazycat.manatee@gmail.com>
 ;; Copyright (C) 2019, Andy Stewart, all rights reserved.
-;; Created: 2019-07-20 01:21:07
+;; Created: 2019-08-25 12:36:06
 ;; Version: 0.1
-;; Last-Updated: 2019-07-20 01:21:07
+;; Last-Updated: 2019-08-25 12:36:06
 ;;           By: Andy Stewart
-;; URL: http://www.emacswiki.org/emacs/download/snails.el
+;; URL: http://www.emacswiki.org/emacs/download/snails-backend-command.el
 ;; Keywords:
 ;; Compatibility: GNU Emacs 26.2
 ;;
@@ -39,19 +39,19 @@
 
 ;;; Commentary:
 ;;
-;; A modern, easy-to-expand fuzzy search framework
+;; Command backend for snails
 ;;
 
 ;;; Installation:
 ;;
-;; Put snails.el to your load-path.
+;; Put snails-backend-command.el to your load-path.
 ;; The load-path is usually ~/elisp/.
 ;; It's set in your ~/.emacs like this:
 ;; (add-to-list 'load-path (expand-file-name "~/elisp"))
 ;;
 ;; And the following to your ~/.emacs startup file.
 ;;
-;; (require 'snails)
+;; (require 'snails-backend-command)
 ;;
 ;; No need more.
 
@@ -60,12 +60,12 @@
 ;;
 ;;
 ;; All of the above can customize by:
-;;      M-x customize-group RET snails RET
+;;      M-x customize-group RET snails-backend-command RET
 ;;
 
 ;;; Change log:
 ;;
-;; 2019/07/20
+;; 2019/08/25
 ;;      * First released.
 ;;
 
@@ -81,18 +81,43 @@
 
 ;;; Require
 (require 'snails-core)
-(require 'snails-backend-buffer)
-(require 'snails-backend-current-buffer)
-(require 'snails-backend-recentf)
-(require 'snails-backend-awesome-tab-group)
-(require 'snails-backend-fd)
-(require 'snails-backend-mdfind)
-(require 'snails-backend-imenu)
-(require 'snails-backend-command)
-(require 'snails-backend-bookmark)
-(require 'snails-backend-rg)
-(require 'snails-backend-everything)
-(require 'snails-backend-projectile)
 
-(provide 'snails)
-;;; snails.el ends here
+;;; Code:
+(defvar snails-backend-command-list nil)
+
+(defun snails-backend-command-get-commands ()
+  (let (cmds)
+    (mapatoms (lambda (s) (when (commandp s) (push (symbol-name s) cmds))))
+    (setq snails-backend-command-list cmds)))
+
+(snails-backend-command-get-commands)
+
+(run-with-idle-timer 60 t 'snails-backend-command-get-commands)
+
+(snails-create-sync-backend
+ :name
+ "COMMAND"
+
+ :candidate-filter
+ (lambda (input)
+   (let (candidates)
+     (catch 'search-end
+       (dolist (command snails-backend-command-list)
+         (when (or
+                (string-equal input "")
+                (snails-match-input-p input command))
+           (snails-add-candiate 'candidates command command)
+
+           (when (> (length candidates) 20)
+             (throw 'search-end nil))
+           )))
+     (snails-sort-candidates input candidates 0 0)
+     candidates))
+
+ :candiate-do
+ (lambda (candidate)
+   (call-interactively (intern candidate))))
+
+(provide 'snails-backend-command)
+
+;;; snails-backend-command.el ends here

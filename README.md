@@ -20,6 +20,7 @@ regardless of how complex the search framework is.
 ```M-x snails``` to launch snails
 
 * Default snails search input in backends: awesome-tab group, buffer name, recently files or bookmark
+* Search command if prefix start with >
 * Search variable or function define if prefix start with @
 * Search current buffer content if prefix start with #
 * Search project file content if prefix start with !

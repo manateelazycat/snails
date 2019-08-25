@@ -562,6 +562,10 @@ If `fuz' library has load, set with `load'.")
       ;; Search backends with prefix if `snails-search-backends' is nil.
       (let ((prefix (snails-input-prefix input)))
         (cond
+         ;; Search command if prefix start with >
+         ((equal prefix ">")
+          (setq snails-backends '(snails-backend-command))
+          (setq search-content (substring input 1)))
          ;; Search variable or function define if prefix start with @.
          ((equal prefix "@")
           (setq snails-backends '(snails-backend-imenu))
