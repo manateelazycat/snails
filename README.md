@@ -17,12 +17,20 @@ regardless of how complex the search framework is.
 ```
 
 ## Usage
-```M-x snails``` or ```M-x snails-search-point```, it automatically utilize all available backends.
+```M-x snails``` to launch snails
+
+* Default snails search input in backends: awesome-tab group, buffer name, recently files or bookmark
+* Search variable or function define if prefix start with @
+* Search current buffer content if prefix start with #
+* Search project file content if prefix start with !
+* Search file if prefix start with ?
+
+You can use ```M-x snails-search-point``` to launch snails with symbol around point.
 
 <img src="./images/screenshot.png">
 
 ### Use Snails With Custom Backends
-If you feel like there are too many backends available all at once... you can customize the exact backends you want to use! (similar to [Ivy](https://github.com/abo-abo/swiper#ivy))
+You can also customize the search backends you want to use! (similar to [Ivy](https://github.com/abo-abo/swiper#ivy))
 
 You can either write your own backend (see below) or assemble all available backends like the following:
 
@@ -41,7 +49,7 @@ You can either write your own backend (see below) or assemble all available back
 (snails '(snails-backend-buffer snails-backend-recentf) t)
 ```
 
-And so on...
+When you customize the search backends, snails won't filter search result with input prefix.
 
 ## Currently Available Backends
 

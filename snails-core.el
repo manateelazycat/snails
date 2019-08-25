@@ -7,8 +7,8 @@
 ;; Maintainer: Andy Stewart <lazycat.manatee@gmail.com>
 ;; Copyright (C) 2019, Andy Stewart, all rights reserved.
 ;; Created: 2019-05-16 21:26:09
-;; Version: 5.3
-;; Last-Updated: 2019-08-20 20:34:01
+;; Version: 6.0
+;; Last-Updated: 2019-08-25 08:10:07
 ;;           By: Andy Stewart
 ;; URL: http://www.emacswiki.org/emacs/download/snails-core.el
 ;; Keywords:
@@ -67,6 +67,9 @@
 ;;
 
 ;;; Change log:
+;;
+;; 2019/08/25
+;;      * Support search content with input prefix.
 ;;
 ;; 2019/08/20
 ;;      * Call `snails-init-face-with-theme' when user execute snails command.
@@ -239,11 +242,12 @@ need to set face attribute, such as foreground and background."
 (defvar snails-header-line-overlays nil
   "The list overlay to render backend header line.")
 
-(defvar snails-default-backends nil
-  "Contain default backends.")
-
 (defvar snails-backends nil
   "Contain the real backends use in `snails'.")
+
+(defvar snails-search-backends nil
+  "Search backends, default is nil will search with input prefix.
+Or backends pass from function `snails'.")
 
 (defvar snails-input-ticker 0
   "Input ticker to unique search request.
@@ -314,11 +318,10 @@ If `fuz' library has load, set with `load'.")
           ;; Quit snails if it has opened.
           (snails-quit)
 
-        ;; If `backends' is empty list, use `snails-default-backends'.
-        (if (and (listp backends)
-                 (> (length backends) 0))
-            (setq snails-backends backends)
-          (setq snails-backends snails-default-backends))
+        ;; Set `snails-search-backends' if argument backends is set.
+        (when (and (listp backends)
+                   (> (length backends) 0))
+          (setq snails-search-backends backends))
 
         ;; Record buffer before start snails.
         (setq snails-start-buffer (current-buffer))
@@ -417,6 +420,7 @@ If `fuz' library has load, set with `load'.")
   (setq snails-need-render nil)
   (setq snails-select-backend-name nil)
   (setq snails-select-candidate-offset nil)
+  (setq snails-search-backends nil)
   ;; Kill all subprocess and process buffers.
   (maphash
    (lambda (name process)
@@ -531,8 +535,7 @@ If `fuz' library has load, set with `load'.")
 
       ;; Focus out to hide snails frame on Mac.
       (when (featurep 'cocoa)
-        (add-hook 'focus-out-hook 'snails-quit))
-      )
+        (add-hook 'focus-out-hook 'snails-quit)))
 
     ;; Set active flag, use for advice-add detect.
     (setq snails-frame-active-p t)
@@ -544,12 +547,54 @@ If `fuz' library has load, set with `load'.")
 
 (defun snails-search (input)
   "Search input with backends."
-  ;; Update input ticker.
-  (setq snails-input-ticker (+ snails-input-ticker 1))
+  (let ((search-content input))
+    ;; Update input ticker.
+    (setq snails-input-ticker (+ snails-input-ticker 1))
 
-  ;; Clean candidate list.
-  (setq snails-candiate-list (make-list (length snails-backends) nil))
+    ;; Clean candidate list.
+    (setq snails-candiate-list (make-list (length snails-backends) nil))
 
+    ;; Set backends.
+    (if snails-search-backends
+        ;; Search special backends if `snails-search-backends' is not nil.
+        ;; Snails won't filter with prefix in this situation.
+        (setq snails-backends snails-search-backends)
+      ;; Search backends with prefix if `snails-search-backends' is nil.
+      (let ((prefix (snails-input-prefix input)))
+        (cond
+         ;; Search variable or function define if prefix start with @.
+         ((equal prefix "@")
+          (setq snails-backends '(snails-backend-imenu))
+          (setq search-content (substring input 1)))
+         ;; Search current buffer content if prefix start with #.
+         ((equal prefix "#")
+          (setq snails-backends '(snails-backend-current-buffer))
+          (setq search-content (substring input 1)))
+         ;; Search project file content if prefix start with !.
+         ((equal prefix "!")
+          (setq snails-backends '(snails-backend-rg))
+          (setq search-content (substring input 1)))
+         ;; Search filename if prefix start with ?
+         ((equal prefix "?")
+          (setq snails-backends '(snails-backend-projectile snails-backend-fd snails-backend-mdfind snails-backend-everything))
+          (setq search-content (substring input 1)))
+         ;; Search awesome-tab group, buffer name, recently files or bookmark if not found prefix.
+         (t
+          (setq snails-backends '(snails-backend-awesome-tab-group snails-backend-buffer snails-backend-recentf snails-backend-bookmark))
+          ))))
+
+    ;; Search.
+    (snails-input-search search-content)))
+
+(defun snails-input-prefix (input)
+  "Get input prefix, return \"\" if input is empty."
+  (cond ((equal (length input) 0)
+         "")
+        (t
+         (substring input 0 1))))
+
+(defun snails-input-search (input)
+  "Search input with backends inf `snails-backends'."
   ;; Call all backends with new input.
   (dolist (backend snails-backends)
     (let ((search-func (cdr (assoc "search" (eval backend)))))

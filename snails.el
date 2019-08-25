@@ -93,22 +93,5 @@
 (require 'snails-backend-everything)
 (require 'snails-backend-projectile)
 
-;;; Code:
-
-(setq snails-default-backends
-      '(snails-backend-awesome-tab-group
-        snails-backend-buffer
-        snails-backend-recentf
-        snails-backend-bookmark
-        snails-backend-imenu
-        snails-backend-current-buffer
-        snails-backend-rg
-        snails-backend-projectile
-        snails-backend-fd
-        snails-backend-mdfind
-        snails-backend-everything
-        ))
-
 (provide 'snails)
-
 ;;; snails.el ends here
