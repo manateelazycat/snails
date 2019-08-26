@@ -94,6 +94,15 @@
 
 (run-with-idle-timer 60 t 'snails-backend-command-get-commands)
 
+(defun snails-backend-command-wrap-command-with-key (command)
+  (let ((keys (mapconcat
+               'key-description
+               (where-is-internal (intern command))
+               " ")))
+    (if (equal keys "")
+        command
+      (format "%s 「 %s 」" command keys))))
+
 (snails-create-sync-backend
  :name
  "COMMAND"
@@ -106,7 +115,7 @@
          (when (or
                 (string-equal input "")
                 (snails-match-input-p input command))
-           (snails-add-candiate 'candidates command command)
+           (snails-add-candiate 'candidates (snails-backend-command-wrap-command-with-key command) command)
 
            (when (> (length candidates) 20)
              (throw 'search-end nil))
