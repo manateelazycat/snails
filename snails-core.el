@@ -582,6 +582,10 @@ If `fuz' library has load, set with `load'.")
          ((equal prefix "?")
           (setq snails-backends '(snails-backend-projectile snails-backend-fd snails-backend-mdfind snails-backend-everything))
           (setq search-content (substring input 1)))
+         ;; Search org file content if prefix start with ~.
+         ((equal prefix "~")
+          (setq snails-backends '(snails-backend-org))
+          (setq search-content (substring input 1)))
          ;; Search awesome-tab group, buffer name, recently files or bookmark if not found prefix.
          (t
           (setq snails-backends '(snails-backend-awesome-tab-group snails-backend-buffer snails-backend-recentf snails-backend-bookmark))
