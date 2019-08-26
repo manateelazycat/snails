@@ -85,6 +85,8 @@
 ;;; Code:
 (defvar snails-backend-command-list nil)
 
+(defvar snails-backend-command-filter-number 20)
+
 (defun snails-backend-command-get-commands ()
   (let (cmds)
     (mapatoms (lambda (s) (when (commandp s) (push (symbol-name s) cmds))))
@@ -117,7 +119,7 @@
                 (snails-match-input-p input command))
            (snails-add-candiate 'candidates (snails-backend-command-wrap-command-with-key command) command)
 
-           (when (> (length candidates) 20)
+           (when (> (length candidates) snails-backend-command-filter-number)
              (throw 'search-end nil))
            )))
      (snails-sort-candidates input candidates 0 0)
