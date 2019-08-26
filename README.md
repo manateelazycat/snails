@@ -67,6 +67,7 @@ When you customize the search backends, snails won't filter search result with i
 | snails-backend-fd                | Use fd search files in current project                                 |
 | snails-backend-mdfind            | Use mdfind search files in local disk, only Mac                        |
 | snails-backend-everything        | Use everything search files in local disk, only Windows                |
+| snails-backend-command           | Search command                                                         |
 
 ## Fuzz match
 Snails use normal match algorithm default.
