@@ -7,8 +7,8 @@
 ;; Maintainer: Andy Stewart <lazycat.manatee@gmail.com>
 ;; Copyright (C) 2019, Andy Stewart, all rights reserved.
 ;; Created: 2019-05-16 21:26:09
-;; Version: 6.1
-;; Last-Updated: 2019-08-27 15:32:34
+;; Version: 6.2
+;; Last-Updated: 2019-08-27 18:54:48
 ;;           By: Andy Stewart
 ;; URL: http://www.emacswiki.org/emacs/download/snails-core.el
 ;; Keywords:
@@ -70,6 +70,7 @@
 ;;
 ;; 2019/08/27
 ;;      * Make `snails' function support customize search string.
+;;      * Fix search-object condition order.
 ;;
 ;; 2019/08/25
 ;;      * Support search content with input prefix.
@@ -348,8 +349,12 @@ or set it with any string you want."
 
         ;; Search.
         (cond
+         ;; Search with customize string when `search-object' is string.
+         ((and (stringp search-object)
+               (not (string-empty-p search-object)))
+          (snails-search search-object))
          ;; Search symbol around point when `search-object' is t.
-         ((booleanp search-object)
+         (search-object
           (run-with-timer
            0.05 nil
            (lambda ()
@@ -358,10 +363,6 @@ or set it with any string you want."
                (with-current-buffer snails-input-buffer
                  (insert search-string))
                (snails-search search-string)))))
-         ;; Search with customize string when `search-object' is string.
-         ((and (stringp search-object)
-               (not (string-empty-p search-object)))
-          (snails-search search-object))
          ;; Just launch with empty string when `search-object' is nil.
          (t
           (snails-search ""))))
