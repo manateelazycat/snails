@@ -7,8 +7,8 @@
 ;; Maintainer: Andy Stewart <lazycat.manatee@gmail.com>
 ;; Copyright (C) 2019, Andy Stewart, all rights reserved.
 ;; Created: 2019-05-16 21:26:09
-;; Version: 6.3
-;; Last-Updated: 2019-08-27 21:22:15
+;; Version: 6.4
+;; Last-Updated: 2019-08-27 22:43:15
 ;;           By: Andy Stewart
 ;; URL: http://www.emacswiki.org/emacs/download/snails-core.el
 ;; Keywords:
@@ -72,6 +72,7 @@
 ;;      * Make `snails' function support customize search string.
 ;;      * Fix search-object condition order.
 ;;      * Add new options `snails-default-backends' and `snails-prefix-backends'.
+;;      * Fix issue #29
 ;;
 ;; 2019/08/25
 ;;      * Support search content with input prefix.
@@ -642,8 +643,9 @@ or set it with any string you want."
 
 (defun snails-update-list-by-index (list n val)
   "Update candidates with backend index."
-  (nconc (cl-subseq list 0 n)
-         (cons val (nthcdr (1+ n) list))))
+  (when list
+    (nconc (cl-subseq list 0 n)
+           (cons val (nthcdr (1+ n) list)))))
 
 (defun snails-get-backend-names ()
   "Get all backend names."
