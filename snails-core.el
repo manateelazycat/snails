@@ -7,8 +7,8 @@
 ;; Maintainer: Andy Stewart <lazycat.manatee@gmail.com>
 ;; Copyright (C) 2019, Andy Stewart, all rights reserved.
 ;; Created: 2019-05-16 21:26:09
-;; Version: 6.0
-;; Last-Updated: 2019-08-25 08:10:07
+;; Version: 6.1
+;; Last-Updated: 2019-08-27 15:32:34
 ;;           By: Andy Stewart
 ;; URL: http://www.emacswiki.org/emacs/download/snails-core.el
 ;; Keywords:
@@ -68,6 +68,9 @@
 
 ;;; Change log:
 ;;
+;; 2019/08/27
+;;      * Make `snails' function support customize search string.
+;;
 ;; 2019/08/25
 ;;      * Support search content with input prefix.
 ;;
@@ -91,7 +94,7 @@
 ;;      * Foucs out to hide snails frame on Mac.
 ;;      * Snails will search symbol around point when you press prefix key before call snails.
 ;;      * Make async process buffer's name starts with " *" to hide process buffer tab when search.
-;;      * Make `snails' support backends and search-symbol arguments.
+;;      * Make `snails' support backends and search-object arguments.
 ;;      * Add new command `snails-search-point'.
 ;;      * Add `snails-flash-line'.
 ;;      * Improve `snails-sort-candidates'
@@ -309,8 +312,14 @@ If `fuz' library has load, set with `load'.")
   ;; Injection keymap.
   (use-local-map snails-mode-map))
 
-(defun snails (&optional backends search-symbol)
-  "Start snails to search."
+(defun snails (&optional backends search-object)
+  "Start snails to search.
+
+`backends' is list of backend, default is nil, you can customize your own search backend list.
+
+`search-object', default is nil, nothing fill in input buffer,
+you can set `search-object' with t to search symbol around point,
+or set it with any string you want."
   (interactive)
   (if (display-graphic-p)
       (if (and snails-frame
@@ -337,24 +346,26 @@ If `fuz' library has load, set with `load'.")
         ;; Create popup frame to show search result.
         (snails-create-frame)
 
-        ;; First search.
-        (snails-first-search search-symbol))
+        ;; Search.
+        (cond
+         ;; Search symbol around point when `search-object' is t.
+         ((booleanp search-object)
+          (run-with-timer
+           0.05 nil
+           (lambda ()
+             (let ((search-string (or (with-current-buffer snails-start-buffer
+                                        (snails-pointer-string)) "")))
+               (with-current-buffer snails-input-buffer
+                 (insert search-string))
+               (snails-search search-string)))))
+         ;; Search with customize string when `search-object' is string.
+         ((and (stringp search-object)
+               (not (string-empty-p search-object)))
+          (snails-search search-object))
+         ;; Just launch with empty string when `search-object' is nil.
+         (t
+          (snails-search ""))))
     (message "Snails render candidates in new frame that only can be run in a graphical environment.")))
-
-(defun snails-first-search (search-symbol)
-  "First search need delay, make snails frame display as soon as possible."
-  (run-with-timer
-   0.05 nil
-   (lambda ()
-     (if search-symbol
-         ;; Search symbol around point.
-         (let ((search-string (or (with-current-buffer snails-start-buffer
-                                    (snails-pointer-string)) "")))
-           (with-current-buffer snails-input-buffer
-             (insert search-string))
-           (snails-search search-string))
-       ;; Send empty search content to backends.
-       (snails-search "")))))
 
 (defun snails-search-point ()
   "Search symbol at point"

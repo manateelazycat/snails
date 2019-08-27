@@ -50,6 +50,11 @@ You can either write your own backend (see below) or assemble all available back
 (snails '(snails-backend-buffer snails-backend-recentf) t)
 ```
 
+#### Search customize string ```hello```
+```elisp
+(snails nil "hello")
+```
+
 When you customize the search backends, snails won't filter search result with input prefix.
 
 ## Currently Available Backends
