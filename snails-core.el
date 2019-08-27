@@ -7,8 +7,8 @@
 ;; Maintainer: Andy Stewart <lazycat.manatee@gmail.com>
 ;; Copyright (C) 2019, Andy Stewart, all rights reserved.
 ;; Created: 2019-05-16 21:26:09
-;; Version: 6.2
-;; Last-Updated: 2019-08-27 18:54:48
+;; Version: 6.3
+;; Last-Updated: 2019-08-27 21:22:15
 ;;           By: Andy Stewart
 ;; URL: http://www.emacswiki.org/emacs/download/snails-core.el
 ;; Keywords:
@@ -71,6 +71,7 @@
 ;; 2019/08/27
 ;;      * Make `snails' function support customize search string.
 ;;      * Fix search-object condition order.
+;;      * Add new options `snails-default-backends' and `snails-prefix-backends'.
 ;;
 ;; 2019/08/25
 ;;      * Support search content with input prefix.
@@ -182,6 +183,22 @@
 (defcustom snails-fame-height-proportion 0.618
   "The height of snails frame, height ratio of the parent frame."
   :type 'integer
+  :group 'snails)
+
+(defcustom snails-default-backends
+  '(snails-backend-awesome-tab-group snails-backend-buffer snails-backend-recentf snails-backend-bookmark)
+  "The default backend"
+  :type 'cons
+  :group 'snails)
+
+(defcustom snails-prefix-backends
+  '((">" '(snails-backend-command))
+    ("@" '(snails-backend-imenu))
+    ("#" '(snails-backend-current-buffer))
+    ("!" '(snails-backend-rg))
+    ("?" '(snails-backend-projectile snails-backend-fd snails-backend-mdfind snails-backend-everything)))
+  "The prefix/backends pair."
+  :type 'cons
   :group 'snails)
 
 (defface snails-header-line-face
@@ -571,33 +588,24 @@ or set it with any string you want."
         ;; Search special backends if `snails-search-backends' is not nil.
         ;; Snails won't filter with prefix in this situation.
         (setq snails-backends snails-search-backends)
-      ;; Search backends with prefix if `snails-search-backends' is nil.
-      (let ((prefix (snails-input-prefix input)))
-        (cond
-         ;; Search command if prefix start with >
-         ((equal prefix ">")
-          (setq snails-backends '(snails-backend-command))
-          (setq search-content (substring input 1)))
-         ;; Search variable or function define if prefix start with @.
-         ((equal prefix "@")
-          (setq snails-backends '(snails-backend-imenu))
-          (setq search-content (substring input 1)))
-         ;; Search current buffer content if prefix start with #.
-         ((equal prefix "#")
-          (setq snails-backends '(snails-backend-current-buffer))
-          (setq search-content (substring input 1)))
-         ;; Search project file content if prefix start with !.
-         ((equal prefix "!")
-          (setq snails-backends '(snails-backend-rg))
-          (setq search-content (substring input 1)))
-         ;; Search filename if prefix start with ?
-         ((equal prefix "?")
-          (setq snails-backends '(snails-backend-projectile snails-backend-fd snails-backend-mdfind snails-backend-everything))
-          (setq search-content (substring input 1)))
-         ;; Search awesome-tab group, buffer name, recently files or bookmark if not found prefix.
-         (t
-          (setq snails-backends '(snails-backend-awesome-tab-group snails-backend-buffer snails-backend-recentf snails-backend-bookmark))
-          ))))
+
+      ;; Try search backends with prefix if `snails-search-backends' is nil.
+      (let ((prefix (snails-input-prefix input))
+            match-prefix)
+
+        ;; Search prefix backend if match prefix in `snails-prefix-backends'.
+        (catch 'search-prefix-backend
+          (dolist (prefix-backend snails-prefix-backends)
+            (when (equal prefix (car prefix-backend))
+              (setq snails-backends (eval (cadr prefix-backend)))
+              (setq search-content (substring input 1))
+              (setq match-prefix t)
+              (throw 'search-prefix-backend nil)
+              )))
+
+        ;; Search default backends if not match any prefix in `snails-prefix-backends'.
+        (unless match-prefix
+          (setq snails-backends snails-default-backends))))
 
     ;; Search.
     (snails-input-search search-content)))

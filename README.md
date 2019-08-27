@@ -30,6 +30,8 @@ You can use ```M-x snails-search-point``` to launch snails with symbol around po
 
 <img src="./images/screenshot.png">
 
+You can customize ```snails-default-backends``` and ```snails-prefix-backends``` with your own prefix rule.
+
 ### Use Snails With Custom Backends
 You can also customize the search backends you want to use! (similar to [Ivy](https://github.com/abo-abo/swiper#ivy))
 
