@@ -16,7 +16,7 @@
 ;;
 ;; Features that might be required by this library:
 ;;
-;; `cl-lib' `subr' `subr-x'
+;; `cl-lib' `subr-x'
 ;;
 
 ;;; This file is NOT part of GNU Emacs
@@ -163,7 +163,6 @@
 
 ;;; Require
 (require 'cl-lib)
-(require 'subr)
 (require 'subr-x)
 
 (when (featurep 'cocoa)
