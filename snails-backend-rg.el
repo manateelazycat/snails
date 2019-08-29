@@ -92,9 +92,22 @@
  (lambda (input)
    (when (and (executable-find "rg")
               (> (length input) 5))
-     (when snails-project-root-dir
-       (list "rg" "--no-heading" "--column" "--color" "never" "--max-columns" "300" input snails-project-root-dir)
-       )))
+     (let ((search-dir snails-project-root-dir)
+           (search-input input))
+       ;; If the user input character includes the path separator @, replace the current directory with the entered directory.
+       (when (string-match-p "@" input)
+         (let (search-content input-dir)
+           (setq search-content (split-string input "@"))
+           (setq input-dir (second search-content))
+           (when (and (not (equal input-dir ""))
+                      (file-exists-p input-dir))
+             (setq search-dir input-dir)
+             (setq search-input (first search-content)))))
+
+       ;; Search.
+       (when search-dir
+         (list "rg" "--no-heading" "--column" "--color" "never" "--max-columns" "300" search-input search-dir)
+         ))))
 
  :candidate-filter
  (lambda (candidate-list)
