@@ -7,8 +7,8 @@
 ;; Maintainer: Andy Stewart <lazycat.manatee@gmail.com>
 ;; Copyright (C) 2019, Andy Stewart, all rights reserved.
 ;; Created: 2019-05-16 21:26:09
-;; Version: 6.4
-;; Last-Updated: 2019-08-27 22:43:15
+;; Version: 6.5
+;; Last-Updated: 2019-09-01 16:05:13
 ;;           By: Andy Stewart
 ;; URL: http://www.emacswiki.org/emacs/download/snails-core.el
 ;; Keywords:
@@ -67,6 +67,9 @@
 ;;
 
 ;;; Change log:
+;;
+;; 2019/09/01
+;;      * We need init `snails-candiate-list' with `snails-backends', otherwise first launch will fail.
 ;;
 ;; 2019/08/27
 ;;      * Make `snails' function support customize search string.
@@ -581,9 +584,6 @@ or set it with any string you want."
     ;; Update input ticker.
     (setq snails-input-ticker (+ snails-input-ticker 1))
 
-    ;; Clean candidate list.
-    (setq snails-candiate-list (make-list (length snails-backends) nil))
-
     ;; Set backends.
     (if snails-search-backends
         ;; Search special backends if `snails-search-backends' is not nil.
@@ -607,6 +607,9 @@ or set it with any string you want."
         ;; Search default backends if not match any prefix in `snails-prefix-backends'.
         (unless match-prefix
           (setq snails-backends snails-default-backends))))
+
+    ;; Init `snails-candiate-list' with `snails-backends'.
+    (setq snails-candiate-list (make-list (length snails-backends) nil))
 
     ;; Search.
     (snails-input-search search-content)))
