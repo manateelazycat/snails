@@ -16,7 +16,7 @@
                       (executable-find "rg")
                       (> (length (nth 0 input-info)) 5)
                       (> (length (nth 1 input-info)) 5))
-             (list "fd" "-c" "never" "-a" "-td"  (nth 1 input-info) "--search-path" (expand-file-name (getenv "HOME")))
+             (list "fd" "-c" "never" "-a" "-td" "--full-path" (nth 1 input-info) "--search-path" (expand-file-name (getenv "HOME")))
              )
            )
        (progn ;; fd search only
