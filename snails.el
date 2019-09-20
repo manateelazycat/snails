@@ -93,6 +93,7 @@
 (require 'snails-backend-rg)
 (require 'snails-backend-everything)
 (require 'snails-backend-projectile)
+(require 'snails-backend-directory-files)
 
 (provide 'snails)
 ;;; snails.el ends here
