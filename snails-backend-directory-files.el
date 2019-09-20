@@ -1,15 +1,15 @@
-;;; snails-backend-projectile.el --- Projectile backend for snails
+;;; snails-backend-directory-files.el --- Directory files backend for snails
 
-;; Filename: snails-backend-projectile.el
-;; Description: Projectile backend for snails
-;; Author: Cosven <http://cosven.me>
-;; Maintainer: Cosven <http://cosven.me>
+;; Filename: snails-backend-directory-files.el
+;; Description: Rencent files backend for snails
+;; Author: Andy Stewart <lazycat.manatee@gmail.com>
+;; Maintainer: Andy Stewart <lazycat.manatee@gmail.com>
 ;; Copyright (C) 2019, Andy Stewart, all rights reserved.
-;; Created: 2019-08-07 05:50:41
+;; Created: 2019-09-21 6:41:46
 ;; Version: 0.1
-;; Last-Updated: 2019-08-07 05:50:41
-;;           By: Cosven
-;; URL: http://www.emacswiki.org/emacs/download/snails-backend-projectile.el
+;; Last-Updated: 2019-09-21 6:41:46
+;;           By: Andy Stewart
+;; URL: http://www.emacswiki.org/emacs/download/snails-backend-directory-files.el
 ;; Keywords:
 ;; Compatibility: GNU Emacs 26.2
 ;;
@@ -39,19 +39,19 @@
 
 ;;; Commentary:
 ;;
-;; Projectile backend for snails
+;; Rencent files backend for snails
 ;;
 
 ;;; Installation:
 ;;
-;; Put snails-backend-projectile.el to your load-path.
+;; Put snails-backend-directory-files.el to your load-path.
 ;; The load-path is usually ~/elisp/.
 ;; It's set in your ~/.emacs like this:
 ;; (add-to-list 'load-path (expand-file-name "~/elisp"))
 ;;
 ;; And the following to your ~/.emacs startup file.
 ;;
-;; (require 'snails-backend-projectile)
+;; (require 'snails-backend-directory-files)
 ;;
 ;; No need more.
 
@@ -60,12 +60,12 @@
 ;;
 ;;
 ;; All of the above can customize by:
-;;      M-x customize-group RET snails-backend-projectile RET
+;;      M-x customize-group RET snails-backend-directory-files RET
 ;;
 
 ;;; Change log:
 ;;
-;; 2019/08/07
+;; 2019/09/21
 ;;      * First released.
 ;;
 
@@ -82,42 +82,30 @@
 ;;; Require
 (require 'snails-core)
 
-
 ;;; Code:
-
-(defun snails-backend-projectile-project-root ()
-  "Find projectile root."
-  (projectile-project-root (snails-start-buffer-dir)))
-
-(defun snails-backend-projectile-candidates ()
-  "List project files."
-  (when (featurep 'projectile)
-    (let ((project-root (snails-backend-projectile-project-root)))
-      (when project-root
-        (projectile-project-files project-root)))))
 
 (snails-create-sync-backend
  :name
- "PROJECTILE"
+ "DIRECTORY FILES"
 
  :candidate-filter
  (lambda (input)
-   (let ((candidates)
-         (project-files (snails-backend-projectile-candidates)))
-     (when project-files
-       (dolist (file project-files)
-         (when (or
-                (string-equal input "")
-                (snails-match-input-p input file))
-           (snails-add-candiate 'candidates (snails-wrap-file-icon file) file))))
+   (let ((current-directory (snails-start-buffer-dir))
+         filepath
+         candidates)
+     (dolist (file (cddr (directory-files current-directory)))
+       (when (or
+              (string-equal input "")
+              (snails-match-input-p input file))
+         (setq filepath (concat current-directory file))
+         (snails-add-candiate 'candidates (snails-wrap-file-icon file) filepath)))
      (snails-sort-candidates input candidates 1 1)
      candidates))
 
  :candiate-do
  (lambda (candidate)
-   (let ((project-root (snails-backend-projectile-project-root)))
-     (find-file (expand-file-name candidate project-root)))))
+   (find-file candidate)))
 
-(provide 'snails-backend-projectile)
+(provide 'snails-backend-directory-files)
 
-;;; snails-backend-projectile.el ends here
+;;; snails-backend-directory-files.el ends here

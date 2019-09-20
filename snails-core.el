@@ -190,7 +190,7 @@
   :group 'snails)
 
 (defcustom snails-default-backends
-  '(snails-backend-awesome-tab-group snails-backend-buffer snails-backend-recentf snails-backend-bookmark)
+  '(snails-backend-awesome-tab-group snails-backend-buffer snails-backend-recentf snails-backend-directory-files snails-backend-bookmark)
   "The default backend"
   :type 'cons
   :group 'snails)
@@ -1198,6 +1198,20 @@ If `fuz' not found, use normal match algorithm."
   (if (snails-fuz-library-load-p)
       (string-match-p (snails-build-fuzzy-regex input) candidate-content)
     (string-match-p (regexp-quote input) candidate-content)))
+
+(defun snails-start-buffer-dir ()
+  "Get directory of `snails-start-buffer'.
+
+If `snails-start-buffer' is nil, get path of HOME.
+If `snails-start-buffer' is dired-mode, get path by `dired-directory'.
+Otherwise get path by `buffer-file-name'."
+  (cond ((not snails-start-buffer)
+         (expand-file-name "~"))
+        ((equal 'dired-mode (with-current-buffer snails-start-buffer major-mode))
+         (with-current-buffer snails-start-buffer
+           (expand-file-name dired-directory)))
+        (t
+         (file-name-directory (buffer-file-name snails-start-buffer)))))
 
 (defun snails-flash-line ()
   (let ((pulse-iterations 1)
