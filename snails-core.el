@@ -1213,6 +1213,21 @@ Otherwise get path by `buffer-file-name'."
         (t
          (file-name-directory (buffer-file-name snails-start-buffer)))))
 
+(defun snails-pick-search-info-from-input (input)
+  "If nothing after @ , return HOME path and search string.
+If type soemthing after @ , split input with input-dir and search-content.
+Otherwise return nil."
+  (when (string-match-p "@" input)
+    (let (search-content input-dir)
+      (setq search-content (split-string input "@"))
+      (setq input-dir (second search-content))
+      (cond ((equal input-dir "")
+             (list (expand-file-name "~") (first search-content)))
+            ((file-exists-p input-dir)
+             (list input-dir (first search-content)))
+            (t nil))
+      )))
+
 (defun snails-flash-line ()
   (let ((pulse-iterations 1)
         (pulse-delay 0.3))

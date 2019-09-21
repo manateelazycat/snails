@@ -26,6 +26,8 @@ regardless of how complex the search framework is.
 * Search project file content if prefix start with !
 * Search file if prefix start with ?
 * Enter "!color-rg@/Users/andy/color-rg" to search ```color-rg``` keywrod in directory ```/Users/andy/color-rg``` recursively.
+* Enter "?color-rg@" to search ```color-rg``` file in HOME directory.
+* Enter "?color-rg@/home/andy/color-rg" to search ```color-rg``` file in ```/home/andy/color-rg``` directory.
 
 You can use ```M-x snails-search-point``` to launch snails with symbol around point.
 

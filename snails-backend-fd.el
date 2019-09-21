@@ -92,7 +92,15 @@
  (lambda (input)
    (when (and (executable-find "fd")
               (> (length input) 5))
-     (list "fd" "-c" "never" "-a" "-tf" input "--search-path" (or snails-project-root-dir (expand-file-name default-directory)))
+     (let ((search-dir (or snails-project-root-dir (snails-start-buffer-dir)))
+           (search-input input)
+           (search-info (snails-pick-search-info-from-input input)))
+       ;; If the user input character includes the path separator @, replace the current directory with the entered directory.
+       (when search-info
+         (setq search-dir (first search-info))
+         (setq search-input (second search-info)))
+
+       (list "fd" "-c" "never" "-a" "-tf" search-input "--search-path" search-dir))
      ))
 
  :candidate-filter

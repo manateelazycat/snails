@@ -93,16 +93,12 @@
    (when (and (executable-find "rg")
               (> (length input) 5))
      (let ((search-dir snails-project-root-dir)
-           (search-input input))
+           (search-input input)
+           (search-info (snails-pick-search-info-from-input input)))
        ;; If the user input character includes the path separator @, replace the current directory with the entered directory.
-       (when (string-match-p "@" input)
-         (let (search-content input-dir)
-           (setq search-content (split-string input "@"))
-           (setq input-dir (second search-content))
-           (when (and (not (equal input-dir ""))
-                      (file-exists-p input-dir))
-             (setq search-dir input-dir)
-             (setq search-input (first search-content)))))
+       (when search-info
+         (setq search-dir (first search-info))
+         (setq search-input (second search-info)))
 
        ;; Search.
        (when search-dir
