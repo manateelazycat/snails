@@ -206,17 +206,17 @@
   :group 'snails)
 
 (defface snails-header-line-face
-  '((t (:inherit font-lock-function-name-face :underline t :height 1.2)))
+    '((t (:inherit font-lock-function-name-face :underline t :height 1.2)))
   "Face for header line"
   :group 'snails)
 
 (defface snails-header-index-face
-  '((t (:inherit font-lock-function-name-face :underline t)))
+    '((t (:inherit font-lock-function-name-face :underline t)))
   "Face for header index"
   :group 'snails)
 
 (defface snails-candiate-content-face
-  '((t))
+    '((t))
   "Face for candidate content.
 Note, candidate name is display name you can see in content buffer.
 Candidate content use for confirm, it's invisible, it doesn't
@@ -224,22 +224,22 @@ need to set face attribute, such as foreground and background."
   :group 'snails)
 
 (defface snails-select-line-face
-  '((t (:inherit region)))
+    '((t (:inherit region)))
   "Face for select line."
   :group 'snails)
 
 (defface snails-input-buffer-face
-  '((t (:height 250)))
+    '((t (:height 250)))
   "Face for input area."
   :group 'snails)
 
 (defface snails-content-buffer-face
-  '((t (:height 130)))
+    '((t (:height 130)))
   "Face for content area."
   :group 'snails)
 
 (defface snails-copy-candidate-face
-  '((t (:foreground "Gold" :bold t)))
+    '((t (:foreground "Gold" :bold t)))
   "Face copy candidate."
   :group 'snails)
 
@@ -370,23 +370,23 @@ or set it with any string you want."
 
         ;; Search.
         (cond
-         ;; Search with customize string when `search-object' is string.
-         ((and (stringp search-object)
-               (not (string-empty-p search-object)))
-          (snails-search search-object))
-         ;; Search symbol around point when `search-object' is t.
-         (search-object
-          (run-with-timer
-           0.05 nil
-           (lambda ()
-             (let ((search-string (or (with-current-buffer snails-start-buffer
-                                        (snails-pointer-string)) "")))
-               (with-current-buffer snails-input-buffer
-                 (insert search-string))
-               (snails-search search-string)))))
-         ;; Just launch with empty string when `search-object' is nil.
-         (t
-          (snails-search ""))))
+          ;; Search with customize string when `search-object' is string.
+          ((and (stringp search-object)
+                (not (string-empty-p search-object)))
+           (snails-search search-object))
+          ;; Search symbol around point when `search-object' is t.
+          (search-object
+           (run-with-timer
+            0.05 nil
+            (lambda ()
+              (let ((search-string (or (with-current-buffer snails-start-buffer
+                                         (snails-pointer-string)) "")))
+                (with-current-buffer snails-input-buffer
+                  (insert search-string))
+                (snails-search search-string)))))
+          ;; Just launch with empty string when `search-object' is nil.
+          (t
+           (snails-search ""))))
     (message "Snails render candidates in new frame that only can be run in a graphical environment.")))
 
 (defun snails-search-point ()
@@ -716,7 +716,7 @@ or set it with any string you want."
               ;; Render candidate display name.
               (insert (nth 0 candiate))
 
-              ;; Render candidate real content.
+              ;; Render candidate real content. ;
               (setq candidate-content-start (point))
               (insert (format "%s" (nth 1 candiate)))
               (setq candidate-content-end (point))
@@ -852,13 +852,13 @@ influence of C1 on the result."
          (bg-unspecified (string= (face-background 'default) "unspecified-bg"))
          (fg-unspecified (string= (face-foreground 'default) "unspecified-fg"))
          (fg (cond
-              ((and fg-unspecified (eq bg-mode 'dark)) "gray80")
-              ((and fg-unspecified (eq bg-mode 'light)) "gray20")
-              (t (face-foreground 'default))))
+               ((and fg-unspecified (eq bg-mode 'dark)) "gray80")
+               ((and fg-unspecified (eq bg-mode 'light)) "gray20")
+               (t (face-foreground 'default))))
          (bg (cond
-              ((and bg-unspecified (eq bg-mode 'dark)) "gray20")
-              ((and bg-unspecified (eq bg-mode 'light)) "gray80")
-              (t (face-background 'default))))
+               ((and bg-unspecified (eq bg-mode 'dark)) "gray20")
+               ((and bg-unspecified (eq bg-mode 'light)) "gray80")
+               (t (face-background 'default))))
          ;; for light themes
          (bg-dark (snails-color-blend black bg 0.1))
          (bg-more-dark (snails-color-blend black bg 0.15))
@@ -870,11 +870,11 @@ influence of C1 on the result."
          (fg-light (snails-color-blend fg bg 0.7))
          (fg-more-light (snails-color-blend white fg 0.3)))
     (cond
-     ((eq bg-mode 'dark)
-      (list bg-light fg-dark bg-more-light fg-more-light))
-     (t
-      (list bg-dark fg-light bg-more-dark fg-more-dark)
-      ))))
+      ((eq bg-mode 'dark)
+       (list bg-light fg-dark bg-more-light fg-more-light))
+      (t
+       (list bg-dark fg-light bg-more-dark fg-more-dark)
+       ))))
 
 (defun snails-init-face-with-theme ()
   (let* ((colors (snails-get-theme-colors))
@@ -1136,9 +1136,9 @@ And render result when subprocess finish search."
             ;; Find overlay that face is `snails-candiate-content-face'.
             (when (eq (overlay-get overlay 'face) 'snails-candiate-content-face)
               (throw 'candidate
-                     (list
-                      (snails-get-candidate-backend-name (point))
-                      (buffer-substring (overlay-start overlay) (overlay-end overlay))))))
+                (list
+                 (snails-get-candidate-backend-name (point))
+                 (buffer-substring (overlay-start overlay) (overlay-end overlay))))))
           (setq overlays (cdr overlays))))
       )))
 
@@ -1188,9 +1188,9 @@ If `fuz' library not found, not sorting.
                          (cons it (fuz-calc-score-skim input (nth match-index it))))
                        retval)
                (pcase-lambda (`(,candidate1 . ,fuzz-score1) `(,candidate2 . ,fuzz-score2))
-                 (if (equal fuzz-score1 fuzz-score2)
-                     (string> (nth content-index candidate1) (nth content-index candidate2))
-                   (< fuzz-score1 fuzz-score2)))))))
+                   (if (equal fuzz-score1 fuzz-score2)
+                       (string> (nth content-index candidate1) (nth content-index candidate2))
+                     (< fuzz-score1 fuzz-score2)))))))
 
 (defun snails-match-input-p (input candidate-content)
   "If `fuz' library load, use fuzz match algorithm.
@@ -1210,6 +1210,8 @@ Otherwise get path by `buffer-file-name'."
         ((equal 'dired-mode (with-current-buffer snails-start-buffer major-mode))
          (with-current-buffer snails-start-buffer
            (expand-file-name dired-directory)))
+        ((not (buffer-file-name snails-start-buffer))
+         (expand-file-name "~"))
         (t
          (file-name-directory (buffer-file-name snails-start-buffer)))))
 
@@ -1277,62 +1279,62 @@ Otherwise return nil."
 (add-hook 'minibuffer-setup-hook 'snails-monitor-minibuffer-enter)
 
 (cl-defmacro snails-create-sync-backend (&rest args &key name candidate-filter candiate-do)
-  "Macro to create sync backend code.
+             "Macro to create sync backend code.
 
 `name' is backend name, such 'Foo Bar'.
 `candidate-filter' is function that accpet input string, and return candidate list, example format: ((display-name-1 candidate-1) (display-name-2 candidate-2))
 `candidate-do-function' is function that confirm candidate, accpet candidate search, and do anything you want.
 "
-  (let* ((backend-template-name (string-join (split-string (downcase name)) "-"))
-         (backend-name (intern (format "snails-backend-%s" backend-template-name)))
-         (search-function (intern (format "snails-backend-%s-search" backend-template-name))))
-    `(progn
-       (defun ,search-function(input input-ticker update-callback)
-         (funcall
-          update-callback
-          ,name
-          input-ticker
-          (funcall ,candidate-filter input)))
+             (let* ((backend-template-name (string-join (split-string (downcase name)) "-"))
+                    (backend-name (intern (format "snails-backend-%s" backend-template-name)))
+                    (search-function (intern (format "snails-backend-%s-search" backend-template-name))))
+               `(progn
+                  (defun ,search-function(input input-ticker update-callback)
+                    (funcall
+                     update-callback
+                     ,name
+                     input-ticker
+                     (funcall ,candidate-filter input)))
 
-       (defvar ,backend-name nil)
+                  (defvar ,backend-name nil)
 
-       (setq ,backend-name
-             '(("name" . ,name)
-               ("search" . ,search-function)
-               ("do" . ,candiate-do)
-               )
-             ))))
+                  (setq ,backend-name
+                        '(("name" . ,name)
+                          ("search" . ,search-function)
+                          ("do" . ,candiate-do)
+                          )
+                        ))))
 
 (cl-defmacro snails-create-async-backend (&rest args &key name build-command candidate-filter candiate-do)
-  "Macro to create sync backend code.
+             "Macro to create sync backend code.
 
 `name' is backend name, such 'Foo Bar'.
 `candidate-filter' is function that accpet input string, and return candidate list, example format: ((display-name-1 candidate-1) (display-name-2 candidate-2))
 `candidate-do-function' is function that confirm candidate, accpet candidate search, and do anything you want.
 "
-  (let* ((backend-template-name (string-join (split-string (downcase name)) "-"))
-         (backend-name (intern (format "snails-backend-%s" backend-template-name)))
-         (search-function (intern (format "snails-backend-%s-search" backend-template-name))))
-    `(progn
-       (defun ,search-function(input input-ticker update-callback)
-         (funcall
-          'snails-create-async-process
-          ,name
-          input
-          input-ticker
-          ,build-command
-          ,candidate-filter
-          update-callback
-          ))
+             (let* ((backend-template-name (string-join (split-string (downcase name)) "-"))
+                    (backend-name (intern (format "snails-backend-%s" backend-template-name)))
+                    (search-function (intern (format "snails-backend-%s-search" backend-template-name))))
+               `(progn
+                  (defun ,search-function(input input-ticker update-callback)
+                    (funcall
+                     'snails-create-async-process
+                     ,name
+                     input
+                     input-ticker
+                     ,build-command
+                     ,candidate-filter
+                     update-callback
+                     ))
 
-       (defvar ,backend-name nil)
+                  (defvar ,backend-name nil)
 
-       (setq ,backend-name
-             '(("name" . ,name)
-               ("search" . ,search-function)
-               ("do" . ,candiate-do)
-               )
-             ))))
+                  (setq ,backend-name
+                        '(("name" . ,name)
+                          ("search" . ,search-function)
+                          ("do" . ,candiate-do)
+                          )
+                        ))))
 
 (provide 'snails-core)
 
