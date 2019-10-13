@@ -92,6 +92,8 @@
    " *Echo Area "
    " *Minibuf-"
    " *Custom-Work*"
+   " *pyim-page-tooltip-posframe-buffer*"
+   " *load"
    ))
 
 (defun snails-backend-buffer-not-blacklist-buffer (buf)
