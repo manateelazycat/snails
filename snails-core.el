@@ -206,7 +206,7 @@
   :group 'snails)
 
 (defface snails-header-line-face
-    '((t (:inherit font-lock-function-name-face :underline t :height 1.2)))
+    '((t (:inherit font-lock-function-name-face :underline t :height 1.3)))
   "Face for header line"
   :group 'snails)
 
@@ -702,7 +702,7 @@ or set it with any string you want."
 
             ;; Insert backend index.
             (setq header-index-start (point))
-            (insert (format " [%s/%s]\n" effective-backend-index effective-backend-number))
+            (insert (format " [%s/%s] (%s)\n" effective-backend-index effective-backend-number (length candiate-list)))
             (backward-char)
             (setq header-index-end (point))
             (overlay-put (make-overlay header-index-start header-index-end)
