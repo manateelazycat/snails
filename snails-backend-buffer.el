@@ -94,6 +94,7 @@
    " *Custom-Work*"
    " *pyim-page-tooltip-posframe-buffer*"
    " *load"
+   " *server"
    ))
 
 (defun snails-backend-buffer-not-blacklist-buffer (buf)
