@@ -7,8 +7,8 @@
 ;; Maintainer: Andy Stewart <lazycat.manatee@gmail.com>
 ;; Copyright (C) 2019, Andy Stewart, all rights reserved.
 ;; Created: 2019-05-16 21:26:09
-;; Version: 6.5
-;; Last-Updated: 2019-09-01 16:05:13
+;; Version: 6.6
+;; Last-Updated: 2019-12-05 18:31:01
 ;;           By: Andy Stewart
 ;; URL: http://www.emacswiki.org/emacs/download/snails-core.el
 ;; Keywords:
@@ -67,6 +67,9 @@
 ;;
 
 ;;; Change log:
+;;
+;; 2019/12/05
+;;      * Within two seconds of the call only once snails function, to avoid problems start blinking twice interface under KDE environment.
 ;;
 ;; 2019/09/01
 ;;      * We need init `snails-candiate-list' with `snails-backends', otherwise first launch will fail.
@@ -261,6 +264,9 @@ need to set face attribute, such as foreground and background."
 (defvar snails-frame-active-p nil
   "The parent frame of popup frame.")
 
+(defvar snails-frame-active-time 0
+  "The last time of snails frame active.")
+
 (defvar snails-select-line-overlay nil
   "Select line overlay, use to highlight selected candidate.")
 
@@ -343,11 +349,17 @@ If `fuz' library has load, set with `load'.")
 you can set `search-object' with t to search symbol around point,
 or set it with any string you want."
   (interactive)
-  (if (display-graphic-p)
-      (if (and snails-frame
-               (frame-live-p snails-frame))
+  (if (and
+       ;; Only running snails when in GUI environment.
+       (display-graphic-p)
+       ;; Only running once in 2 seconds.
+       (> (- (float-time) snails-frame-active-time) 2))
+      (if (and
+           snails-frame
+           (frame-live-p snails-frame))
           ;; Quit snails if it has opened.
-          (snails-quit)
+          (progn
+            (snails-quit))
 
         ;; Set `snails-search-backends' if argument backends is set.
         (when (and (listp backends)
@@ -572,6 +584,7 @@ or set it with any string you want."
 
     ;; Set active flag, use for advice-add detect.
     (setq snails-frame-active-p t)
+    (setq snails-frame-active-time (float-time))
 
     ;; Show popup frame.
     ;; `select-frame-set-input-focus' is necessary for gnome-shell DE.
