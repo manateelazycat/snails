@@ -64,20 +64,21 @@ When you customize the search backends, snails won't filter search result with i
 
 ## Currently Available Backends
 
-| Backend                          | Description                                                                            |
-| :--------                        | :----                                                                                  |
-| snails-backend-awesome-tab-group | Switch group of awesome-tab, need install plugin ```awesome-tab```                     |
-| snails-backend-buffer            | Search buffer list                                                                     |
-| snails-backend-recentf           | Search recently files                                                                  |
-| snails-backend-bookmark          | Switch bookmark                                                                        |
-| snails-backend-imenu             | Jump to function or variable definition                                                |
-| snails-backend-current-buffer    | Search current buffer content                                                          |
-| snails-backend-rg                | Use ripgrep search content in current project, need install ```ripgrep```              |
-| snails-backend-projectile        | Search files in current project, need install plugin ```projectitle```                 |
-| snails-backend-fd                | Use fd search files in current project, need install ```fd```                          |
-| snails-backend-mdfind            | Use mdfind search files in local disk, only Mac                                        |
-| snails-backend-everything        | Use everything search files in local disk, only Windows, need install ```everything``` |
-| snails-backend-command           | Search command                                                                         |
+| Backend                          | Description                                                                                                                  |
+| :--------                        | :----                                                                                                                        |
+| snails-backend-awesome-tab-group | Switch group of awesome-tab, need install plugin ```awesome-tab```                                                           |
+| snails-backend-buffer            | Search buffer list                                                                                                           |
+| snails-backend-recentf           | Search recently files                                                                                                        |
+| snails-backend-bookmark          | Switch bookmark                                                                                                              |
+| snails-backend-imenu             | Jump to function or variable definition                                                                                      |
+| snails-backend-current-buffer    | Search current buffer content                                                                                                |
+| snails-backend-rg                | Use ripgrep search content in current project, need install ```ripgrep```                                                    |
+| snails-backend-projectile        | Search files in current project, need install plugin ```projectitle```                                                       |
+| snails-backend-fd                | Use fd search files in current project, need install ```fd```                                                                |
+| snails-backend-mdfind            | Use mdfind search files in local disk, only Mac                                                                              |
+| snails-backend-everything        | Use everything search files in local disk, only Windows, need install ```everything```                                       |
+| snails-backend-command           | Search command                                                                                                               |
+| snails-backend-eaf-pdf-table     | Search table of contents of PDF file, united [EAF](https://github.com/manateelazycat/emacs-application-framework) technology |
 
 ## Fuzz match
 Snails use normal match algorithm default.
