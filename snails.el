@@ -95,6 +95,7 @@
 (require 'snails-backend-projectile)
 (require 'snails-backend-directory-files)
 (require 'snails-backend-eaf-pdf-table)
+(require 'snails-backend-eaf-browser-history)
 
 (provide 'snails)
 ;;; snails.el ends here
