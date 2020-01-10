@@ -97,19 +97,20 @@
                                                   (file-name-as-directory "browser")
                                                   (file-name-as-directory "history")
                                                   "log.txt")))
-           (with-temp-buffer
-             (insert-file-contents browser-history-file-path)
-             (beginning-of-buffer)
+           (when (file-exists-p browser-history-file-path)
+             (with-temp-buffer
+               (insert-file-contents browser-history-file-path)
+               (beginning-of-buffer)
 
-             (while (not (eobp))
-               (beginning-of-line)
-               (when (or
-                      (string-equal input "")
-                      (snails-match-input-p input (buffer-substring (point-at-bol) (point-at-eol))))
-                 (snails-add-candiate 'candidates
-                                      (buffer-substring (point-at-bol) (point-at-eol))
-                                      (buffer-substring (point-at-bol) (point-at-eol))))
-               (forward-line 1))))))
+               (while (not (eobp))
+                 (beginning-of-line)
+                 (when (or
+                        (string-equal input "")
+                        (snails-match-input-p input (buffer-substring (point-at-bol) (point-at-eol))))
+                   (snails-add-candiate 'candidates
+                                        (buffer-substring (point-at-bol) (point-at-eol))
+                                        (buffer-substring (point-at-bol) (point-at-eol))))
+                 (forward-line 1)))))))
      (snails-sort-candidates input candidates 0 0)
      candidates
      ))
