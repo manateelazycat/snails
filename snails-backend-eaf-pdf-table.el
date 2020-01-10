@@ -51,7 +51,7 @@
 ;;
 ;; And the following to your ~/.emacs startup file.
 ;;
-;; (require 'snails-backend-eaf-pdf)
+;; (require 'snails-backend-eaf-pdf-table)
 ;;
 ;; No need more.
 
@@ -60,7 +60,7 @@
 ;;
 ;;
 ;; All of the above can customize by:
-;;      M-x customize-group RET snails-backend-eaf-pdf RET
+;;      M-x customize-group RET snails-backend-eaf-pdf-table RET
 ;;
 
 ;;; Change log:
