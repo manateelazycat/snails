@@ -51,7 +51,7 @@
 ;;
 ;; And the following to your ~/.emacs startup file.
 ;;
-;; (require 'snails-backend-eaf-pdf)
+;; (require 'snails-backend-eaf-browser-history)
 ;;
 ;; No need more.
 
@@ -60,7 +60,7 @@
 ;;
 ;;
 ;; All of the above can customize by:
-;;      M-x customize-group RET snails-backend-eaf-pdf RET
+;;      M-x customize-group RET snails-backend-eaf-browser-history RET
 ;;
 
 ;;; Change log:
@@ -91,10 +91,12 @@
  (lambda (input)
    (let (candidates)
      (with-current-buffer snails-start-buffer
-       (when (and (featurep 'eaf)
-                  (derived-mode-p 'eaf-mode)
-                  (string-equal eaf--buffer-app-name "browser"))
-         (let ((browser-history-file-path (eaf-call "call_function" eaf--buffer-id "get_history_log_file")))
+       (when (ignore-errors (require 'eaf))
+         (let ((browser-history-file-path (concat user-emacs-directory
+                                                  (file-name-as-directory "eaf")
+                                                  (file-name-as-directory "browser")
+                                                  (file-name-as-directory "history")
+                                                  "log.txt")))
            (with-temp-buffer
              (insert-file-contents browser-history-file-path)
              (beginning-of-buffer)
