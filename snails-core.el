@@ -7,8 +7,8 @@
 ;; Maintainer: Andy Stewart <lazycat.manatee@gmail.com>
 ;; Copyright (C) 2019, Andy Stewart, all rights reserved.
 ;; Created: 2019-05-16 21:26:09
-;; Version: 6.6
-;; Last-Updated: 2019-12-05 18:31:01
+;; Version: 6.7
+;; Last-Updated: 2020-01-20 04:22:01
 ;;           By: Andy Stewart
 ;; URL: http://www.emacswiki.org/emacs/download/snails-core.el
 ;; Keywords:
@@ -67,6 +67,9 @@
 ;;
 
 ;;; Change log:
+;;
+;; 2020/01/20
+;;      * Add search prefix tips under input buffer.
 ;;
 ;; 2019/12/05
 ;;      * Within two seconds of the call only once snails function, to avoid problems start blinking twice interface under KDE environment.
@@ -246,8 +249,21 @@ need to set face attribute, such as foreground and background."
   "Face copy candidate."
   :group 'snails)
 
+(defface snails-tips-prefix-key-face
+  '((t (:inherit font-lock-function-name-face)))
+  "Face for tips prefix key."
+  :group 'snails)
+
+(defface snails-tips-prefix-backend-face
+  '((t (:inherit font-lock-comment-face)))
+  "Face for tips backend name."
+  :group 'snails)
+
 (defvar snails-input-buffer " *snails input*"
   "The buffer name of search input buffer.")
+
+(defvar snails-tips-buffer " *snails tips*"
+  "The buffer name of tips buffer.")
 
 (defvar snails-content-buffer " *snails content*"
   "The buffer name of search content buffer.")
@@ -375,6 +391,7 @@ or set it with any string you want."
 
         ;; Create input and content buffer.
         (snails-create-input-buffer)
+        (snails-create-tips-buffer)
         (snails-create-content-buffer)
 
         ;; Create popup frame to show search result.
@@ -492,6 +509,35 @@ or set it with any string you want."
     (setq-local mode-line-format nil)
     ))
 
+(defun snails-create-tips-buffer ()
+  (with-current-buffer (get-buffer-create snails-tips-buffer)
+    ;; Clear buffer.
+    (erase-buffer)
+    (buffer-face-set 'snails-content-buffer-face)
+    ;; Insert prefix tips.
+    (insert "Search prefix:")
+    (dolist (prefix-backends snails-prefix-backends)
+      (let (prefix-key-start prefix-key-end prefix-backend-start prefix-backend-end)
+        (setq prefix-key-start (point))
+        (insert (format " %s " (car prefix-backends)))
+        (setq prefix-key-end (point))
+        (overlay-put (make-overlay prefix-key-start prefix-key-end)
+                     'face
+                     'snails-tips-prefix-key-face)
+
+        (setq prefix-backend-start (point))
+        (insert (mapconcat (lambda (b) (format "'%s'" (eval (cdr (assoc "name" (eval b)))))) (eval (cadr prefix-backends)) " "))
+        (setq prefix-backend-end (point))
+        (overlay-put (make-overlay prefix-backend-start prefix-backend-end)
+                     'face
+                     'snails-tips-prefix-backend-face)
+        ))
+    ;; Disable hl-line, header-line and cursor shape in tips buffer.
+    (setq-local global-hl-line-overlay nil)
+    (setq-local header-line-format nil)
+    (setq-local cursor-type nil)
+    ))
+
 (defun snails-create-content-buffer ()
   "Create content buffer."
   (with-current-buffer (get-buffer-create snails-content-buffer)
@@ -567,6 +613,12 @@ or set it with any string you want."
       (set-window-margins (selected-window) 1 1)
 
       ;; Split window with one line height of input buffer.
+      (split-window (selected-window) (line-pixel-height) nil t)
+
+      ;; Set tips buffer.
+      (other-window 1)
+      (switch-to-buffer snails-tips-buffer)
+      (set-window-margins (selected-window) 1 1)
       (split-window (selected-window) (line-pixel-height) nil t)
 
       ;; Set content window margin and switch to content buffer.
