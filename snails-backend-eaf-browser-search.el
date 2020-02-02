@@ -1,15 +1,15 @@
-;;; snails.el --- A modern, easy-to-expand fuzzy search framework
+;;; snails-backend-eaf-browser-search.el --- Search or search in brwoser backend for snails
 
-;; Filename: snails.el
-;; Description: A modern, easy-to-expand fuzzy search framework
+;; Filename: snails-backend-eaf-browser-search.el
+;; Description: Buffer switch backend for snails
 ;; Author: Andy Stewart <lazycat.manatee@gmail.com>
 ;; Maintainer: Andy Stewart <lazycat.manatee@gmail.com>
 ;; Copyright (C) 2019, Andy Stewart, all rights reserved.
-;; Created: 2019-07-20 01:21:07
+;; Created: 2019-07-23 16:43:17
 ;; Version: 0.1
-;; Last-Updated: 2019-07-20 01:21:07
+;; Last-Updated: 2019-07-23 16:43:17
 ;;           By: Andy Stewart
-;; URL: http://www.emacswiki.org/emacs/download/snails.el
+;; URL: http://www.emacswiki.org/emacs/download/snails-backend-buffer.el
 ;; Keywords:
 ;; Compatibility: GNU Emacs 26.2
 ;;
@@ -39,19 +39,19 @@
 
 ;;; Commentary:
 ;;
-;; A modern, easy-to-expand fuzzy search framework
+;; Buffer switch backend for snails
 ;;
 
 ;;; Installation:
 ;;
-;; Put snails.el to your load-path.
+;; Put snails-backend-eaf-browser-search.el to your load-path.
 ;; The load-path is usually ~/elisp/.
 ;; It's set in your ~/.emacs like this:
 ;; (add-to-list 'load-path (expand-file-name "~/elisp"))
 ;;
 ;; And the following to your ~/.emacs startup file.
 ;;
-;; (require 'snails)
+;; (require 'snails-backend-buffer)
 ;;
 ;; No need more.
 
@@ -60,12 +60,12 @@
 ;;
 ;;
 ;; All of the above can customize by:
-;;      M-x customize-group RET snails RET
+;;      M-x customize-group RET snails-backend-buffer RET
 ;;
 
 ;;; Change log:
 ;;
-;; 2019/07/20
+;; 2019/07/23
 ;;      * First released.
 ;;
 
@@ -81,23 +81,25 @@
 
 ;;; Require
 (require 'snails-core)
-(require 'snails-backend-buffer)
-(require 'snails-backend-current-buffer)
-(require 'snails-backend-recentf)
-(require 'snails-backend-awesome-tab-group)
-(require 'snails-backend-fd)
-(require 'snails-backend-mdfind)
-(require 'snails-backend-imenu)
-(require 'snails-backend-command)
-(require 'snails-backend-bookmark)
-(require 'snails-backend-rg)
-(require 'snails-backend-everything)
-(require 'snails-backend-projectile)
-(require 'snails-backend-directory-files)
-(require 'snails-backend-eaf-pdf-table)
-(require 'snails-backend-eaf-browser-history)
-(require 'snails-backend-eaf-browser-open)
-(require 'snails-backend-eaf-browser-search)
 
-(provide 'snails)
-;;; snails.el ends here
+;;; Code:
+
+(snails-create-sync-backend
+ :name
+ "EAF-BROWSER-SEARCH"
+
+ :candidate-filter
+ (lambda (input)
+   (let (candidates)
+     (when (ignore-errors (require 'eaf))
+       (unless (eaf-is-valid-url input)
+         (snails-add-candiate 'candidates (format "Search in browser: %s" input) input)))
+     candidates))
+
+ :candiate-do
+ (lambda (candidate)
+   (eaf-search-it candidate)))
+
+(provide 'snails-backend-eaf-browser-search)
+
+;;; snails-backend-eaf-browser-search.el ends here
