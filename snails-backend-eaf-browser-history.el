@@ -83,6 +83,8 @@
 (require 'snails-core)
 
 ;;; Code:
+(defvar snails-backend-eaf-browser-history-limit 10)
+
 (snails-create-sync-backend
  :name
  "EAF-BROWSER-HISTORY"
@@ -102,7 +104,8 @@
                (insert-file-contents browser-history-file-path)
                (beginning-of-buffer)
 
-               (while (not (eobp))
+               (while (and (< (length candidates) snails-backend-eaf-browser-history-limit)
+                           (not (eobp)))
                  (beginning-of-line)
                  (when (or
                         (string-equal input "")
