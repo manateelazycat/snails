@@ -83,6 +83,8 @@
 (require 'snails-core)
 
 ;;; Code:
+(defvar snails-backend-eaf-browser-history-limit 10)
+
 (snails-create-async-backend
  :name
  "EAF-BROWSER-HISTORY"
@@ -98,9 +100,12 @@
  (lambda (candidate-list)
    (let ((candidate-index 1)
          candidates)
-     (dolist (candidate candidate-list)
-       (snails-add-candiate 'candidates (format "%s %s" candidate-index candidate) candidate)
-       (setq candidate-index (+ candidate-index 1)))
+     (catch 'exceed-the-limit
+       (dolist (candidate candidate-list)
+         (snails-add-candiate 'candidates (format "%s %s" candidate-index candidate) candidate)
+         (setq candidate-index (+ candidate-index 1))
+         (when (> candidate-index snails-backend-eaf-browser-history-limit)
+           (throw 'exceed-the-limit nil))))
      candidates))
 
  :candiate-do
