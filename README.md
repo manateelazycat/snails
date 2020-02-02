@@ -81,7 +81,7 @@ When you customize the search backends, snails won't filter search result with i
 | snails-backend-everything          | Use everything search files in local disk, only Windows, need install ```everything```                                       |
 | snails-backend-command             | Search command                                                                                                               |
 | snails-backend-eaf-pdf-table       | Search table of contents of PDF file, united [EAF](https://github.com/manateelazycat/emacs-application-framework) technology |
-| snails-backend-eaf-browser-history | Search history of browser, united [EAF](https://github.com/manateelazycat/emacs-application-framework) technology            |
+| snails-backend-eaf-browser-history | Search history of browser, united [EAF](https://github.com/manateelazycat/emacs-application-framework) technology, need install ```fzf```            |
 
 ## Fuzz match
 Snails use normal match algorithm default.

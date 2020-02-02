@@ -83,40 +83,25 @@
 (require 'snails-core)
 
 ;;; Code:
-(defvar snails-backend-eaf-browser-history-limit 10)
-
-(snails-create-sync-backend
+(snails-create-async-backend
  :name
  "EAF-BROWSER-HISTORY"
 
- :candidate-filter
+ :build-command
  (lambda (input)
-   (let (candidates)
-     (with-current-buffer snails-start-buffer
-       (when (ignore-errors (require 'eaf))
-         (let ((browser-history-file-path
-                (concat eaf-config-location
-                        (file-name-as-directory "browser")
-                        (file-name-as-directory "history")
-                        "log.txt")))
-           (when (file-exists-p browser-history-file-path)
-             (with-temp-buffer
-               (insert-file-contents browser-history-file-path)
-               (beginning-of-buffer)
+   (when (executable-find "fzf")
+     (list (expand-file-name "fzf-search.sh")
+           (concat eaf-config-location (file-name-as-directory "browser") (file-name-as-directory "history") "log.txt")
+           input)))
 
-               (while (and (< (length candidates) snails-backend-eaf-browser-history-limit)
-                           (not (eobp)))
-                 (beginning-of-line)
-                 (when (or
-                        (string-equal input "")
-                        (snails-match-input-p input (buffer-substring (point-at-bol) (point-at-eol))))
-                   (snails-add-candiate 'candidates
-                                        (buffer-substring (point-at-bol) (point-at-eol))
-                                        (buffer-substring (point-at-bol) (point-at-eol))))
-                 (forward-line 1)))))))
-     (snails-sort-candidates input candidates 0 0)
-     candidates
-     ))
+ :candidate-filter
+ (lambda (candidate-list)
+   (let ((candidate-index 1)
+         candidates)
+     (dolist (candidate candidate-list)
+       (snails-add-candiate 'candidates (format "%s %s" candidate-index candidate) candidate)
+       (setq candidate-index (+ candidate-index 1)))
+     candidates))
 
  :candiate-do
  (lambda (candidate)

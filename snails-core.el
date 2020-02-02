@@ -725,84 +725,85 @@ or set it with any string you want."
 
 (defun snails-render-bufer ()
   "Render candidates when `snails-need-render' flag is set."
-  (when snails-need-render
-    (with-current-buffer snails-content-buffer
-      ;; Record select line offset.
-      (snails-record-select-line-offset)
+  (ignore-errors
+    (when snails-need-render
+      (with-current-buffer snails-content-buffer
+        ;; Record select line offset.
+        (snails-record-select-line-offset)
 
-      ;; Clean buffer first.
-      (erase-buffer)
+        ;; Clean buffer first.
+        (erase-buffer)
 
-      ;; Clean all header line overlays.
-      (setq snails-header-line-overlays nil)
+        ;; Clean all header line overlays.
+        (setq snails-header-line-overlays nil)
 
-      ;; Reset select line variables.
-      (setq snails-select-line-overlay (make-overlay (point) (point) (current-buffer) t))
-      (overlay-put snails-select-line-overlay 'face `snails-select-line-face)
+        ;; Reset select line variables.
+        (setq snails-select-line-overlay (make-overlay (point) (point) (current-buffer) t))
+        (overlay-put snails-select-line-overlay 'face `snails-select-line-face)
 
-      (let* ((candiate-index 0)
-             (backend-names (snails-get-backend-names))
-             (effective-backend-index 1)
-             (effective-backend-number (length (cl-remove-if #'booleanp snails-candiate-list)))
-             header-line-start
-             header-line-end
-             header-index-start
-             header-index-end
-             candidate-content-start
-             candidate-content-end)
-        ;; Render backend result.
-        (dolist (candiate-list snails-candiate-list)
-          ;; Just render backend result when return candidate is not nil.
-          (when candiate-list
-            ;; Render header line with overlay.
-            (setq header-line-start (point))
-            (insert (nth candiate-index backend-names))
-            (setq header-line-end (point))
-            (let ((header-line-overlay (make-overlay header-line-start header-line-end)))
-              (add-to-list 'snails-header-line-overlays header-line-overlay)
-              (overlay-put header-line-overlay
-                           'face
-                           'snails-header-line-face
-                           ))
-
-            ;; Insert backend index.
-            (setq header-index-start (point))
-            (insert (format " [%s/%s] (%s)\n" effective-backend-index effective-backend-number (length candiate-list)))
-            (backward-char)
-            (setq header-index-end (point))
-            (overlay-put (make-overlay header-index-start header-index-end)
-                         'face
-                         'snails-header-index-face)
-            (forward-char)
-            (setq effective-backend-index (+ effective-backend-index 1))
-
-            ;; Render candidate list.
-            (dolist (candiate candiate-list)
-              ;; Render candidate display name.
-              (insert (nth 0 candiate))
-
-              ;; Render candidate real content. ;
-              (setq candidate-content-start (point))
-              (insert (format "%s" (nth 1 candiate)))
-              (setq candidate-content-end (point))
-              (let ((candidate-content-overlay (make-overlay candidate-content-start candidate-content-end)))
-                (overlay-put candidate-content-overlay 'display "")
-                (overlay-put candidate-content-overlay
+        (let* ((candiate-index 0)
+               (backend-names (snails-get-backend-names))
+               (effective-backend-index 1)
+               (effective-backend-number (length (cl-remove-if #'booleanp snails-candiate-list)))
+               header-line-start
+               header-line-end
+               header-index-start
+               header-index-end
+               candidate-content-start
+               candidate-content-end)
+          ;; Render backend result.
+          (dolist (candiate-list snails-candiate-list)
+            ;; Just render backend result when return candidate is not nil.
+            (when candiate-list
+              ;; Render header line with overlay.
+              (setq header-line-start (point))
+              (insert (nth candiate-index backend-names))
+              (setq header-line-end (point))
+              (let ((header-line-overlay (make-overlay header-line-start header-line-end)))
+                (add-to-list 'snails-header-line-overlays header-line-overlay)
+                (overlay-put header-line-overlay
                              'face
-                             'snails-candiate-content-face))
+                             'snails-header-line-face
+                             ))
+
+              ;; Insert backend index.
+              (setq header-index-start (point))
+              (insert (format " [%s/%s] (%s)\n" effective-backend-index effective-backend-number (length candiate-list)))
+              (backward-char)
+              (setq header-index-end (point))
+              (overlay-put (make-overlay header-index-start header-index-end)
+                           'face
+                           'snails-header-index-face)
+              (forward-char)
+              (setq effective-backend-index (+ effective-backend-index 1))
+
+              ;; Render candidate list.
+              (dolist (candiate candiate-list)
+                ;; Render candidate display name.
+                (insert (nth 0 candiate))
+
+                ;; Render candidate real content. ;
+                (setq candidate-content-start (point))
+                (insert (format "%s" (nth 1 candiate)))
+                (setq candidate-content-end (point))
+                (let ((candidate-content-overlay (make-overlay candidate-content-start candidate-content-end)))
+                  (overlay-put candidate-content-overlay 'display "")
+                  (overlay-put candidate-content-overlay
+                               'face
+                               'snails-candiate-content-face))
+                (insert "\n"))
+
+              ;; Insert new empty line at last candiate of backend.
               (insert "\n"))
+            ;; Update candidate index to fetch name of next backend.
+            (setq candiate-index (+ candiate-index 1))))
 
-            ;; Insert new empty line at last candiate of backend.
-            (insert "\n"))
-          ;; Update candidate index to fetch name of next backend.
-          (setq candiate-index (+ candiate-index 1))))
+        ;; Restore select line offset.
+        (snails-restore-select-line-offset)
+        )
 
-      ;; Restore select line offset.
-      (snails-restore-select-line-offset)
-      )
-
-    ;; Reset render flag.
-    (setq snails-need-render nil)))
+      ;; Reset render flag.
+      (setq snails-need-render nil))))
 
 (defun snails-record-select-line-offset ()
   "Record select line offset."
