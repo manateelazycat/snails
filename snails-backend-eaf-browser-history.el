@@ -92,11 +92,11 @@
    (let (candidates)
      (with-current-buffer snails-start-buffer
        (when (ignore-errors (require 'eaf))
-         (let ((browser-history-file-path (concat user-emacs-directory
-                                                  (file-name-as-directory "eaf")
-                                                  (file-name-as-directory "browser")
-                                                  (file-name-as-directory "history")
-                                                  "log.txt")))
+         (let ((browser-history-file-path
+                (concat eaf-config-location
+                        (file-name-as-directory "browser")
+                        (file-name-as-directory "history")
+                        "log.txt")))
            (when (file-exists-p browser-history-file-path)
              (with-temp-buffer
                (insert-file-contents browser-history-file-path)
