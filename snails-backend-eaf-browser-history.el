@@ -100,10 +100,11 @@
  :candidate-filter
  (lambda (candidate-list)
    (let ((candidate-index 1)
+         (format-string (concat (format "%%%sd" (+ (/ snails-backend-eaf-browser-history-limit 10) 1)) " %s"))
          candidates)
      (catch 'exceed-the-limit
        (dolist (candidate candidate-list)
-         (snails-add-candiate 'candidates (format "%s %s" candidate-index candidate) candidate)
+         (snails-add-candiate 'candidates (format format-string candidate-index candidate) candidate)
          (setq candidate-index (+ candidate-index 1))
          (when (> candidate-index snails-backend-eaf-browser-history-limit)
            (throw 'exceed-the-limit nil))))
