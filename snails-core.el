@@ -535,6 +535,7 @@ or set it with any string you want."
     ;; Disable hl-line, header-line and cursor shape in tips buffer.
     (setq-local global-hl-line-overlay nil)
     (setq-local header-line-format nil)
+    (setq-local mode-line-format nil)
     (setq-local cursor-type nil)
     ))
 
