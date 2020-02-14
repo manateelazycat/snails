@@ -196,7 +196,7 @@
   :group 'snails)
 
 (defcustom snails-default-backends
-  '(snails-backend-awesome-tab-group snails-backend-buffer snails-backend-eaf-pdf-table snails-backend-eaf-browser-history snails-backend-eaf-browser-open snails-backend-eaf-browser-search snails-backend-recentf snails-backend-directory-files snails-backend-bookmark)
+  '(snails-backend-awesome-tab-group snails-backend-buffer snails-backend-eaf-pdf-table snails-backend-eaf-browser-history snails-backend-eaf-browser-open snails-backend-eaf-browser-search snails-backend-google-suggestion snails-backend-recentf snails-backend-directory-files snails-backend-bookmark)
   "The default backend"
   :type 'cons
   :group 'snails)

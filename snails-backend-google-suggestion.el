@@ -1,17 +1,17 @@
-;;; snails.el --- A modern, easy-to-expand fuzzy search framework
+;;; snails-backend-google-suggestion.el --- EAF PDF backend for snails
 
-;; Filename: snails.el
-;; Description: A modern, easy-to-expand fuzzy search framework
+;; Filename: snails-backend-google-suggestion.el
+;; Description: EAF PDF backend for snails
 ;; Author: Andy Stewart <lazycat.manatee@gmail.com>
 ;; Maintainer: Andy Stewart <lazycat.manatee@gmail.com>
-;; Copyright (C) 2019, Andy Stewart, all rights reserved.
-;; Created: 2019-07-20 01:21:07
+;; Copyright (C) 2020, Andy Stewart, all rights reserved.
+;; Created: 2020-01-06 19:00:31
 ;; Version: 0.1
-;; Last-Updated: 2019-07-20 01:21:07
+;; Last-Updated: 2020-01-06 19:00:31
 ;;           By: Andy Stewart
-;; URL: http://www.emacswiki.org/emacs/download/snails.el
+;; URL: http://www.emacswiki.org/emacs/download/snails-backend-eaf-pdf.el
 ;; Keywords:
-;; Compatibility: GNU Emacs 26.2
+;; Compatibility: GNU Emacs 26.3
 ;;
 ;; Features that might be required by this library:
 ;;
@@ -39,19 +39,19 @@
 
 ;;; Commentary:
 ;;
-;; A modern, easy-to-expand fuzzy search framework
+;; EAF PDF backend for snails
 ;;
 
 ;;; Installation:
 ;;
-;; Put snails.el to your load-path.
+;; Put snails-backend-google-suggestion.el to your load-path.
 ;; The load-path is usually ~/elisp/.
 ;; It's set in your ~/.emacs like this:
 ;; (add-to-list 'load-path (expand-file-name "~/elisp"))
 ;;
 ;; And the following to your ~/.emacs startup file.
 ;;
-;; (require 'snails)
+;; (require 'snails-backend-eaf-browser-history)
 ;;
 ;; No need more.
 
@@ -60,12 +60,12 @@
 ;;
 ;;
 ;; All of the above can customize by:
-;;      M-x customize-group RET snails RET
+;;      M-x customize-group RET snails-backend-eaf-browser-history RET
 ;;
 
 ;;; Change log:
 ;;
-;; 2019/07/20
+;; 2020/01/06
 ;;      * First released.
 ;;
 
@@ -81,24 +81,30 @@
 
 ;;; Require
 (require 'snails-core)
-(require 'snails-backend-buffer)
-(require 'snails-backend-current-buffer)
-(require 'snails-backend-recentf)
-(require 'snails-backend-awesome-tab-group)
-(require 'snails-backend-fd)
-(require 'snails-backend-mdfind)
-(require 'snails-backend-imenu)
-(require 'snails-backend-command)
-(require 'snails-backend-bookmark)
-(require 'snails-backend-rg)
-(require 'snails-backend-everything)
-(require 'snails-backend-projectile)
-(require 'snails-backend-directory-files)
-(require 'snails-backend-eaf-pdf-table)
-(require 'snails-backend-eaf-browser-history)
-(require 'snails-backend-eaf-browser-open)
-(require 'snails-backend-eaf-browser-search)
-(require 'snails-backend-google-suggestion)
 
-(provide 'snails)
-;;; snails.el ends here
+;;; Code:
+(snails-create-async-backend
+ :name
+ "GOOGLE SUGGESTION"
+
+ :build-command
+ (lambda (input)
+   (when (executable-find "curl")
+     (list (concat (file-name-directory (locate-library "snails")) "google-suggestion.sh")
+           (replace-regexp-in-string "\\s-+" "%20" input))))
+
+ :candidate-filter
+ (lambda (candidate-list)
+   (let (candidates)
+     (dolist (candidate candidate-list)
+       (snails-add-candiate 'candidates candidate candidate))
+     candidates))
+
+ :candiate-do
+ (lambda (candidate)
+   (eaf-search-it candidate)
+   ))
+
+(provide 'snails-backend-google-suggestion)
+
+;;; snails-backend-google-suggestion.el ends here
