@@ -100,14 +100,17 @@
  :candidate-filter
  (lambda (candidate-list)
    (let ((candidate-index 1)
-         (format-string (concat (format "%%%sd" (+ (/ snails-backend-eaf-browser-history-limit 10) 1)) " %s"))
+         (format-string (concat (format "%%%sd" (+ (/ snails-backend-eaf-browser-history-limit 10) 1)) " %s %s"))
          candidates)
      (catch 'exceed-the-limit
        (dolist (candidate candidate-list)
-         (snails-add-candiate 'candidates (format format-string candidate-index candidate) candidate)
-         (setq candidate-index (+ candidate-index 1))
-         (when (> candidate-index snails-backend-eaf-browser-history-limit)
-           (throw 'exceed-the-limit nil))))
+         (when (string-match "^\\(.+\\)ᛝ\\(.+\\)ᛡ\\(.+\\)$" candidate)
+           (snails-add-candiate 'candidates
+                                (format format-string candidate-index (match-string 1 candidate) (match-string 2 candidate))
+                                (match-string 2 candidate))
+           (setq candidate-index (+ candidate-index 1))
+           (when (> candidate-index snails-backend-eaf-browser-history-limit)
+             (throw 'exceed-the-limit nil)))))
      candidates))
 
  :candiate-do
@@ -115,10 +118,7 @@
    (with-temp-buffer
      (insert candidate)
      (beginning-of-buffer)
-     (when (search-forward-regexp "\\s-\\(http\\|ftp\\)" (point-at-eol) t)
-       (backward-word 1)
-       (eaf-open-browser (buffer-substring (point) (point-at-eol)))
-       ))))
+     (eaf-open-browser candidate))))
 
 (provide 'snails-backend-eaf-browser-history)
 
