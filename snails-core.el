@@ -7,8 +7,8 @@
 ;; Maintainer: Andy Stewart <lazycat.manatee@gmail.com>
 ;; Copyright (C) 2019, Andy Stewart, all rights reserved.
 ;; Created: 2019-05-16 21:26:09
-;; Version: 6.7
-;; Last-Updated: 2020-01-20 04:22:01
+;; Version: 6.8
+;; Last-Updated: 2020-02-27 19:29:36
 ;;           By: Andy Stewart
 ;; URL: http://www.emacswiki.org/emacs/download/snails-core.el
 ;; Keywords:
@@ -67,6 +67,9 @@
 ;;
 
 ;;; Change log:
+;;
+;; 2020/02/27
+;;      * Don't delete snails frame to improve performance.
 ;;
 ;; 2020/01/20
 ;;      * Add search prefix tips under input buffer.
@@ -280,12 +283,6 @@ need to set face attribute, such as foreground and background."
 (defvar snails-start-buffer-lines nil
   "The line number of start buffer.")
 
-(defvar snails-frame-active-p nil
-  "The parent frame of popup frame.")
-
-(defvar snails-frame-active-time 0
-  "The last time of snails frame active.")
-
 (defvar snails-select-line-overlay nil
   "Select line overlay, use to highlight selected candidate.")
 
@@ -368,17 +365,10 @@ If `fuz' library has load, set with `load'.")
 you can set `search-object' with t to search symbol around point,
 or set it with any string you want."
   (interactive)
-  (if (and
-       ;; Only running snails when in GUI environment.
-       (display-graphic-p)
-       ;; Only running once in 2 seconds.
-       (> (- (float-time) snails-frame-active-time) 2))
-      (if (and
-           snails-frame
-           (frame-live-p snails-frame))
+  (if (display-graphic-p)
+      (if (snails-frame-is-visible-p)
           ;; Quit snails if it has opened.
-          (progn
-            (snails-quit))
+          (snails-quit)
 
         ;; Set `snails-search-backends' if argument backends is set.
         (when (and (listp backends)
@@ -476,9 +466,7 @@ or set it with any string you want."
   "Quit snails."
   (interactive)
   ;; Delete frame first.
-  (ignore-errors (delete-frame snails-frame t))
-  (setq snails-frame nil)
-  (setq snails-frame-active-p nil)
+  (make-frame-invisible snails-frame)
   (setq snails-project-root-dir nil)
   (setq snails-start-buffer nil)
   (setq snails-select-line-overlay nil)
@@ -585,20 +573,21 @@ or set it with any string you want."
               )))
 
     ;; Make popup frame, and position at center of current frame.
-    (setq snails-frame
-          (make-frame
-           '((parent-frame . (window-frame))
-             (skip-taskbar . t)
-             (minibuffer . nil)
-             (visibility . nil)
-             (internal-border-width . 0)
-             (left-fringe . 0)
-             (right-fringe . 0)
-             (vertical-scroll-bars . nil)
-             (horizontal-scroll-bars . nil)
-             (undecorated . t)
-             (unsplittable . t)
-             )))
+    (unless (frame-visible-p snails-frame)
+      (setq snails-frame
+            (make-frame
+             '((parent-frame . (window-frame))
+               (skip-taskbar . t)
+               (minibuffer . nil)
+               (visibility . nil)
+               (internal-border-width . 0)
+               (left-fringe . 0)
+               (right-fringe . 0)
+               (vertical-scroll-bars . nil)
+               (horizontal-scroll-bars . nil)
+               (undecorated . t)
+               (unsplittable . t)
+               ))))
 
     ;; Configuration frame.
     (with-selected-frame snails-frame
@@ -637,10 +626,6 @@ or set it with any string you want."
       ;; Focus out to hide snails frame on Mac.
       (when (featurep 'cocoa)
         (add-hook 'focus-out-hook 'snails-quit)))
-
-    ;; Set active flag, use for advice-add detect.
-    (setq snails-frame-active-p t)
-    (setq snails-frame-active-time (float-time))
 
     ;; Show popup frame.
     ;; `select-frame-set-input-focus' is necessary for gnome-shell DE.
@@ -1186,9 +1171,12 @@ And render result when subprocess finish search."
 
 (defun snails-frame-is-active-p ()
   (and snails-frame
-       (frame-live-p snails-frame)
-       snails-frame-active-p
+       (frame-visible-p snails-frame)
        (eq (window-frame (selected-window)) snails-frame)))
+
+(defun snails-frame-is-visible-p ()
+  (and snails-frame
+       (frame-visible-p snails-frame)))
 
 (defun snails-candidate-get-info ()
   (with-current-buffer snails-content-buffer
@@ -1341,8 +1329,7 @@ Otherwise return nil."
               ))
 
 (defun snails-monitor-minibuffer-enter ()
-  (when (and snails-frame
-             (frame-live-p snails-frame))
+  (when (snails-frame-is-visible-p)
     (snails-quit)))
 
 (add-hook 'minibuffer-setup-hook 'snails-monitor-minibuffer-enter)
