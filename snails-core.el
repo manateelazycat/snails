@@ -573,7 +573,9 @@ or set it with any string you want."
               )))
 
     ;; Make popup frame, and position at center of current frame.
-    (unless (frame-visible-p snails-frame)
+    (unless (and
+             snails-frame
+             (frame-visible-p snails-frame))
       (setq snails-frame
             (make-frame
              '((parent-frame . (window-frame))
