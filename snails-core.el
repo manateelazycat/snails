@@ -7,8 +7,8 @@
 ;; Maintainer: Andy Stewart <lazycat.manatee@gmail.com>
 ;; Copyright (C) 2019, Andy Stewart, all rights reserved.
 ;; Created: 2019-05-16 21:26:09
-;; Version: 6.8
-;; Last-Updated: 2020-02-27 19:29:36
+;; Version: 6.9
+;; Last-Updated: 2020-02-27 20:03:37
 ;;           By: Andy Stewart
 ;; URL: http://www.emacswiki.org/emacs/download/snails-core.el
 ;; Keywords:
@@ -70,6 +70,7 @@
 ;;
 ;; 2020/02/27
 ;;      * Don't delete snails frame to improve performance.
+;;      * Use `with-selected-frame' make sure command execute in root frame.
 ;;
 ;; 2020/01/20
 ;;      * Add search prefix tips under input buffer.
@@ -1022,7 +1023,9 @@ influence of C1 on the result."
           (snails-quit)
 
           ;; Call backend do function.
-          (funcall do-func candidate)
+          ;; Use `with-selected-frame' make sure command execute in root frame.
+          (with-selected-frame (car (last (frame-list)))
+            (funcall do-func candidate))
           (throw 'backend-do nil)
           )))))
 
