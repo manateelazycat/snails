@@ -590,6 +590,8 @@ or set it with any string you want."
                (horizontal-scroll-bars . nil)
                (undecorated . t)
                (unsplittable . t)
+               (tool-bar-lines . 0)
+               (menu-bar-lines . 0)
                ))))
 
     ;; Configuration frame.
