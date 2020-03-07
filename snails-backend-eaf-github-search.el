@@ -98,7 +98,7 @@
 
  :candiate-do
  (lambda (candidate)
-   (eaf-open (concat "https://github.com/search?q=" candidate) "browser")
+   (eaf-open (concat "https://github.com/search?type=Code&q=" candidate) "browser")
    ))
 
 (provide 'snails-backend-eaf-github-search)
