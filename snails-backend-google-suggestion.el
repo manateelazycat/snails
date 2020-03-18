@@ -89,7 +89,8 @@
 
  :build-command
  (lambda (input)
-   (when (executable-find "curl")
+   (when (and (executable-find "curl")
+              (> (length input) 3))
      (list (concat (file-name-directory (locate-library "snails")) "google-suggestion.sh")
            (replace-regexp-in-string "\\s-+" "%20" input))))
 

@@ -91,7 +91,8 @@
  :candidate-filter
  (lambda (input)
    (let (candidates)
-     (when (ignore-errors (require 'eaf))
+     (when (and (ignore-errors (require 'eaf))
+                (> (length input) 3))
        (unless (eaf-is-valid-url input)
          (snails-add-candiate 'candidates (format "Search in github: %s" input) input)))
      candidates))
