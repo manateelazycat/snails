@@ -250,13 +250,8 @@ need to set face attribute, such as foreground and background."
   :group 'snails)
 
 (defface snails-content-buffer-face
-  '((t (:height 130)))
+  '((t (:height 140)))
   "Face for content area."
-  :group 'snails)
-
-(defface snails-copy-candidate-face
-  '((t (:foreground "Gold" :bold t)))
-  "Face copy candidate."
   :group 'snails)
 
 (defface snails-tips-prefix-key-face
@@ -265,7 +260,7 @@ need to set face attribute, such as foreground and background."
   :group 'snails)
 
 (defface snails-tips-prefix-backend-face
-  '((t (:inherit font-lock-comment-face)))
+  '((t (:height 140)))
   "Face for tips backend name."
   :group 'snails)
 
@@ -466,6 +461,11 @@ or set it with any string you want."
        (nth 0 candidate-info)
        (nth 1 candidate-info)))))
 
+(defun snails-kill ()
+  (interactive)
+  (delete-frame snails-frame t)
+  (setq snails-frame nil))
+
 (defun snails-quit ()
   "Quit snails."
   (interactive)
@@ -620,7 +620,7 @@ or set it with any string you want."
       (other-window 1)
       (switch-to-buffer snails-tips-buffer)
       (set-window-margins (selected-window) 1 1)
-      (split-window (selected-window) (line-pixel-height) nil t)
+      (split-window (selected-window) (* 2 (line-pixel-height)) nil t)
 
       ;; Set content window margin and switch to content buffer.
       (other-window 1)
@@ -906,54 +906,29 @@ influence of C1 on the result."
             (round (+ (* x alpha) (* y (- 1 alpha)))))
           (color-values c1) (color-values c2))))
 
-(defun snails-get-theme-colors ()
-  "We need adjust snails's colors when user switch new theme."
-  (let* ((white "#FFFFFF")
-         (black "#000000")
-         (bg-mode (frame-parameter nil 'background-mode))
-         (bg-unspecified (string= (face-background 'default) "unspecified-bg"))
-         (fg-unspecified (string= (face-foreground 'default) "unspecified-fg"))
-         (fg (cond
-              ((and fg-unspecified (eq bg-mode 'dark)) "gray80")
-              ((and fg-unspecified (eq bg-mode 'light)) "gray20")
-              (t (face-foreground 'default))))
-         (bg (cond
-              ((and bg-unspecified (eq bg-mode 'dark)) "gray20")
-              ((and bg-unspecified (eq bg-mode 'light)) "gray80")
-              (t (face-background 'default))))
-         ;; for light themes
-         (bg-dark (snails-color-blend black bg 0.1))
-         (bg-more-dark (snails-color-blend black bg 0.15))
-         (fg-dark (snails-color-blend fg bg-dark 0.7))
-         (fg-more-dark (snails-color-blend black fg 0.2))
-         ;; for dark themes
-         (bg-light (snails-color-blend white bg 0.05))
-         (bg-more-light (snails-color-blend white bg 0.1))
-         (fg-light (snails-color-blend fg bg 0.7))
-         (fg-more-light (snails-color-blend white fg 0.3)))
-    (cond
-     ((eq bg-mode 'dark)
-      (list bg-light fg-dark bg-more-light fg-more-light))
-     (t
-      (list bg-dark fg-light bg-more-dark fg-more-dark)
-      ))))
-
 (defun snails-init-face-with-theme ()
-  (let* ((colors (snails-get-theme-colors))
-         (content-bg-color (nth 0 colors))
-         (input-bg-color (nth 2 colors))
-         (input-fg-color (nth 3 colors)))
-    ;; Set select face.
-    (set-face-attribute 'snails-select-line-face nil
-                        :background (face-foreground 'default)
-                        :foreground (face-background 'default))
-    ;; Set input buffer face.
+  (let* ((bg-mode (frame-parameter nil 'background-mode))
+         (default-background-color (face-background 'default))
+         (default-foreground-color (face-foreground 'default))
+         input-buffer-color
+         content-buffer-color)
+    (cond ((eq bg-mode 'dark)
+           (setq input-buffer-color (snails-color-blend default-background-color "#000000" 0.9))
+           (setq content-buffer-color (snails-color-blend default-background-color "#000000" 0.8)))
+          ((eq bg-mode 'light)
+           (setq input-buffer-color (snails-color-blend default-background-color "#000000" 0.95))
+           (setq content-buffer-color (snails-color-blend default-background-color "#000000" 0.9))))
     (set-face-attribute 'snails-input-buffer-face nil
-                        :background content-bg-color
-                        :foreground input-fg-color)
-    ;; Set coent buffer face.
+                        :foreground default-foreground-color
+                        :background input-buffer-color)
+
     (set-face-attribute 'snails-content-buffer-face nil
-                        :background content-bg-color)
+                        :foreground default-foreground-color
+                        :background content-buffer-color)
+
+    (set-face-attribute 'snails-select-line-face nil
+                        :background default-foreground-color
+                        :foreground default-background-color)
     ))
 
 (defun snails-jump-to-next-item ()
