@@ -7,8 +7,8 @@
 ;; Maintainer: Andy Stewart <lazycat.manatee@gmail.com>
 ;; Copyright (C) 2019, Andy Stewart, all rights reserved.
 ;; Created: 2019-05-16 21:26:09
-;; Version: 6.9
-;; Last-Updated: 2020-02-27 20:03:37
+;; Version: 7.0
+;; Last-Updated: 2020-03-21 17:20:47
 ;;           By: Andy Stewart
 ;; URL: http://www.emacswiki.org/emacs/download/snails-core.el
 ;; Keywords:
@@ -67,6 +67,9 @@
 ;;
 
 ;;; Change log:
+;;
+;; 2020/03/21
+;;      * Make snails follow Emacs theme.
 ;;
 ;; 2020/02/27
 ;;      * Don't delete snails frame to improve performance.
@@ -237,7 +240,7 @@ need to set face attribute, such as foreground and background."
   :group 'snails)
 
 (defface snails-select-line-face
-  '((t (:inherit region)))
+  '((t))
   "Face for select line."
   :group 'snails)
 
@@ -940,9 +943,13 @@ influence of C1 on the result."
          (content-bg-color (nth 0 colors))
          (input-bg-color (nth 2 colors))
          (input-fg-color (nth 3 colors)))
+    ;; Set select face.
+    (set-face-attribute 'snails-select-line-face nil
+                        :background (face-foreground 'default)
+                        :foreground (face-background 'default))
     ;; Set input buffer face.
     (set-face-attribute 'snails-input-buffer-face nil
-                        :background input-bg-color
+                        :background content-bg-color
                         :foreground input-fg-color)
     ;; Set coent buffer face.
     (set-face-attribute 'snails-content-buffer-face nil
