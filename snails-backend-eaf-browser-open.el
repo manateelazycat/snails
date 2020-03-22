@@ -97,7 +97,7 @@
          (snails-add-candiate 'candidates (format "Open in browser: %s" input) input)))
      candidates))
 
- :candiate-do
+ :candidate-do
  (lambda (candidate)
    (eaf-open-browser candidate)))
 

@@ -98,11 +98,15 @@
               (string-equal input "")
               (snails-match-input-p input file))
          (setq filepath (concat current-directory file))
-         (snails-add-candiate 'candidates (snails-wrap-file-icon file) filepath)))
+         (snails-add-candiate 'candidates file filepath)))
      (snails-sort-candidates input candidates 1 1)
      candidates))
 
- :candiate-do
+ :candidate-icon
+ (lambda (candidate)
+   (snails-render-file-icon candidate))
+
+ :candidate-do
  (lambda (candidate)
    (find-file candidate)))
 

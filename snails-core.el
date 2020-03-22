@@ -336,6 +336,8 @@ If `fuz' library has load, set with `load'.")
     (define-key map (kbd "C-p") 'snails-select-prev-item)
     (define-key map (kbd "M-n") 'snails-select-next-item)
     (define-key map (kbd "M-p") 'snails-select-prev-item)
+    (define-key map (kbd "M-,") 'snails-select-next-item)
+    (define-key map (kbd "M-.") 'snails-select-prev-item)
     (define-key map (kbd "C-v") 'snails-select-next-backend)
     (define-key map (kbd "M-v") 'snails-select-prev-backend)
     (define-key map (kbd "M-j") 'snails-select-next-backend)
@@ -746,7 +748,8 @@ or set it with any string you want."
              header-index-start
              header-index-end
              candidate-content-start
-             candidate-content-end)
+             candidate-content-end
+             candidate-render-icon-func)
         ;; Render backend result.
         (dolist (candiate-list snails-candiate-list)
           ;; Just render backend result when return candidate is not nil.
@@ -773,10 +776,19 @@ or set it with any string you want."
             (forward-char)
             (setq effective-backend-index (+ effective-backend-index 1))
 
+            (setq candidate-render-icon-func (cdr (assoc "icon" (eval (nth candiate-index snails-backends)))))
+
+            ;; Trick: make icon have same indent.
+            (setq-local tab-width 1)
+
             ;; Render candidate list.
             (dolist (candiate candiate-list)
+              ;; Render candiate icon.
+              (when candidate-render-icon-func
+                (insert (format "%s\t" (funcall candidate-render-icon-func (nth 0 candiate)))))
+
               ;; Render candidate display name.
-              (insert (nth 0 candiate))
+              (insert (string-trim (nth 0 candiate)))
 
               ;; Render candidate real content. ;
               (setq candidate-content-start (point))
@@ -1034,33 +1046,29 @@ influence of C1 on the result."
   "Detect current line whether empty line."
   (= (point-at-eol) (point-at-bol)))
 
-(defun snails-wrap-buffer-icon (buf)
-  "Wrap display name with buffer icon, use for buffer search backend."
-  (if (featurep 'all-the-icons)
-      (format "%s %s"
-              (with-current-buffer buf
-                (all-the-icons-icon-for-buffer))
-              (string-trim-left (buffer-name buf)))
-    (buffer-name buf)))
+(defun snails-render-web-icon ()
+  (all-the-icons-faicon "html5"))
 
-(defun snails-wrap-file-icon (file)
-  "Wrap display name with file icon, use for file search backend."
+(defun snails-render-buffer-icon (buf)
+  "Render buffer icon."
   (if (featurep 'all-the-icons)
-      (format "%s %s"
-              (all-the-icons-icon-for-file file :height 1)
-              (string-trim-left file))
-    file))
+      (with-current-buffer buf
+        (if (derived-mode-p buf 'eaf-mode)
+            (all-the-icons-faicon "html5")
+          (all-the-icons-icon-for-buffer)))
+    ""))
 
-(defun snails-wrap-file-icon-with-candidate (file candidate &optional no-trim)
-  "Wrap display name with file icon, use for file search backend."
+(defun snails-render-file-icon (file)
+  "Render file icon."
   (if (featurep 'all-the-icons)
-      (format "%s %s"
-              (all-the-icons-icon-for-file (format "hello.%s" (file-name-extension file)) :height 1)
-              (if no-trim
-                  candidate
-                (string-trim-left candidate)
-                ))
-    candidate))
+      (all-the-icons-icon-for-file file :height 1)
+    ""))
+
+(defun snails-render-search-file-icon (file candidate &optional no-trim)
+  "Render search tools file icon."
+  (if (featurep 'all-the-icons)
+      (all-the-icons-icon-for-file (format "hello.%s" (file-name-extension file)) :height 1)
+    ""))
 
 (defun snails-format-line-number (line-number max-line-number)
   "Format line number with same width."
@@ -1323,7 +1331,7 @@ Otherwise return nil."
 
 (add-hook 'minibuffer-setup-hook 'snails-monitor-minibuffer-enter)
 
-(cl-defmacro snails-create-sync-backend (&rest args &key name candidate-filter candiate-do)
+(cl-defmacro snails-create-sync-backend (&rest args &key name candidate-filter candidate-icon candidate-do)
   "Macro to create sync backend code.
 
 `name' is backend name, such 'Foo Bar'.
@@ -1346,11 +1354,12 @@ Otherwise return nil."
        (setq ,backend-name
              '(("name" . ,name)
                ("search" . ,search-function)
-               ("do" . ,candiate-do)
+               ("icon" . ,candidate-icon)
+               ("do" . ,candidate-do)
                )
              ))))
 
-(cl-defmacro snails-create-async-backend (&rest args &key name build-command candidate-filter candiate-do)
+(cl-defmacro snails-create-async-backend (&rest args &key name build-command candidate-filter candidate-icon candidate-do)
   "Macro to create sync backend code.
 
 `name' is backend name, such 'Foo Bar'.
@@ -1377,7 +1386,8 @@ Otherwise return nil."
        (setq ,backend-name
              '(("name" . ,name)
                ("search" . ,search-function)
-               ("do" . ,candiate-do)
+               ("icon" . ,candidate-icon)
+               ("do" . ,candidate-do)
                )
              ))))
 

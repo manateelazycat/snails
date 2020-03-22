@@ -109,11 +109,15 @@
          (when (or
                 (string-equal input "")
                 (snails-match-input-p input file))
-           (snails-add-candiate 'candidates (snails-wrap-file-icon file) file))))
+           (snails-add-candiate 'candidates file file))))
      (snails-sort-candidates input candidates 1 1)
      candidates))
 
- :candiate-do
+ :candidate-icon
+ (lambda (candidate)
+   (snails-render-file-icon candidate))
+
+ :candidate-do
  (lambda (candidate)
    (let ((project-root (snails-backend-projectile-project-root)))
      (find-file (expand-file-name candidate project-root)))))

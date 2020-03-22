@@ -97,7 +97,7 @@
          (snails-add-candiate 'candidates (format "Search in browser: %s" input) input)))
      candidates))
 
- :candiate-do
+ :candidate-do
  (lambda (candidate)
    (eaf-search-it candidate)))
 

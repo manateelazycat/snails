@@ -109,15 +109,16 @@
  (lambda (candidate-list)
    (let (candidates)
      (dolist (candidate candidate-list)
-       (snails-add-candiate
-        'candidates
-        (snails-wrap-file-icon-with-candidate
-         (nth 0 (split-string candidate ":"))
-         (string-remove-prefix (or snails-project-root-dir "") candidate))
-        candidate))
+       (snails-add-candiate 'candidates candidate candidate))
      candidates))
 
- :candiate-do
+ :candidate-icon
+ (lambda (candidate)
+   (snails-render-search-file-icon
+    (nth 0 (split-string candidate ":"))
+    (string-remove-prefix (or snails-project-root-dir "") candidate)))
+
+ :candidate-do
  (lambda (candidate)
    (let ((file-info (split-string candidate ":")))
      (when (> (length file-info) 3)

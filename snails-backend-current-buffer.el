@@ -110,7 +110,7 @@
           candidate)))
      candidates))
 
- :candiate-do
+ :candidate-do
  (lambda (candidate)
    (let ((file-info (split-string candidate ":")))
      (when (> (length file-info) 2)

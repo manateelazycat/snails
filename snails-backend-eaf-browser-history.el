@@ -101,20 +101,23 @@
  :candidate-filter
  (lambda (candidate-list)
    (let ((candidate-index 1)
-         (format-string (concat (format "%%%sd" (+ (/ snails-backend-eaf-browser-history-limit 10) 1)) " %s %s"))
          candidates)
      (catch 'exceed-the-limit
        (dolist (candidate candidate-list)
          (when (string-match "^\\(.+\\)ᛝ\\(.+\\)ᛡ\\(.+\\)$" candidate)
            (snails-add-candiate 'candidates
-                                (format format-string candidate-index (match-string 1 candidate) (match-string 2 candidate))
+                                (format "%s %s" (match-string 1 candidate) (match-string 2 candidate))
                                 (match-string 2 candidate))
            (setq candidate-index (+ candidate-index 1))
            (when (> candidate-index snails-backend-eaf-browser-history-limit)
              (throw 'exceed-the-limit nil)))))
      candidates))
 
- :candiate-do
+ :candidate-icon
+ (lambda (candidate)
+   (snails-render-web-icon))
+
+ :candidate-do
  (lambda (candidate)
    (with-temp-buffer
      (insert candidate)

@@ -101,7 +101,7 @@
        (snails-add-candiate 'candidates candidate candidate))
      candidates))
 
- :candiate-do
+ :candidate-do
  (lambda (candidate)
    (eaf-search-it candidate)
    ))

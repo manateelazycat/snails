@@ -98,10 +98,14 @@
  (lambda (candidate-list)
    (let (candidates)
      (dolist (candidate candidate-list)
-       (snails-add-candiate 'candidates (snails-wrap-file-icon candidate) candidate))
+       (snails-add-candiate 'candidates candidate candidate))
      candidates))
 
- :candiate-do
+ :candidate-icon
+ (lambda (candidate)
+   (snails-render-file-icon candidate))
+
+ :candidate-do
  (lambda (candidate)
    (find-file candidate)))
 

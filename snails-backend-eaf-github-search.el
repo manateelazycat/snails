@@ -97,7 +97,7 @@
          (snails-add-candiate 'candidates (format "Search in github: %s" input) input)))
      candidates))
 
- :candiate-do
+ :candidate-do
  (lambda (candidate)
    (eaf-open (concat "https://github.com/search?type=Code&q=" candidate) "browser")
    ))

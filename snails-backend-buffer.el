@@ -118,12 +118,16 @@
                (string-equal input "")
                (snails-match-input-p input (buffer-name buf))
                ))
-         (snails-add-candiate 'candidates (snails-wrap-buffer-icon buf) (buffer-name buf))
+         (snails-add-candiate 'candidates (buffer-name buf) (buffer-name buf))
          ))
      (snails-sort-candidates input candidates 1 1)
      candidates))
 
- :candiate-do
+ :candidate-icon
+ (lambda (candidate)
+   (snails-render-buffer-icon candidate))
+
+ :candidate-do
  (lambda (candidate)
    (switch-to-buffer candidate)))
 

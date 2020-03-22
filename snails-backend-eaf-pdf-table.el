@@ -113,7 +113,7 @@
      candidates
      ))
 
- :candiate-do
+ :candidate-do
  (lambda (candidate)
    (eaf-call "handle_input_message"
              eaf--buffer-id
