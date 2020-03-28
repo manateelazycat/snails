@@ -7,8 +7,8 @@
 ;; Maintainer: Andy Stewart <lazycat.manatee@gmail.com>
 ;; Copyright (C) 2019, Andy Stewart, all rights reserved.
 ;; Created: 2019-05-16 21:26:09
-;; Version: 7.0
-;; Last-Updated: 2020-03-21 17:20:47
+;; Version: 7.1
+;; Last-Updated: 2020-03-28 09:01:49
 ;;           By: Andy Stewart
 ;; URL: http://www.emacswiki.org/emacs/download/snails-core.el
 ;; Keywords:
@@ -67,6 +67,9 @@
 ;;
 
 ;;; Change log:
+;;
+;; 2020/03/28
+;;      * Remap `hl-line' color with `snails-input-buffer-face', avoid two colors in input backgorund.
 ;;
 ;; 2020/03/21
 ;;      * Make snails follow Emacs theme.
@@ -500,8 +503,9 @@ or set it with any string you want."
     (run-hooks 'snails-mode-hook)
     ;; Set input buffer face.
     (buffer-face-set 'snails-input-buffer-face)
+    ;; Remap `hl-line' color with `snails-input-buffer-face', avoid two colors in input backgorund.
+    (face-remap-add-relative 'hl-line '(:background (face-background 'snails-input-buffer-face)))
     ;; Disable hl-line, header-line and mode-line in input buffer.
-    (setq-local global-hl-line-overlay nil)
     (setq-local header-line-format nil)
     (setq-local mode-line-format nil)
     ))
@@ -530,7 +534,6 @@ or set it with any string you want."
                      'snails-tips-prefix-backend-face)
         ))
     ;; Disable hl-line, header-line and cursor shape in tips buffer.
-    (setq-local global-hl-line-overlay nil)
     (setq-local header-line-format nil)
     (setq-local mode-line-format nil)
     (setq-local cursor-type nil)
