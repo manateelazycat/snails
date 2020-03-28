@@ -504,7 +504,7 @@ or set it with any string you want."
     ;; Set input buffer face.
     (buffer-face-set 'snails-input-buffer-face)
     ;; Remap `hl-line' color with `snails-input-buffer-face', avoid two colors in input backgorund.
-    (face-remap-add-relative 'hl-line '(:background (face-background 'snails-input-buffer-face)))
+    (face-remap-add-relative 'hl-line :background (face-background 'snails-input-buffer-face))
     ;; Disable hl-line, header-line and mode-line in input buffer.
     (setq-local header-line-format nil)
     (setq-local mode-line-format nil)
