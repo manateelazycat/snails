@@ -461,10 +461,9 @@ or set it with any string you want."
   "Confirm current candidate."
   (interactive)
   (let ((candidate-info (snails-candidate-get-info)))
-    (when candidate-info
-      (snails-backend-do
-       (nth 0 candidate-info)
-       (nth 1 candidate-info)))))
+    (if candidate-info
+        (snails-backend-do (nth 0 candidate-info) (nth 1 candidate-info))
+      (message "Nothing selected."))))
 
 (defun snails-kill ()
   (interactive)
@@ -1180,24 +1179,25 @@ And render result when subprocess finish search."
 
 (defun snails-candidate-get-info ()
   (with-current-buffer snails-content-buffer
-    ;; Goto candidate content overlay position.
-    (goto-char (overlay-start snails-select-line-overlay))
-    (end-of-line)
-    (backward-char)
+    (when (overlayp snails-select-line-overlay)
+      ;; Goto candidate content overlay position.
+      (goto-char (overlay-start snails-select-line-overlay))
+      (end-of-line)
+      (backward-char)
 
-    ;; Pickup candidate content and confirm by corresponding backend.
-    (let ((overlays (overlays-at (point))))
-      (catch 'candidate
-        (while overlays
-          (let ((overlay (car overlays)))
-            ;; Find overlay that face is `snails-candiate-content-face'.
-            (when (eq (overlay-get overlay 'face) 'snails-candiate-content-face)
-              (throw 'candidate
-                     (list
-                      (snails-get-candidate-backend-name (point))
-                      (buffer-substring (overlay-start overlay) (overlay-end overlay))))))
-          (setq overlays (cdr overlays))))
-      )))
+      ;; Pickup candidate content and confirm by corresponding backend.
+      (let ((overlays (overlays-at (point))))
+        (catch 'candidate
+          (while overlays
+            (let ((overlay (car overlays)))
+              ;; Find overlay that face is `snails-candiate-content-face'.
+              (when (eq (overlay-get overlay 'face) 'snails-candiate-content-face)
+                (throw 'candidate
+                       (list
+                        (snails-get-candidate-backend-name (point))
+                        (buffer-substring (overlay-start overlay) (overlay-end overlay))))))
+            (setq overlays (cdr overlays))))
+        ))))
 
 (defun snails-fuz-library-load-p ()
   "Test `fuz' libary is load."

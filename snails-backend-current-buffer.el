@@ -92,7 +92,7 @@
  (lambda (input)
    (let ((buffer-filename (buffer-file-name snails-start-buffer)))
      (when (and (executable-find "rg")
-                (> (length input) 5)
+                (> (length input) 3)
                 buffer-filename)
        (list "rg" "--no-heading" "--column" "--color" "never" "--max-columns" "300" input buffer-filename)
        )))
