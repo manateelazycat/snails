@@ -7,8 +7,8 @@
 ;; Maintainer: Andy Stewart <lazycat.manatee@gmail.com>
 ;; Copyright (C) 2019, Andy Stewart, all rights reserved.
 ;; Created: 2019-05-16 21:26:09
-;; Version: 7.1
-;; Last-Updated: 2020-03-28 09:01:49
+;; Version: 7.2
+;; Last-Updated: 2020-03-30 21:26:44
 ;;           By: Andy Stewart
 ;; URL: http://www.emacswiki.org/emacs/download/snails-core.el
 ;; Keywords:
@@ -67,6 +67,9 @@
 ;;
 
 ;;; Change log:
+;;
+;; 2020/03/30
+;;      * Add `snails-focus-init-frame' fix Mac focus problem.
 ;;
 ;; 2020/03/28
 ;;      * Remap `hl-line' color with `snails-input-buffer-face', avoid two colors in input backgorund.
@@ -272,6 +275,9 @@ need to set face attribute, such as foreground and background."
   "Face for tips backend name."
   :group 'snails)
 
+(defvar snails-init-frame nil
+  "The frame before snails start, use for focus after snails hide.")
+
 (defvar snails-input-buffer " *snails input*"
   "The buffer name of search input buffer.")
 
@@ -473,7 +479,10 @@ or set it with any string you want."
 (defun snails-kill ()
   (interactive)
   (delete-frame snails-frame t)
-  (setq snails-frame nil))
+  (setq snails-frame nil)
+
+  ;; Focus init frame.
+  (snails-focus-init-frame))
 
 (defun snails-quit ()
   "Quit snails."
@@ -495,7 +504,15 @@ or set it with any string you want."
      (when (and process
                 (process-live-p process))
        (kill-process process)))
-   snails-backend-subprocess-hash))
+   snails-backend-subprocess-hash)
+
+  ;; Focus init frame.
+  (snails-focus-init-frame))
+
+(defun snails-focus-init-frame ()
+  (when snails-init-frame
+    (select-frame snails-init-frame)
+    ))
 
 (defun snails-create-input-buffer ()
   "Create input buffer."
@@ -570,6 +587,10 @@ or set it with any string you want."
 
 (defun snails-create-frame ()
   "Create popup frame."
+  ;; Record frame before snails start.
+  (setq snails-init-frame (selected-frame))
+
+  ;; Create snails frame.
   (let* ((edges (frame-edges))
          (x (nth 0 edges))
          (y (nth 1 edges))
