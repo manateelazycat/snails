@@ -91,8 +91,12 @@
  (lambda (input)
    (when (and (executable-find "curl")
               (> (length input) 3))
-     (list (concat (file-name-directory (locate-library "snails")) "google-suggestion.sh")
-           (replace-regexp-in-string "\\s-+" "%20" input))))
+     (if (memq system-type '(windows-nt ms-dos))
+         (list  "powershell.exe" "-ExecutionPolicy" "unrestricted"
+                (concat (file-name-directory (locate-library "snails")) "google-suggestion.ps1")
+                (replace-regexp-in-string "\\s-+" "%20" input))
+       (list (concat (file-name-directory (locate-library "snails")) "google-suggestion.sh")
+             (replace-regexp-in-string "\\s-+" "%20" input)))))
 
  :candidate-filter
  (lambda (candidate-list)
