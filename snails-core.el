@@ -248,12 +248,12 @@ need to set face attribute, such as foreground and background."
   :group 'snails)
 
 (defface snails-input-buffer-face
-  '((t))
+  '((t (:height 250)))
   "Face for input area."
   :group 'snails)
 
 (defface snails-content-buffer-face
-  '((t))
+  '((t (:height 140)))
   "Face for content area."
   :group 'snails)
 
@@ -263,7 +263,7 @@ need to set face attribute, such as foreground and background."
   :group 'snails)
 
 (defface snails-tips-prefix-backend-face
-  '((t))
+  '((t (:height 140)))
   "Face for tips backend name."
   :group 'snails)
 
