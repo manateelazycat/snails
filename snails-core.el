@@ -248,12 +248,12 @@ need to set face attribute, such as foreground and background."
   :group 'snails)
 
 (defface snails-input-buffer-face
-  '((t (:height 250)))
+  '((t))
   "Face for input area."
   :group 'snails)
 
 (defface snails-content-buffer-face
-  '((t (:height 140)))
+  '((t))
   "Face for content area."
   :group 'snails)
 
@@ -263,7 +263,7 @@ need to set face attribute, such as foreground and background."
   :group 'snails)
 
 (defface snails-tips-prefix-backend-face
-  '((t (:height 140)))
+  '((t))
   "Face for tips backend name."
   :group 'snails)
 
@@ -502,6 +502,8 @@ or set it with any string you want."
     (run-hooks 'snails-mode-hook)
     ;; Set input buffer face.
     (buffer-face-set 'snails-input-buffer-face)
+    ;; Increate input buffer size, this need set for Emacs 28.
+    (text-scale-increase 1.25)
     ;; Remap `hl-line' color with `snails-input-buffer-face', avoid two colors in input backgorund.
     (face-remap-add-relative 'hl-line :background (face-background 'snails-input-buffer-face))
     ;; Disable hl-line, header-line and mode-line in input buffer.
