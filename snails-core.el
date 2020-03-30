@@ -224,6 +224,11 @@
   :type 'cons
   :group 'snails)
 
+(defcustom snails-input-buffer-text-scale 1.25
+  "The font scale of input buffer."
+  :type 'float
+  :group 'snails)
+
 (defface snails-header-line-face
   '((t (:inherit font-lock-function-name-face :underline t :height 1.3)))
   "Face for header line"
@@ -503,7 +508,7 @@ or set it with any string you want."
     ;; Set input buffer face.
     (buffer-face-set 'snails-input-buffer-face)
     ;; Increate input buffer size, this need set for Emacs 28.
-    (text-scale-increase 1.25)
+    (text-scale-increase snails-input-buffer-text-scale)
     ;; Remap `hl-line' color with `snails-input-buffer-face', avoid two colors in input backgorund.
     (face-remap-add-relative 'hl-line :background (face-background 'snails-input-buffer-face))
     ;; Disable hl-line, header-line and mode-line in input buffer.
