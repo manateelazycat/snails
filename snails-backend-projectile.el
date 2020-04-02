@@ -110,8 +110,7 @@
                 (string-equal input "")
                 (snails-match-input-p input file))
            (snails-add-candiate 'candidates file file))))
-     (snails-sort-candidates input candidates 1 1)
-     candidates))
+     (snails-sort-candidates input candidates 1 1)))
 
  :candidate-icon
  (lambda (candidate)

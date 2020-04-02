@@ -1269,13 +1269,14 @@ If `fuz' library not found, not sorting.
         (when (string-match-p fuzzy-re (nth match-index (car candidates)))
           (push (pop candidates) retval)))
 
-      (cl-sort (mapcar (lambda (it)
-                         (cons it (fuz-calc-score-skim input (nth match-index it))))
-                       retval)
-               (pcase-lambda (`(,candidate1 . ,fuzz-score1) `(,candidate2 . ,fuzz-score2))
-                 (if (equal fuzz-score1 fuzz-score2)
-                     (string> (nth content-index candidate1) (nth content-index candidate2))
-                   (< fuzz-score1 fuzz-score2)))))))
+      (mapcar #'car
+            (cl-sort (mapcar (lambda (it)
+                                      (cons it (fuz-calc-score-skim input (nth match-index it))))
+                                    retval)
+                            (pcase-lambda (`(,candidate1 . ,fuzz-score1) `(,candidate2 . ,fuzz-score2))
+                              (if (equal fuzz-score1 fuzz-score2)
+                                  (string> (nth content-index candidate1) (nth content-index candidate2))
+                                (> fuzz-score1 fuzz-score2))))))))
 
 (defun snails-match-input-p (input candidate-content)
   "If `fuz' library load, use fuzz match algorithm.
