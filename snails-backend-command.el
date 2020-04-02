@@ -124,8 +124,7 @@
            (when (> (length candidates) snails-backend-command-filter-number)
              (throw 'search-end nil))
            )))
-     (snails-sort-candidates input candidates 0 0)
-     candidates))
+     (snails-sort-candidates input candidates 0 0)))
 
  :candidate-do
  (lambda (candidate)

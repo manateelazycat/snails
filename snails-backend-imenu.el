@@ -148,8 +148,7 @@
                               (car imenu-item)
                               (number-to-string (marker-position (cdr imenu-item))))))
 
-     (snails-sort-candidates input candidates 0 0)
-     candidates))
+     (snails-sort-candidates input candidates 0 0)))
 
  :candidate-do
  (lambda (candidate)

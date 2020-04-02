@@ -99,8 +99,7 @@
               (snails-match-input-p input file))
          (setq filepath (concat current-directory file))
          (snails-add-candiate 'candidates file filepath)))
-     (snails-sort-candidates input candidates 1 1)
-     candidates))
+     (snails-sort-candidates input candidates 1 1)))
 
  :candidate-icon
  (lambda (candidate)
