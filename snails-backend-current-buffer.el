@@ -96,6 +96,10 @@
                 buffer-filename)
        (setq input (replace-regexp-in-string " " ".*" input))
 
+       (when (memq system-type '(cygwin windows-nt ms-dos))
+         (setq input (encode-coding-string input locale-coding-system))
+         (setq buffer-filename (encode-coding-string buffer-filename locale-coding-system)))
+
        (list "rg" "--no-heading" "--column" "--color" "never" "--max-columns" "300" input buffer-filename)
        )))
 

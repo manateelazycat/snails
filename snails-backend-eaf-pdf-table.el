@@ -109,9 +109,7 @@
                                       (buffer-substring (point-at-bol) (point-at-eol))
                                       (buffer-substring (point-at-bol) (point))))
                (forward-line 1))))))
-     (snails-sort-candidates input candidates 0 0)
-     candidates
-     ))
+     (snails-sort-candidates input candidates 0 0)))
 
  :candidate-do
  (lambda (candidate)

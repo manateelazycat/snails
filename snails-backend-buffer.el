@@ -120,8 +120,7 @@
                ))
          (snails-add-candiate 'candidates (buffer-name buf) (buffer-name buf))
          ))
-     (snails-sort-candidates input candidates 1 1)
-     candidates))
+     (snails-sort-candidates input candidates 1 1)))
 
  :candidate-icon
  (lambda (candidate)
