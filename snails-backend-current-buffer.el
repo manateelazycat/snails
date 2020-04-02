@@ -94,6 +94,8 @@
      (when (and (executable-find "rg")
                 (> (length input) 3)
                 buffer-filename)
+       (setq input (replace-regexp-in-string " " ".*" input))
+
        (list "rg" "--no-heading" "--column" "--color" "never" "--max-columns" "300" input buffer-filename)
        )))
 
