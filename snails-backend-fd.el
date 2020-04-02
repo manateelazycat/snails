@@ -100,6 +100,10 @@
          (setq search-dir (first search-info))
          (setq search-input (second search-info)))
 
+       (when (memq system-type '(cygwin windows-nt ms-dos))
+         (setq search-input (encode-coding-string search-input 'gbk))
+         (setq search-dir (encode-coding-string search-dir 'gbk)))
+
        (list "fd" "-c" "never" "-a" "-tf" search-input "--search-path" search-dir))
      ))
 

@@ -100,6 +100,10 @@
          (setq search-dir (first search-info))
          (setq search-input (second search-info)))
 
+       (when (memq system-type '(cygwin windows-nt ms-dos))
+         (setq search-input (encode-coding-string search-input 'gbk))
+         (setq search-dir (encode-coding-string search-dir 'gbk)))
+
        ;; Search.
        (when search-dir
          (list "rg" "--no-heading" "--column" "--color" "never" "--max-columns" "300" search-input search-dir)
