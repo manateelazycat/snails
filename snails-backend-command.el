@@ -92,7 +92,9 @@
     (mapatoms (lambda (s) (when (commandp s) (push (symbol-name s) cmds))))
     (setq snails-backend-command-list cmds)))
 
-(snails-backend-command-get-commands)
+(add-hook 'after-init-hook 'snails-backend-command-get-commands)
+
+(run-with-idle-timer 2 nil 'snails-backend-command-get-commands)
 
 (run-with-idle-timer 60 t 'snails-backend-command-get-commands)
 
