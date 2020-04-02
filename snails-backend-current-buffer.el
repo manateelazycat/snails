@@ -94,6 +94,7 @@
      (when (and (executable-find "rg")
                 (> (length input) 3)
                 buffer-filename)
+       (setq input (replace-regexp-in-string " " ".*" input))
 
        (when (memq system-type '(cygwin windows-nt ms-dos))
          (setq input (encode-coding-string input locale-coding-system))
