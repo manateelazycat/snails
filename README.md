@@ -79,6 +79,7 @@ When you customize the search backends, snails won't filter search result with i
 | snails-backend-fd                  | Use fd search files in current project, need install ```fd```                                                                             |
 | snails-backend-mdfind              | Use mdfind search files in local disk, only Mac                                                                                           |
 | snails-backend-everything          | Use everything search files in local disk, only Windows, need install ```everything```                                                    |
+| snails-backend-fasd                | Use fasd to search most visit directory , need install ```fasd```                                                                         |
 | snails-backend-command             | Search command                                                                                                                            |
 | snails-backend-eaf-pdf-table       | Search table of contents of PDF file, united [EAF](https://github.com/manateelazycat/emacs-application-framework) technology              |
 | snails-backend-eaf-browser-history | Search history of browser, united [EAF](https://github.com/manateelazycat/emacs-application-framework) technology, need install ```fzf``` |
