@@ -1048,10 +1048,12 @@ influence of C1 on the result."
           ;; Quit frame first.
           (snails-quit)
 
-          ;; Call backend do function.
-          ;; Use `with-selected-frame' make sure command execute in root frame.
-          (with-selected-frame snails-init-frame
-            (funcall do-func candidate))
+          ;; Switch to init frame.
+          (select-frame snails-init-frame)
+
+          ;; Do.
+          (funcall do-func candidate)
+
           (throw 'backend-do nil)
           )))))
 
