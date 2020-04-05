@@ -1,17 +1,17 @@
-;;; snails.el --- A modern, easy-to-expand fuzzy search framework
+;;; snails-extensions.el --- Extensions function for snails.
 
-;; Filename: snails.el
-;; Description: A modern, easy-to-expand fuzzy search framework
+;; Filename: snails-extensions.el
+;; Description: Extensions function for snails.
 ;; Author: Andy Stewart <lazycat.manatee@gmail.com>
 ;; Maintainer: Andy Stewart <lazycat.manatee@gmail.com>
-;; Copyright (C) 2019, Andy Stewart, all rights reserved.
-;; Created: 2019-07-20 01:21:07
+;; Copyright (C) 2020, Andy Stewart, all rights reserved.
+;; Created: 2020-04-05 15:24:41
 ;; Version: 0.1
-;; Last-Updated: 2019-07-20 01:21:07
+;; Last-Updated: 2020-04-05 15:24:41
 ;;           By: Andy Stewart
-;; URL: http://www.emacswiki.org/emacs/download/snails.el
+;; URL: http://www.emacswiki.org/emacs/download/snails-extensions.el
 ;; Keywords:
-;; Compatibility: GNU Emacs 26.2
+;; Compatibility: GNU Emacs 28.0.50
 ;;
 ;; Features that might be required by this library:
 ;;
@@ -39,19 +39,19 @@
 
 ;;; Commentary:
 ;;
-;; A modern, easy-to-expand fuzzy search framework
+;; Extensions function for snails.
 ;;
 
 ;;; Installation:
 ;;
-;; Put snails.el to your load-path.
+;; Put snails-extensions.el to your load-path.
 ;; The load-path is usually ~/elisp/.
 ;; It's set in your ~/.emacs like this:
 ;; (add-to-list 'load-path (expand-file-name "~/elisp"))
 ;;
 ;; And the following to your ~/.emacs startup file.
 ;;
-;; (require 'snails)
+;; (require 'snails-extensions)
 ;;
 ;; No need more.
 
@@ -60,12 +60,12 @@
 ;;
 ;;
 ;; All of the above can customize by:
-;;      M-x customize-group RET snails RET
+;;      M-x customize-group RET snails-extensions RET
 ;;
 
 ;;; Change log:
 ;;
-;; 2019/07/20
+;; 2020/04/05
 ;;      * First released.
 ;;
 
@@ -81,27 +81,24 @@
 
 ;;; Require
 (require 'snails-core)
-(require 'snails-extensions)
-(require 'snails-backend-buffer)
-(require 'snails-backend-current-buffer)
-(require 'snails-backend-recentf)
-(require 'snails-backend-awesome-tab-group)
-(require 'snails-backend-fd)
-(require 'snails-backend-mdfind)
-(require 'snails-backend-imenu)
-(require 'snails-backend-command)
-(require 'snails-backend-bookmark)
-(require 'snails-backend-rg)
-(require 'snails-backend-everything)
-(require 'snails-backend-projectile)
-(require 'snails-backend-directory-files)
-(require 'snails-backend-eaf-pdf-table)
-(require 'snails-backend-eaf-browser-history)
-(require 'snails-backend-eaf-browser-open)
-(require 'snails-backend-eaf-browser-search)
-(require 'snails-backend-eaf-github-search)
-(require 'snails-backend-google-suggestion)
-(require 'snails-backend-fasd)
 
-(provide 'snails)
-;;; snails.el ends here
+;;; Code:
+
+(defun snails-candiate-alternate-do ()
+  "Alternate do for current candidate."
+  (interactive)
+  (let ((candidate-info (snails-candidate-get-info)))
+    (if candidate-info
+        (let ((backend-name (nth 0 candidate-info))
+              (candidate (nth 1 candidate-info)))
+          (snails-quit)
+          (with-selected-frame snails-init-frame
+            (cond ((string-equal backend-name "EAF-BROWSER-HISTORY")
+                   (eaf-open-browser (url-host (url-generic-parse-url candidate)))))))
+      (message "Nothing selected."))))
+
+(define-key snails-mode-map (kbd "C-j") 'snails-candiate-alternate-do)
+
+(provide 'snails-extensions)
+
+;;; snails-extensions.el ends here

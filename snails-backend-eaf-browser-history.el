@@ -119,10 +119,7 @@
 
  :candidate-do
  (lambda (candidate)
-   (with-temp-buffer
-     (insert candidate)
-     (beginning-of-buffer)
-     (eaf-open-browser candidate))))
+   (eaf-open-browser candidate)))
 
 (provide 'snails-backend-eaf-browser-history)
 

@@ -1050,7 +1050,7 @@ influence of C1 on the result."
 
           ;; Call backend do function.
           ;; Use `with-selected-frame' make sure command execute in root frame.
-          (with-selected-frame (car (last (frame-list)))
+          (with-selected-frame snails-init-frame
             (funcall do-func candidate))
           (throw 'backend-do nil)
           )))))
@@ -1270,13 +1270,13 @@ If `fuz' library not found, not sorting.
           (push (pop candidates) retval)))
 
       (mapcar #'car
-            (cl-sort (mapcar (lambda (it)
-                                      (cons it (fuz-calc-score-skim input (nth match-index it))))
-                                    retval)
-                            (pcase-lambda (`(,candidate1 . ,fuzz-score1) `(,candidate2 . ,fuzz-score2))
-                              (if (equal fuzz-score1 fuzz-score2)
-                                  (string> (nth content-index candidate1) (nth content-index candidate2))
-                                (> fuzz-score1 fuzz-score2))))))))
+              (cl-sort (mapcar (lambda (it)
+                                 (cons it (fuz-calc-score-skim input (nth match-index it))))
+                               retval)
+                       (pcase-lambda (`(,candidate1 . ,fuzz-score1) `(,candidate2 . ,fuzz-score2))
+                         (if (equal fuzz-score1 fuzz-score2)
+                             (string> (nth content-index candidate1) (nth content-index candidate2))
+                           (> fuzz-score1 fuzz-score2))))))))
 
 (defun snails-match-input-p (input candidate-content)
   "If `fuz' library load, use fuzz match algorithm.
