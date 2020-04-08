@@ -101,7 +101,7 @@
            (setq input "")
          (setq input (file-name-base absolute-path))))
 
-     (dolist (file (cddr (directory-files current-directory)))
+     (dolist (file (directory-files current-directory nil  "^\\([^.]\\|\\.[^.]\\|\\.\\..\\)"))
        (when (or
               (string-equal input "")
               (snails-match-input-p input file))
