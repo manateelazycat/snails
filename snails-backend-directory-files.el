@@ -90,10 +90,18 @@
 
  :candidate-filter
  (lambda (input)
-   (let ((current-directory (snails-start-buffer-dir))
-         filepath
-         candidates)
-     (dolist (file (cddr (directory-files current-directory)))
+   (let* ((current-directory (snails-start-buffer-dir))
+          (absolute-path current-directory)
+          filepath
+          candidates)
+     (when (string-match-p "/" input)
+       (setq absolute-path (expand-file-name input absolute-path)
+             current-directory (file-name-directory absolute-path))
+       (if (directory-name-p input)
+           (setq input "")
+         (setq input (file-name-base absolute-path))))
+
+     (dolist (file (directory-files current-directory nil  "^\\([^.]\\|\\.[^.]\\|\\.\\..\\)"))
        (when (or
               (string-equal input "")
               (snails-match-input-p input file))

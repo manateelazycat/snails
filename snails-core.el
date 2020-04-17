@@ -410,6 +410,8 @@ or set it with any string you want."
          ;; Search with customize string when `search-object' is string.
          ((and (stringp search-object)
                (not (string-empty-p search-object)))
+          (with-current-buffer snails-input-buffer
+            (insert search-object))
           (snails-search search-object))
          ;; Search symbol around point when `search-object' is t.
          (search-object
