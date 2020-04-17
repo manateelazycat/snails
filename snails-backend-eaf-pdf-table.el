@@ -94,20 +94,20 @@
        (when (and (featurep 'eaf)
                   (derived-mode-p 'eaf-mode)
                   (string-equal eaf--buffer-app-name "pdf-viewer"))
-         (let ((pdf-table-file-path (eaf-call "call_function" eaf--buffer-id "get_table_file")))
+         (let ((toc (eaf-call "call_function" eaf--buffer-id "get_toc")))
            (with-temp-buffer
-             (insert-file-contents pdf-table-file-path)
+             (insert toc)
              (beginning-of-buffer)
 
              (while (not (eobp))
-               (beginning-of-line)
-               (forward-word 1)
+               (end-of-line)
+               (backward-word 1)
                (when (or
                       (string-equal input "")
                       (snails-match-input-p input (buffer-substring (point-at-bol) (point-at-eol))))
                  (snails-add-candiate 'candidates
                                       (buffer-substring (point-at-bol) (point-at-eol))
-                                      (buffer-substring (point-at-bol) (point))))
+                                      (buffer-substring (point) (point-at-eol))))
                (forward-line 1))))))
      candidates))
 
