@@ -1264,23 +1264,24 @@ If `fuz' library not found, not sorting.
 `candidates' is candidate list need sort.
 `match-index' is index to fetch match part from candiate, use for calculate sort score.
 `content-index' is index to content part from candiate, use for compare content when fuzz score is same."
-  (when (and (snails-fuz-library-load-p)
-             candidates)
-    (let ((fuzzy-re (snails-build-fuzzy-regex input))
-          retval)
+  (if (and (snails-fuz-library-load-p)
+           candidates)
+      (let ((fuzzy-re (snails-build-fuzzy-regex input))
+            retval)
 
-      (while candidates
-        (when (string-match-p fuzzy-re (nth match-index (car candidates)))
-          (push (pop candidates) retval)))
+        (while candidates
+          (when (string-match-p fuzzy-re (nth match-index (car candidates)))
+            (push (pop candidates) retval)))
 
-      (mapcar #'car
-              (cl-sort (mapcar (lambda (it)
-                                 (cons it (fuz-calc-score-skim input (nth match-index it))))
-                               retval)
-                       (pcase-lambda (`(,candidate1 . ,fuzz-score1) `(,candidate2 . ,fuzz-score2))
-                         (if (equal fuzz-score1 fuzz-score2)
-                             (string> (nth content-index candidate1) (nth content-index candidate2))
-                           (> fuzz-score1 fuzz-score2))))))))
+        (mapcar #'car
+                (cl-sort (mapcar (lambda (it)
+                                   (cons it (fuz-calc-score-skim input (nth match-index it))))
+                                 retval)
+                         (pcase-lambda (`(,candidate1 . ,fuzz-score1) `(,candidate2 . ,fuzz-score2))
+                           (if (equal fuzz-score1 fuzz-score2)
+                               (string> (nth content-index candidate1) (nth content-index candidate2))
+                             (> fuzz-score1 fuzz-score2))))))
+    candidates))
 
 (defun snails-match-input-p (input candidate-content)
   "If `fuz' library load, use fuzz match algorithm.
