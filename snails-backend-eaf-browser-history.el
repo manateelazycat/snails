@@ -93,7 +93,7 @@
  (lambda (input)
    (when (and (ignore-errors (require 'eaf))
               (executable-find "fzf")
-              (> (length input) 3))
+              (> (length input) 1))
      (list (concat (file-name-directory (locate-library "snails")) "fzf-search.sh")
            (concat eaf-config-location (file-name-as-directory "browser") (file-name-as-directory "history") "log.txt")
            input)))
