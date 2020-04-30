@@ -232,6 +232,11 @@
   :type 'float
   :group 'snails)
 
+(defcustom snails-need-render-candidate-icon t
+  "If non nil try render candidate icon."
+  :type 'boolean
+  :group 'snails)
+
 (defface snails-header-line-face
   '((t (:inherit font-lock-function-name-face :underline t :height 1.3)))
   "Face for header line"
@@ -781,7 +786,7 @@ or set it with any string you want."
              header-index-end
              candidate-content-start
              candidate-content-end
-             candidate-render-icon-func)
+             (candidate-render-icon-func snails-need-render-candidate-icon))
         ;; Render backend result.
         (dolist (candiate-list snails-candiate-list)
           ;; Just render backend result when return candidate is not nil.
@@ -808,7 +813,8 @@ or set it with any string you want."
             (forward-char)
             (setq effective-backend-index (+ effective-backend-index 1))
 
-            (setq candidate-render-icon-func (cdr (assoc "icon" (eval (nth candiate-index snails-backends)))))
+            (setq candidate-render-icon-func (if candidate-render-icon-func
+                                                 (cdr (assoc "icon" (eval (nth candiate-index snails-backends))))))
 
             ;; Trick: make icon have same indent.
             (setq-local tab-width 1)
@@ -897,7 +903,7 @@ or set it with any string you want."
            (current-symbol (if (or (string-empty-p current-string)
                                    (string-match-p "[[:space:]]" current-string))
                                ;; Get symbol around point if string around point is empty or include spaces.
-                               (thing-at-point 'symbol)
+                               (thing-at-point 'symbol t)
                              ;; Otherwise, get string around point.
                              current-string)))
       (cond ((string-prefix-p "." current-symbol)
@@ -1081,7 +1087,9 @@ influence of C1 on the result."
   (= (point-at-eol) (point-at-bol)))
 
 (defun snails-render-web-icon ()
-  (all-the-icons-faicon "html5"))
+  (if (featurep 'all-the-icons)
+      (all-the-icons-faicon "html5"))
+  "")
 
 (defun snails-render-buffer-icon (buf)
   "Render buffer icon."
