@@ -385,7 +385,8 @@ or set it with any string you want."
 
         ;; Set `snails-search-backends' if argument backends is set.
         (when (and (listp backends)
-                   (> (length backends) 0))
+                   (> (length backends) 0)
+                   (cl-subsetp backends snails-default-backends))
           (setq snails-search-backends backends))
 
         ;; Record buffer before start snails.
