@@ -211,19 +211,17 @@
   :type 'integer
   :group 'snails)
 
-(defcustom snails-default-backends
-  '(snails-backend-awesome-tab-group snails-backend-buffer snails-backend-eaf-pdf-table snails-backend-eaf-browser-history snails-backend-eaf-browser-open snails-backend-eaf-browser-search snails-backend-eaf-github-search snails-backend-google-suggestion snails-backend-recentf snails-backend-directory-files snails-backend-bookmark)
-  "The default backend"
+(defcustom snails-default-backends '()
+  "The default backend.
+when use macro to create new backend,
+it will automatically register to default backends."
   :type 'cons
   :group 'snails)
 
-(defcustom snails-prefix-backends
-  '((">" '(snails-backend-command))
-    ("@" '(snails-backend-imenu))
-    ("#" '(snails-backend-current-buffer))
-    ("!" '(snails-backend-rg))
-    ("?" '(snails-backend-projectile snails-backend-fd snails-backend-mdfind snails-backend-everything)))
-  "The prefix/backends pair."
+(defcustom snails-prefix-backends '()
+  "The prefix/backends pair.
+when use macro to create new backend and new backend has prefix defined,
+it will automatically register prefix."
   :type 'cons
   :group 'snails)
 
@@ -1368,16 +1366,18 @@ Otherwise return nil."
 
 (add-hook 'minibuffer-setup-hook 'snails-monitor-minibuffer-enter)
 
-(cl-defmacro snails-create-sync-backend (&rest args &key name candidate-filter candidate-icon candidate-do)
+(cl-defmacro snails-create-sync-backend (&rest args &key name prefix candidate-filter candidate-icon candidate-do)
   "Macro to create sync backend code.
 
 `name' is backend name, such 'Foo Bar'.
+`prefix' is backend prefix symbol, suck as '> # @'
 `candidate-filter' is function that accpet input string, and return candidate list, example format: ((display-name-1 candidate-1) (display-name-2 candidate-2))
 `candidate-do-function' is function that confirm candidate, accpet candidate search, and do anything you want.
 "
   (let* ((backend-template-name (string-join (split-string (downcase name)) "-"))
          (backend-name (intern (format "snails-backend-%s" backend-template-name)))
-         (search-function (intern (format "snails-backend-%s-search" backend-template-name))))
+         (search-function (intern (format "snails-backend-%s-search" backend-template-name)))
+         (old-prefix (assoc prefix snails-prefix-backends)))
     `(progn
        (defun ,search-function(input input-ticker update-callback)
          (funcall
@@ -1387,25 +1387,52 @@ Otherwise return nil."
           (funcall ,candidate-filter input)))
 
        (defvar ,backend-name nil)
-
        (setq ,backend-name
              '(("name" . ,name)
                ("search" . ,search-function)
                ("icon" . ,candidate-icon)
                ("do" . ,candidate-do)
                )
-             ))))
+             )
 
-(cl-defmacro snails-create-async-backend (&rest args &key name build-command candidate-filter candidate-icon candidate-do)
+       (add-to-list 'snails-default-backends ',backend-name)
+
+       ;; update `snails-prefix-backends'
+       (cond
+        ;; if prefix not `nil' and is taken, add backend to old prefix/backends list
+        ((and ,prefix
+              ',old-prefix)
+         (let* ((prefix ,prefix)
+                (backends-with-prefix (list ',backend-name)))
+           ;; add new backends to old prefix/backends pair
+           (dolist (each-prefix (cadr (cadr ',old-prefix)))
+             (push each-prefix backends-with-prefix))
+           (setq backends-with-prefix `(,prefix ',backends-with-prefix))
+
+           ;; delete old prefix/backends pair and add new one
+           (setq snails-prefix-backends (delete ',old-prefix snails-prefix-backends))
+           (add-to-list 'snails-prefix-backends backends-with-prefix)))
+        ;; if prefix is not taken and not `nil', just add it
+        ((not (null ,prefix))
+         (add-to-list 'snails-prefix-backends
+                      '(,prefix
+                        '(,backend-name))))
+        ;; done nothing if prefix is `nil'
+        )
+       )))
+
+(cl-defmacro snails-create-async-backend (&rest args &key name prefix build-command candidate-filter candidate-icon candidate-do)
   "Macro to create sync backend code.
 
 `name' is backend name, such 'Foo Bar'.
+`prefix' is backend prefix symbol, suck as '> # @'
 `candidate-filter' is function that accpet input string, and return candidate list, example format: ((display-name-1 candidate-1) (display-name-2 candidate-2))
 `candidate-do-function' is function that confirm candidate, accpet candidate search, and do anything you want.
 "
   (let* ((backend-template-name (string-join (split-string (downcase name)) "-"))
          (backend-name (intern (format "snails-backend-%s" backend-template-name)))
-         (search-function (intern (format "snails-backend-%s-search" backend-template-name))))
+         (search-function (intern (format "snails-backend-%s-search" backend-template-name)))
+         (old-prefix (assoc prefix snails-prefix-backends)))
     `(progn
        (defun ,search-function(input input-ticker update-callback)
          (funcall
@@ -1426,7 +1453,33 @@ Otherwise return nil."
                ("icon" . ,candidate-icon)
                ("do" . ,candidate-do)
                )
-             ))))
+             )
+
+       (add-to-list 'snails-default-backends ',backend-name)
+
+       ;; update `snails-prefix-backends'
+       (cond
+        ;; if prefix not `nil' and is taken, add backend to old prefix/backends list
+        ((and ,prefix
+              ',old-prefix)
+         (let* ((prefix ,prefix)
+                (backends-with-prefix (list ',backend-name)))
+           ;; add new backends to old prefix/backends pair
+           (dolist (each-prefix (cadr (cadr ',old-prefix)))
+             (push each-prefix backends-with-prefix))
+           (setq backends-with-prefix `(,prefix ',backends-with-prefix))
+
+           ;; delete old prefix/backends pair and add new one
+           (setq snails-prefix-backends (delete ',old-prefix snails-prefix-backends))
+           (add-to-list 'snails-prefix-backends backends-with-prefix)))
+        ;; if prefix is not taken and not `nil', just add it
+        ((not (null ,prefix))
+         (add-to-list 'snails-prefix-backends
+                      '(,prefix
+                        '(,backend-name))))
+        ;; done nothing if prefix is `nil'
+        )
+       )))
 
 (provide 'snails-core)
 

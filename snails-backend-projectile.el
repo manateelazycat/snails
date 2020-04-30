@@ -100,6 +100,9 @@
  :name
  "PROJECTILE"
 
+ :prefix
+ "?"
+
  :candidate-filter
  (lambda (input)
    (let ((candidates)

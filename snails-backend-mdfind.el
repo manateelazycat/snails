@@ -88,6 +88,9 @@
  :name
  "MDFIND"
 
+ :prefix
+ "?"
+
  :build-command
  (lambda (input)
    (when (and (featurep 'cocoa)

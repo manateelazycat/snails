@@ -111,6 +111,9 @@
  :name
  "COMMAND"
 
+ :prefix
+ ">"
+
  :candidate-filter
  (lambda (input)
    (let (candidates)

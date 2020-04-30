@@ -88,6 +88,9 @@
  :name
  "FD"
 
+ :prefix
+ "?"
+
  :build-command
  (lambda (input)
    (when (and (executable-find "fd")

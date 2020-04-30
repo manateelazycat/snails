@@ -88,6 +88,9 @@
  :name
  "RG"
 
+ :prefix
+ "!"
+
  :build-command
  (lambda (input)
    (when (and (executable-find "rg")

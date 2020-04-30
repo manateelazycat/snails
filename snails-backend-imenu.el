@@ -135,6 +135,9 @@
  :name
  "IMENU"
 
+ :prefix
+ "@"
+
  :candidate-filter
  (lambda (input)
    (let ((imenu-items (snails-backend-imenu-candidates snails-start-buffer))

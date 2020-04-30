@@ -79,6 +79,9 @@
  :name
  "EVERYTHING"
 
+ :prefix
+ "?"
+
  :build-command
  (lambda (input)
    (when (and (executable-find "es")

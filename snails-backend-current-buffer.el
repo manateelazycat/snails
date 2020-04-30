@@ -88,6 +88,9 @@
  :name
  "CURRENT BUFFER"
 
+ :prefix
+ "#"
+
  :build-command
  (lambda (input)
    (let ((buffer-filename (buffer-file-name snails-start-buffer)))
