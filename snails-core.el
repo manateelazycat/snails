@@ -1392,6 +1392,7 @@ Otherwise return nil."
              '(("name" . ,name)
                ("search" . ,search-function)
                ("icon" . ,candidate-icon)
+               ("prefix" . ,prefix)
                ("do" . ,candidate-do)
                )
              )
@@ -1406,7 +1407,7 @@ Otherwise return nil."
          (let* ((prefix ,prefix)
                 (backends-with-prefix (list ',backend-name)))
            ;; add new backends to old prefix/backends pair
-           (dolist (each-prefix (cadr (cadr ',old-prefix)))
+           (dolist (each-prefix (cadadr ',old-prefix))
              (push each-prefix backends-with-prefix))
            (setq backends-with-prefix `(,prefix ',backends-with-prefix))
 
@@ -1452,6 +1453,7 @@ Otherwise return nil."
              '(("name" . ,name)
                ("search" . ,search-function)
                ("icon" . ,candidate-icon)
+               ("prefix" . ,prefix)
                ("do" . ,candidate-do)
                )
              )
@@ -1466,7 +1468,7 @@ Otherwise return nil."
          (let* ((prefix ,prefix)
                 (backends-with-prefix (list ',backend-name)))
            ;; add new backends to old prefix/backends pair
-           (dolist (each-prefix (cadr (cadr ',old-prefix)))
+           (dolist (each-prefix (cadadr ',old-prefix))
              (push each-prefix backends-with-prefix))
            (setq backends-with-prefix `(,prefix ',backends-with-prefix))
 
