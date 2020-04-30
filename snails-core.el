@@ -232,6 +232,21 @@
   :type 'float
   :group 'snails)
 
+(defcustom snails-default-show-prefix-tips t
+  "If non nil show prefix tips buffer when showing snails-frame."
+  :type 'boolean
+  :group 'snails)
+
+(defcustom snails-input-buffer-window-min-height 1
+  "The minimum window height of input buffer."
+  :type 'integer
+  :type 'snails)
+
+(defcustom snails-tips-buffer-window-min-height 2
+  "The minimum window height of tips buffer."
+  :type 'integer
+  :type 'snails)
+
 (defface snails-header-line-face
   '((t (:inherit font-lock-function-name-face :underline t :height 1.3)))
   "Face for header line"
@@ -341,6 +356,9 @@ If `fuz' library has load, set with `load'.")
 (defvar snails-select-candidate-offset nil
   "Record candidate offset of selected candidate.")
 
+(defvar snails-frame-window-conf-register "snails-window-conf"
+  "The register to store snails frame window configuration.")
+
 (defvar snails-mode-map
   (let ((map (make-sparse-keymap)))
     (define-key map (kbd "C-g") 'snails-quit)
@@ -358,6 +376,7 @@ If `fuz' library has load, set with `load'.")
     (define-key map (kbd "M-k") 'snails-select-prev-backend)
     (define-key map (kbd "C-m") 'snails-candidate-do)
     (define-key map (kbd "RET") 'snails-candidate-do)
+    (define-key map (kbd "C-?") 'snails-toggle-prefix-tips-buffer)
     map)
   "Keymap used by `snails-mode'.")
 
@@ -533,6 +552,8 @@ or set it with any string you want."
     ;; Disable hl-line, header-line and mode-line in input buffer.
     (setq-local header-line-format nil)
     (setq-local mode-line-format nil)
+    ;; Set input window minimum height.
+    (setq-local window-min-height snails-input-buffer-window-min-height)
     ))
 
 (defun snails-create-tips-buffer ()
@@ -562,6 +583,10 @@ or set it with any string you want."
     (setq-local header-line-format nil)
     (setq-local mode-line-format nil)
     (setq-local cursor-type nil)
+    ;; Set tips window minimum height.
+    (setq-local window-min-height snails-tips-buffer-window-min-height)
+    ;; Move coursor to the begin of buffer to show all imformation.
+    (beginning-of-buffer)
     ))
 
 (defun snails-create-content-buffer ()
@@ -650,20 +675,29 @@ or set it with any string you want."
       ;; Split window with one line height of input buffer.
       (split-window (selected-window) (line-pixel-height) nil t)
 
-      ;; Set tips buffer.
-      (other-window 1)
-      (switch-to-buffer snails-tips-buffer)
-      (set-window-margins (selected-window) 1 1)
-      (split-window (selected-window) (* 2 (line-pixel-height)) nil t)
-
       ;; Set content window margin and switch to content buffer.
       (other-window 1)
       (switch-to-buffer snails-content-buffer)
       (set-window-margins (selected-window) 1 1)
 
-      ;; Add monitor callback in input change hook.
+      ;; Save window configuration without prefix tips.
       (other-window 1)
+      (window-configuration-to-register snails-frame-window-conf-register)
+
+      ;; Jump to content buffer and split a buffer for prefix tips.
+      (other-window 1)
+      (split-window (selected-window) (* 2 (line-pixel-height)) 'below t)
+
+      ;; Set tips buffer.
+      (switch-to-buffer snails-tips-buffer)
+      (set-window-margins (selected-window) 1 1)
+
+      ;; Goto input buffer, Add monitor callback in input change hook.
+      (other-window 2)
       (add-hook 'after-change-functions 'snails-monitor-input nil t)
+
+      (unless snails-default-show-prefix-tips
+          (snails-toggle-prefix-tips-buffer))
 
       ;; Focus out to hide snails frame on Mac.
       (when (featurep 'cocoa)
@@ -673,6 +707,14 @@ or set it with any string you want."
     ;; `select-frame-set-input-focus' is necessary for gnome-shell DE.
     (make-frame-visible snails-frame)
     (select-frame-set-input-focus snails-frame)))
+
+(defun snails-toggle-prefix-tips-buffer ()
+  "Toggle prefix tips buffer."
+  (interactive)
+  (let ((window-conf (current-window-configuration)))
+    (jump-to-register snails-frame-window-conf-register)
+    (end-of-line)
+    (set-register snails-frame-window-conf-register (list window-conf (point-marker)))))
 
 (defun snails-search (input)
   "Search input with backends."
