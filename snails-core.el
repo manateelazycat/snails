@@ -298,6 +298,9 @@ need to set face attribute, such as foreground and background."
 (defvar snails-start-buffer nil
   "The buffer before snails start.")
 
+(defvar snails-start-buffer-dir-path nil
+  "The `default-directory' value of the buffer before snails start")
+
 (defvar snails-start-buffer-lines nil
   "The line number of start buffer.")
 
@@ -397,6 +400,7 @@ or set it with any string you want."
 
         ;; Record buffer before start snails.
         (setq snails-start-buffer (current-buffer))
+        (setq snails-start-buffer-dir-path default-directory)
         (setq snails-start-buffer-lines (line-number-at-pos (point-max)))
 
         ;; Init face with theme.
@@ -498,6 +502,7 @@ or set it with any string you want."
   (make-frame-invisible snails-frame)
   (setq snails-project-root-dir nil)
   (setq snails-start-buffer nil)
+  (setq snails-start-buffer-dir-path nil)
   (setq snails-select-line-overlay nil)
   (setq snails-need-render nil)
   (setq snails-select-backend-name nil)
@@ -1301,18 +1306,10 @@ If `fuz' not found, use normal match algorithm."
 (defun snails-start-buffer-dir ()
   "Get directory of `snails-start-buffer'.
 
-If `snails-start-buffer' is nil, get path of HOME.
-If `snails-start-buffer' is dired-mode, get path by `dired-directory'.
-Otherwise get path by `buffer-file-name'."
-  (cond ((not snails-start-buffer)
-         (expand-file-name "~"))
-        ((equal 'dired-mode (with-current-buffer snails-start-buffer major-mode))
-         (with-current-buffer snails-start-buffer
-           (expand-file-name dired-directory)))
-        ((not (buffer-file-name snails-start-buffer))
-         (expand-file-name "~"))
-        (t
-         (file-name-directory (buffer-file-name snails-start-buffer)))))
+If `snails-start-buffer' is nil, get path of HOME."
+  (if snails-start-buffer
+        snails-start-buffer-dir-path
+      (expand-file-name "~")))
 
 (defun snails-pick-search-info-from-input (input)
   "If nothing after @ , return HOME path and search string.
