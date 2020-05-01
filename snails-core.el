@@ -1362,6 +1362,15 @@ Otherwise return nil."
                 (apply orig args))
               ))
 
+(advice-add 'delete-frame
+            :around
+            (lambda (orig &optional frame force)
+              "Makes snails-frame undeletable. unless argument force is `t'"
+              (if (or (and snails-frame (equal snails-frame frame) (null force))
+                      (and (null frame) (snails-frame-is-active-p) (null force)))
+                  nil
+                (funcall orig frame force))))
+
 (defun snails-monitor-minibuffer-enter ()
   (when (snails-frame-is-visible-p)
     (snails-quit)))
