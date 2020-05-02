@@ -994,7 +994,7 @@ influence of C1 on the result."
   ;; Adjust line if reach bottom line.
   (when (and (eobp)
              (snails-empty-line-p))
-    (previous-line 2)))
+    (ignore-errors (previous-line 2))))
 
 (defun snails-jump-to-previous-item ()
   "Select previous candidate item."
