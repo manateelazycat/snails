@@ -103,7 +103,10 @@
 
  :candidate-do  
  (lambda (candidate)
-   (awesome-tab-switch-group candidate)))
+   (cond ((featurep 'awesome-tab)
+          (awesome-tab-switch-group candidate))
+         ((featurep 'centaur-tabs)
+          (centaur-tabs-switch-group candidate)))))
 
 (provide 'snails-backend-awesome-tab-group)
 
