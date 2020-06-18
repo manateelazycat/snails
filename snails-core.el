@@ -7,8 +7,8 @@
 ;; Maintainer: Andy Stewart <lazycat.manatee@gmail.com>
 ;; Copyright (C) 2019, Andy Stewart, all rights reserved.
 ;; Created: 2019-05-16 21:26:09
-;; Version: 7.2
-;; Last-Updated: 2020-03-30 21:26:44
+;; Version: 7.3
+;; Last-Updated: 2020-06-19 02:07:26
 ;;           By: Andy Stewart
 ;; URL: http://www.emacswiki.org/emacs/download/snails-core.el
 ;; Keywords:
@@ -563,6 +563,7 @@ or set it with any string you want."
     (setq-local header-line-format nil)
     (setq-local mode-line-format nil)
     ;; Set input window minimum height.
+    (setq-local window-resize-pixelwise t)
     (setq-local window-min-height snails-input-buffer-window-min-height)
     ))
 
@@ -707,7 +708,7 @@ or set it with any string you want."
       (add-hook 'after-change-functions 'snails-monitor-input nil t)
 
       (unless snails-default-show-prefix-tips
-          (snails-toggle-prefix-tips-buffer))
+        (snails-toggle-prefix-tips-buffer))
 
       ;; Focus out to hide snails frame on Mac.
       (when (featurep 'cocoa)
@@ -1356,8 +1357,8 @@ If `fuz' not found, use normal match algorithm."
 
 If `snails-start-buffer' is nil, get path of HOME."
   (if snails-start-buffer
-        snails-start-buffer-dir-path
-      (expand-file-name "~")))
+      snails-start-buffer-dir-path
+    (expand-file-name "~")))
 
 (defun snails-pick-search-info-from-input (input)
   "If nothing after @ , return HOME path and search string.
