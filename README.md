@@ -75,6 +75,7 @@ When you customize the search backends, snails won't filter search result with i
 | snails-backend-imenu               | Jump to function or variable definition                                                                                                   |
 | snails-backend-current-buffer      | Search current buffer content                                                                                                             |
 | snails-backend-rg                  | Use ripgrep search content in current project, need install ```ripgrep```                                                                 |
+| snails-backend-search-pdf          | Use rga search pdf in current directory or supplied directory with @, need install ```ripgrep-all```                                      |
 | snails-backend-projectile          | Search files in current project, need install plugin ```projectitle```                                                                    |
 | snails-backend-fd                  | Use fd search files in current project, need install ```fd```                                                                             |
 | snails-backend-mdfind              | Use mdfind search files in local disk, only Mac                                                                                           |

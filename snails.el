@@ -102,6 +102,7 @@
 (require 'snails-backend-eaf-github-search)
 (require 'snails-backend-google-suggestion)
 (require 'snails-backend-fasd)
+(require 'snails-backend-search-pdf)
 
 (provide 'snails)
 ;;; snails.el ends here
