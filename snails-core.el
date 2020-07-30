@@ -355,9 +355,6 @@ If `fuz' library has load, set with `load'.")
 (defvar snails-project-root-dir nil
   "The project dir when start snails.")
 
-(defvar snails-search-dir nil
-  "the dir which snails search at.")
-
 (defvar snails-need-render nil
   "Mark if you need to re-render after the word selection.")
 

@@ -71,6 +71,9 @@
 
 (require 'snails-core)
 
+(defvar snails-backend-search-pdf-dir nil
+  "the dir which snails-backend-search-pdf search at.")
+
 (snails-create-async-backend
  :name
  "search-pdf"
@@ -92,7 +95,7 @@
          (setq search-input (encode-coding-string search-input locale-coding-system))
          (setq search-dir (encode-coding-string search-dir locale-coding-system)))
 
-       (setq snails-search-dir search-dir)
+       (setq snails-backend-search-pdf-dir search-dir)
        (message (format "searching pdf at %s" search-dir))
 
        ;; Search.
@@ -108,7 +111,7 @@
          (snails-add-candiate
           'candidates
           (format "%s: %s"
-                  (file-relative-name (nth 0 candidate-info) snails-search-dir )
+                  (file-relative-name (nth 0 candidate-info) snails-backend-search-pdf-dir )
                   (string-join (cddr candidate-info)))
           candidate)))
      candidates))
