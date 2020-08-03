@@ -542,8 +542,9 @@ or set it with any string you want."
 
 (defun snails-focus-init-frame ()
   (when snails-init-frame
-    (select-frame snails-init-frame)
-    ))
+    (select-frame snails-init-frame))
+  (when (frame-focus-state snails-init-frame)
+    (select-frame-set-input-focus snails-init-frame)))
 
 (defun snails-create-input-buffer ()
   "Create input buffer."
