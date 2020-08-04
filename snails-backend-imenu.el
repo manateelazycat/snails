@@ -117,7 +117,7 @@
                     (snails-backend-imenu-build-candidates
                      (cl-loop for (e . v) in (cdr elm) collect
                               (cons
-                               (car elm)
+                               e
                                (if (integerp v) (copy-marker v) v)))))
                    ((listp (cdr elm))
                     (and elm (list elm)))
