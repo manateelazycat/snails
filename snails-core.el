@@ -1381,6 +1381,13 @@ Otherwise return nil."
         (pulse-delay 0.3))
     (pulse-momentary-highlight-one-line (point) 'highlight)))
 
+(defun snails-find-file (file)
+  "This function support EAF.
+If EAF library is load, use `eaf-open' instead `find-file'."
+  (if (require 'eaf nil t)
+      (eaf-open file)
+    (find-file file)))
+
 (advice-add 'other-window
             :around
             (lambda (orig &rest args)
