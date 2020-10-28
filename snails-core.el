@@ -291,7 +291,7 @@ need to set face attribute, such as foreground and background."
   :group 'snails)
 
 (defface snails-tips-prefix-backend-face
-  '((t (:height 140)))
+  '((t (:inherit font-lock-comment-face)))
   "Face for tips backend name."
   :group 'snails)
 
@@ -568,35 +568,41 @@ or set it with any string you want."
     ))
 
 (defun snails-create-tips-buffer ()
-  (with-current-buffer (get-buffer-create snails-tips-buffer)
-    ;; Clear buffer.
-    (erase-buffer)
-    (buffer-face-set 'snails-content-buffer-face)
-    ;; Insert prefix tips.
-    (insert "Search prefix:")
-    (dolist (prefix-backends snails-prefix-backends)
-      (let (prefix-key-start prefix-key-end prefix-backend-start prefix-backend-end)
-        (setq prefix-key-start (point))
-        (insert (format " %s " (car prefix-backends)))
-        (setq prefix-key-end (point))
-        (overlay-put (make-overlay prefix-key-start prefix-key-end)
-                     'face
-                     'snails-tips-prefix-key-face)
+  (let (prefix-tip-start)
+    (with-current-buffer (get-buffer-create snails-tips-buffer)
+      ;; Clear buffer.
+      (erase-buffer)
+      (buffer-face-set 'snails-content-buffer-face)
+      ;; Insert prefix tips.
+      (setq prefix-tip-start (point))
+      (insert "Prefix:")
+      (overlay-put (make-overlay prefix-tip-start (point))
+                   'face
+                   'snails-tips-prefix-backend-face)
+      ;; Insert tips.
+      (dolist (prefix-backends snails-prefix-backends)
+        (let (prefix-key-start prefix-key-end prefix-backend-start prefix-backend-end)
+          (setq prefix-key-start (point))
+          (insert (format " %s " (car prefix-backends)))
+          (setq prefix-key-end (point))
+          (overlay-put (make-overlay prefix-key-start prefix-key-end)
+                       'face
+                       'snails-tips-prefix-key-face)
 
-        (setq prefix-backend-start (point))
-        (insert (mapconcat (lambda (b) (format "'%s'" (eval (cdr (assoc "name" (eval b)))))) (eval (cadr prefix-backends)) " "))
-        (setq prefix-backend-end (point))
-        (overlay-put (make-overlay prefix-backend-start prefix-backend-end)
-                     'face
-                     'snails-tips-prefix-backend-face)
-        ))
-    ;; Disable many options for snails buffers.
-    (snails-disable-options t)
-    ;; Set tips window minimum height.
-    (setq-local window-min-height snails-tips-buffer-window-min-height)
-    ;; Move coursor to the begin of buffer to show all information.
-    (beginning-of-buffer)
-    ))
+          (setq prefix-backend-start (point))
+          (insert (mapconcat (lambda (b) (format "'%s'" (eval (cdr (assoc "name" (eval b)))))) (eval (cadr prefix-backends)) " "))
+          (setq prefix-backend-end (point))
+          (overlay-put (make-overlay prefix-backend-start prefix-backend-end)
+                       'face
+                       'snails-tips-prefix-backend-face)
+          ))
+      ;; Disable many options for snails buffers.
+      (snails-disable-options t)
+      ;; Set tips window minimum height.
+      (setq-local window-min-height snails-tips-buffer-window-min-height)
+      ;; Move coursor to the begin of buffer to show all information.
+      (beginning-of-buffer)
+      )))
 
 (defun snails-create-content-buffer ()
   "Create content buffer."
