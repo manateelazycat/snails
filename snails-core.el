@@ -560,12 +560,8 @@ or set it with any string you want."
     (text-scale-increase snails-input-buffer-text-scale)
     ;; Remap `hl-line' color with `snails-input-buffer-face', avoid two colors in input backgorund.
     (face-remap-add-relative 'hl-line :background (face-background 'snails-input-buffer-face))
-    ;; Disable tab-line.
-    (when (version< "27.0" emacs-version)
-      (setq-local tab-line-format nil))
-    ;; Disable hl-line, header-line and mode-line in input buffer.
-    (setq-local header-line-format nil)
-    (setq-local mode-line-format nil)
+    ;; Disable many options for snails buffers.
+    (snails-disable-options nil)
     ;; Set input window minimum height.
     (setq-local window-resize-pixelwise t)
     (setq-local window-min-height snails-input-buffer-window-min-height)
@@ -594,13 +590,8 @@ or set it with any string you want."
                      'face
                      'snails-tips-prefix-backend-face)
         ))
-    ;; Disable tab-line.
-    (when (version< "27.0" emacs-version)
-      (setq-local tab-line-format nil))
-    ;; Disable hl-line, header-line and cursor shape in tips buffer.
-    (setq-local header-line-format nil)
-    (setq-local mode-line-format nil)
-    (setq-local cursor-type nil)
+    ;; Disable many options for snails buffers.
+    (snails-disable-options t)
     ;; Set tips window minimum height.
     (setq-local window-min-height snails-tips-buffer-window-min-height)
     ;; Move coursor to the begin of buffer to show all information.
@@ -614,15 +605,26 @@ or set it with any string you want."
     (erase-buffer)
     ;; Set coent buffer face.
     (buffer-face-set 'snails-content-buffer-face)
-    ;; Disable tab-line.
-    (when (version< "27.0" emacs-version)
-      (setq-local tab-line-format nil))
-    ;; Disable header-line, mode-line, long line and cursor shape in content buffer.
-    (setq-local header-line-format nil)
-    (setq-local mode-line-format nil)
+    ;; Disable many options for snails buffers.
+    (snails-disable-options t)
+    ;; Disable wrap line.
     (setq-local truncate-lines t)
-    (setq-local cursor-type nil)
     ))
+
+(defun snails-disable-options (&optional disable-cursor)
+  "Disable many options for snails buffers."
+  ;; Disable line numbers mode.
+  (when display-line-numbers
+    (setq-local display-line-numbers nil))
+  ;; Disable tab-line.
+  (when (version< "27.0" emacs-version)
+    (setq-local tab-line-format nil))
+  ;; Disable hl-line, header-line and mode-line in input buffer.
+  (setq-local header-line-format nil)
+  (setq-local mode-line-format nil)
+  ;; Disable cursor type if option `disable-cursor' is non-nil.
+  (when disable-cursor
+    (setq-local cursor-type nil)))
 
 (defun snails-monitor-input (begin end length)
   "This is input monitor callback to hook `after-change-functions'."

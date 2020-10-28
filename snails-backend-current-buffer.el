@@ -86,7 +86,7 @@
 
 (snails-create-async-backend
  :name
- "CURRENT BUFFER"
+ "BUFFER"
 
  :build-command
  (lambda (input)
