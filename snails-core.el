@@ -502,9 +502,17 @@ or set it with any string you want."
   "Confirm current candidate."
   (interactive)
   (let ((candidate-info (snails-candidate-get-info)))
-    (if candidate-info
-        (snails-backend-do (nth 0 candidate-info) (nth 1 candidate-info))
-      (message "Nothing selected."))))
+    (cond
+     ;; Quit snails if candidate is empty string.
+     ((and (stringp candidate-info) (string-empty-p (string-trim candidate-info)))
+      (snails-quit))
+     ;; Execute backend command if `candidate-info' is valid info.
+     (candidate-info
+      (snails-backend-do (nth 0 candidate-info) (nth 1 candidate-info)))
+     ;; Message to user if nothing selected.
+     (t
+      (message "Nothing selected."))
+     )))
 
 (defun snails-kill ()
   (interactive)
