@@ -97,6 +97,10 @@
          (snails-add-candiate 'candidates (format "Search in browser: %s" input) input)))
      candidates))
 
+ :candidate-icon
+ (lambda (candidate)
+   (snails-render-material-icon "open_in_browser"))
+
  :candidate-do
  (lambda (candidate)
    (eaf-search-it candidate)))

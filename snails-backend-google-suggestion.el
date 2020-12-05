@@ -105,6 +105,10 @@
        (snails-add-candiate 'candidates candidate candidate))
      candidates))
 
+ :candidate-icon
+ (lambda (candidate)
+   (snails-render-faicon-icon "google"))
+
  :candidate-do
  (lambda (candidate)
    (eaf-search-it candidate)

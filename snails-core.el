@@ -1201,6 +1201,18 @@ influence of C1 on the result."
       (all-the-icons-icon-for-file file :height 1)
     ""))
 
+(defun snails-render-material-icon (icon-name)
+  "Render meterial icon."
+  (if (featurep 'all-the-icons)
+      (all-the-icons-material icon-name :v-adjust -0.15)
+    ""))
+
+(defun snails-render-faicon-icon (icon-name)
+  "Render faicon icon."
+  (if (featurep 'all-the-icons)
+      (all-the-icons-faicon icon-name :v-adjust -0.03)
+    ""))
+
 (defun snails-render-search-file-icon (file candidate &optional no-trim)
   "Render search tools file icon."
   (if (featurep 'all-the-icons)

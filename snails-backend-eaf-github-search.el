@@ -97,6 +97,10 @@
          (snails-add-candiate 'candidates (format "Search in github: %s" input) input)))
      candidates))
 
+ :candidate-icon
+ (lambda (candidate)
+   (snails-render-faicon-icon "github"))
+
  :candidate-do
  (lambda (candidate)
    (eaf-open (concat "https://github.com/search?type=Code&q=" candidate) "browser")
