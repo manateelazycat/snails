@@ -99,6 +99,10 @@
          (snails-add-candiate 'candidates bookmark bookmark)))
      (snails-sort-candidates input candidates 0 0)))
 
+ :candidate-icon
+ (lambda (candidate)
+   (snails-render-faicon-icon "bookmark"))
+
  :candidate-do
  (lambda (candidate)
    (bookmark-jump candidate)))

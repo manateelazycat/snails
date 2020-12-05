@@ -1181,17 +1181,12 @@ influence of C1 on the result."
   "Detect current line whether empty line."
   (= (point-at-eol) (point-at-bol)))
 
-(defun snails-render-web-icon ()
-  (if (featurep 'all-the-icons)
-      (all-the-icons-faicon "html5"))
-  "")
-
 (defun snails-render-buffer-icon (buf)
   "Render buffer icon."
   (if (featurep 'all-the-icons)
       (with-current-buffer buf
         (if (derived-mode-p buf 'eaf-mode)
-            (all-the-icons-faicon "html5")
+            (all-the-icons-faicon "html5" :v-adjust 0.01)
           (all-the-icons-icon-for-buffer)))
     ""))
 

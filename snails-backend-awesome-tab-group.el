@@ -101,7 +101,11 @@
            (snails-add-candiate 'candidates group group))))
      (snails-sort-candidates input candidates 0 0)))
 
- :candidate-do  
+ :candidate-icon
+ (lambda (candidate)
+   (snails-render-material-icon "tab"))
+
+ :candidate-do
  (lambda (candidate)
    (cond ((featurep 'awesome-tab)
           (awesome-tab-switch-group candidate))

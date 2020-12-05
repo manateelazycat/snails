@@ -115,7 +115,7 @@
 
  :candidate-icon
  (lambda (candidate)
-   (snails-render-web-icon))
+   (snails-render-faicon-icon "history"))
 
  :candidate-do
  (lambda (candidate)
