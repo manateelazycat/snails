@@ -91,8 +91,7 @@
  :candidate-filter
  (lambda (input)
    (let (candidates)
-     (when (and (ignore-errors (require 'eaf))
-                (> (length input) 3))
+     (when (ignore-errors (require 'eaf))
        (unless (eaf-is-valid-url input)
          (snails-add-candiate 'candidates (format "Search in browser: %s" input) input)))
      candidates))
