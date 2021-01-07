@@ -87,7 +87,8 @@
 
 (defun snails-backend-projectile-project-root ()
   "Find projectile root."
-  (projectile-project-root (snails-start-buffer-dir)))
+  (when (ignore-errors (require 'projectile))
+    (projectile-project-root (snails-start-buffer-dir))))
 
 (defun snails-backend-projectile-candidates ()
   "List project files."
