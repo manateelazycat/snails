@@ -775,7 +775,9 @@ or set it with any string you want."
 
 (defun snails-search (input)
   "Search input with backends."
-  (let ((search-content input))
+  (let ((search-content input)
+        (gc-cons-threshold most-positive-fixnum)
+        (gc-cons-percentage 0.6))
     ;; Update input ticker.
     (setq snails-input-ticker (+ snails-input-ticker 1))
 

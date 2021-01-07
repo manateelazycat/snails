@@ -84,6 +84,8 @@
 
 ;;; Code:
 
+(defvar snails-backend-fd-filter-number 20)
+
 (snails-create-async-backend
  :name
  "FD"
@@ -110,8 +112,13 @@
  :candidate-filter
  (lambda (candidate-list)
    (let (candidates)
-     (dolist (candidate candidate-list)
-       (snails-add-candiate 'candidates candidate candidate))
+     (catch 'search-end
+       (dolist (candidate candidate-list)
+         (snails-add-candiate 'candidates candidate candidate)
+
+         (when (> (length candidates) snails-backend-fd-filter-number)
+           (throw 'search-end nil))
+         ))
      candidates))
 
  :candidate-icon

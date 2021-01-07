@@ -85,6 +85,8 @@
 
 ;;; Code:
 
+(defvar snails-backend-projectile-filter-number 20)
+
 (defun snails-backend-projectile-project-root ()
   "Find projectile root."
   (when (ignore-errors (require 'projectile))
@@ -107,12 +109,17 @@
          (project-root (snails-backend-projectile-project-root))
          (project-files (snails-backend-projectile-candidates)))
      (when project-files
-       (dolist (file project-files)
-         (when (or
-                (string-equal input "")
-                (snails-match-input-p input file))
-           (setq file-path (expand-file-name file project-root))
-           (snails-add-candiate 'candidates file file-path))))
+       (catch 'search-end
+         (dolist (file project-files)
+           (when (or
+                  (string-equal input "")
+                  (snails-match-input-p input file))
+             (setq file-path (expand-file-name file project-root))
+             (snails-add-candiate 'candidates file file-path))
+
+           (when (> (length candidates) snails-backend-projectile-filter-number)
+             (throw 'search-end nil))
+           )))
      (snails-sort-candidates input candidates 1 1)))
 
  :candidate-icon
