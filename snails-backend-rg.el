@@ -84,6 +84,10 @@
 
 ;;; Code:
 
+(defvar snails-backend-rg-filter-number 20)
+
+(defvar snails-backend-rg-candidate-truncate-length 30)
+
 (snails-create-async-backend
  :name
  "RG"
@@ -112,8 +116,19 @@
  :candidate-filter
  (lambda (candidate-list)
    (let (candidates)
-     (dolist (candidate candidate-list)
-       (snails-add-candiate 'candidates candidate candidate))
+     (catch 'search-end
+       (dolist (candidate candidate-list)
+         (let ((candidate-items (split-string candidate ":")))
+           (snails-add-candiate
+            'candidates
+            ;; Truncate search file path to make sure search content in visible area.
+            (format "%s:%s"
+                    (string-truncate-left (nth 0 candidate-items) snails-backend-rg-candidate-truncate-length)
+                    (string-join (rest candidate-items) ":"))
+            candidate))
+
+         (when (> (length candidates) snails-backend-rg-filter-number)
+           (throw 'search-end nil))))
      candidates))
 
  :candidate-icon

@@ -123,7 +123,7 @@
 ;;      * Add new command `snails-search-point'.
 ;;      * Add `snails-flash-line'.
 ;;      * Improve `snails-sort-candidates'
-;;      * Add option `snails-fame-width-proportion' and `snails-fame-height-proportion'.
+;;      * Add option `snails-frame-width-proportion' and `snails-frame-height-proportion'.
 ;;
 ;; 2019/07/25
 ;;      * Set undecorated parameter in `make-frame' function.
@@ -205,12 +205,12 @@
   :type 'hook
   :group 'snails)
 
-(defcustom snails-fame-width-proportion 0.618
+(defcustom snails-frame-width-proportion 0.618
   "The width of snails frame, width ratio of the parent frame."
   :type 'integer
   :group 'snails)
 
-(defcustom snails-fame-height-proportion 0.618
+(defcustom snails-frame-height-proportion 0.618
   "The height of snails frame, height ratio of the parent frame."
   :type 'integer
   :group 'snails)
@@ -674,8 +674,8 @@ or set it with any string you want."
          (y (nth 1 edges))
          (width  (- (nth 2 edges) x))
          (height (nth 3 edges))
-         (frame-width (truncate (* snails-fame-width-proportion width)))
-         (frame-height (truncate (* snails-fame-height-proportion height)))
+         (frame-width (truncate (* snails-frame-width-proportion width)))
+         (frame-height (truncate (* snails-frame-height-proportion height)))
          (frame-x (+ x (/ (- width frame-width) 2)))
          (frame-y (+ y (/ (- height frame-height) 3))))
 
