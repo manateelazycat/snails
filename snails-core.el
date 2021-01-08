@@ -267,12 +267,12 @@
   :type 'snails)
 
 (defface snails-header-line-face
-  '((t (:inherit font-lock-function-name-face :underline t :height 1.3)))
+  '((t (:inherit font-lock-function-name-face :underline t :height 1.1)))
   "Face for header line"
   :group 'snails)
 
 (defface snails-header-index-face
-  '((t (:inherit font-lock-function-name-face :underline t)))
+  '((t (:inherit font-lock-function-name-face :underline t :height 1.1)))
   "Face for header index"
   :group 'snails)
 
@@ -290,7 +290,7 @@ need to set face attribute, such as foreground and background."
   :group 'snails)
 
 (defface snails-input-buffer-face
-  '((t (:height 250)))
+  '((t (:height 220)))
   "Face for input area."
   :group 'snails)
 
@@ -300,12 +300,14 @@ need to set face attribute, such as foreground and background."
   :group 'snails)
 
 (defface snails-tips-prefix-key-face
-  '((t (:inherit font-lock-function-name-face)))
+  '((t (:inherit font-lock-function-name-face
+                 :height 120)))
   "Face for tips prefix key."
   :group 'snails)
 
 (defface snails-tips-prefix-backend-face
-  '((t (:inherit font-lock-comment-face)))
+  '((t (:inherit font-lock-comment-face
+                 :height 120)))
   "Face for tips backend name."
   :group 'snails)
 
@@ -737,7 +739,7 @@ or set it with any string you want."
 
       ;; Jump to content buffer and split a buffer for prefix tips.
       (other-window 1)
-      (split-window (selected-window) (* 2 (line-pixel-height)) 'below t)
+      (split-window (selected-window) (line-pixel-height) 'below t)
 
       ;; Set tips buffer.
       (switch-to-buffer snails-tips-buffer)
