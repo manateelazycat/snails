@@ -431,6 +431,12 @@ If `fuz' library has load, set with `load'.")
 you can set `search-object' with t to search symbol around point,
 or set it with any string you want."
   (interactive)
+
+  ;; Disable option `snails-show-with-frame' if current environment not GUI.
+  (unless (display-graphic-p)
+    (when snails-show-with-frame
+      (setq snails-show-with-frame nil)))
+
   (if (snails-frame-is-visible-p)
       ;; Quit snails if it has opened.
       (snails-quit)
