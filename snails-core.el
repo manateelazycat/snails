@@ -431,56 +431,54 @@ If `fuz' library has load, set with `load'.")
 you can set `search-object' with t to search symbol around point,
 or set it with any string you want."
   (interactive)
-  (if (display-graphic-p)
-      (if (snails-frame-is-visible-p)
-          ;; Quit snails if it has opened.
-          (snails-quit)
+  (if (snails-frame-is-visible-p)
+      ;; Quit snails if it has opened.
+      (snails-quit)
 
-        ;; Set `snails-search-backends' if argument backends is set.
-        (when (and (listp backends)
-                   (> (length backends) 0))
-          (setq snails-search-backends backends))
+    ;; Set `snails-search-backends' if argument backends is set.
+    (when (and (listp backends)
+               (> (length backends) 0))
+      (setq snails-search-backends backends))
 
-        ;; Record buffer before start snails.
-        (setq snails-start-buffer (current-buffer))
-        (setq snails-start-buffer-dir-path default-directory)
-        (setq snails-start-buffer-lines (line-number-at-pos (point-max)))
+    ;; Record buffer before start snails.
+    (setq snails-start-buffer (current-buffer))
+    (setq snails-start-buffer-dir-path default-directory)
+    (setq snails-start-buffer-lines (line-number-at-pos (point-max)))
 
-        ;; Init face with theme.
-        (snails-init-face-with-theme)
+    ;; Init face with theme.
+    (snails-init-face-with-theme)
 
-        ;; Create input and content buffer.
-        (snails-create-input-buffer)
-        (snails-create-tips-buffer)
-        (snails-create-content-buffer)
+    ;; Create input and content buffer.
+    (snails-create-input-buffer)
+    (snails-create-tips-buffer)
+    (snails-create-content-buffer)
 
-        ;; Create.
-        (if snails-show-with-frame
-            (snails-create-frame)
-          (snails-create-window))
+    ;; Create.
+    (if snails-show-with-frame
+        (snails-create-frame)
+      (snails-create-window))
 
-        ;; Search.
-        (cond
-         ;; Search with customize string when `search-object' is string.
-         ((and (stringp search-object)
-               (not (string-empty-p search-object)))
-          (with-current-buffer snails-input-buffer
-            (insert search-object))
-          (snails-search search-object))
-         ;; Search symbol around point when `search-object' is t.
-         (search-object
-          (run-with-timer
-           0.05 nil
-           (lambda ()
-             (let ((search-string (or (with-current-buffer snails-start-buffer
-                                        (snails-pointer-string)) "")))
-               (with-current-buffer snails-input-buffer
-                 (insert search-string))
-               (snails-search search-string)))))
-         ;; Just launch with empty string when `search-object' is nil.
-         (t
-          (snails-search ""))))
-    (message "Snails render candidates in new frame that only can be run in a graphical environment.")))
+    ;; Search.
+    (cond
+     ;; Search with customize string when `search-object' is string.
+     ((and (stringp search-object)
+           (not (string-empty-p search-object)))
+      (with-current-buffer snails-input-buffer
+        (insert search-object))
+      (snails-search search-object))
+     ;; Search symbol around point when `search-object' is t.
+     (search-object
+      (run-with-timer
+       0.05 nil
+       (lambda ()
+         (let ((search-string (or (with-current-buffer snails-start-buffer
+                                    (snails-pointer-string)) "")))
+           (with-current-buffer snails-input-buffer
+             (insert search-string))
+           (snails-search search-string)))))
+     ;; Just launch with empty string when `search-object' is nil.
+     (t
+      (snails-search "")))))
 
 (defun snails-search-point ()
   "Search symbol at point"
