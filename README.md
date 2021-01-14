@@ -37,6 +37,14 @@ You can use ```M-x snails-search-point``` to launch snails with symbol around po
 
 You can customize ```snails-default-backends``` and ```snails-prefix-backends``` with your own prefix rule.
 
+### Use Snails without popup frame.
+Default snails popup new frame to search candidates.
+If you don't like popup style, you can change to helm style with below code:
+
+```elisp
+(setq snails-show-with-frame nil)
+```
+
 ### Use Snails With Custom Backends
 You can also customize the search backends you want to use! (similar to [Ivy](https://github.com/abo-abo/swiper#ivy))
 

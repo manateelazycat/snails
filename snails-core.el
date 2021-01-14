@@ -266,6 +266,11 @@
   :type 'integer
   :type 'snails)
 
+(defcustom snails-show-with-frame t
+  "If non nil show snails with new frame."
+  :type 'boolean
+  :group 'snails)
+
 (defface snails-header-line-face
   '((t (:inherit font-lock-function-name-face :underline t :height 1.1)))
   "Face for header line"
@@ -383,6 +388,9 @@ If `fuz' library has load, set with `load'.")
 (defvar snails-frame-window-conf nil
   "Record snails frame window configuration.")
 
+(defvar snails-init-conf nil
+  "Record snails init configuration.")
+
 (defvar snails-mode-map
   (let ((map (make-sparse-keymap)))
     (define-key map (kbd "C-g") 'snails-quit)
@@ -446,8 +454,10 @@ or set it with any string you want."
         (snails-create-tips-buffer)
         (snails-create-content-buffer)
 
-        ;; Create popup frame to show search result.
-        (snails-create-frame)
+        ;; Create.
+        (if snails-show-with-frame
+            (snails-create-frame)
+          (snails-create-window))
 
         ;; Search.
         (cond
@@ -524,6 +534,8 @@ or set it with any string you want."
       (snails-quit))
      ;; Execute backend command if `candidate-info' is valid info.
      (candidate-info
+      (unless snails-show-with-frame
+        (set-window-configuration snails-init-conf))
       (snails-backend-do (nth 0 candidate-info) (nth 1 candidate-info)))
      ;; Message to user if nothing selected.
      (t
@@ -541,8 +553,13 @@ or set it with any string you want."
 (defun snails-quit ()
   "Quit snails."
   (interactive)
-  ;; Delete frame first.
-  (make-frame-invisible snails-frame)
+  (if snails-show-with-frame
+      ;; Delete frame first.
+      (make-frame-invisible snails-frame)
+    ;; Restore window configuration.
+    (set-window-configuration snails-init-conf))
+
+  ;; Reset vars.
   (setq snails-project-root-dir nil)
   (setq snails-start-buffer nil)
   (setq snails-start-buffer-dir-path nil)
@@ -551,6 +568,7 @@ or set it with any string you want."
   (setq snails-select-backend-name nil)
   (setq snails-select-candidate-offset nil)
   (setq snails-search-backends nil)
+
   ;; Kill all subprocess and process buffers.
   (maphash
    (lambda (name process)
@@ -760,6 +778,37 @@ or set it with any string you want."
     ;; `select-frame-set-input-focus' is necessary for gnome-shell DE.
     (make-frame-visible snails-frame)
     (select-frame-set-input-focus snails-frame)))
+
+(defun snails-create-window ()
+  (setq snails-init-conf (current-window-configuration))
+
+  (delete-other-windows)
+
+  (split-window)
+
+  (ignore-errors
+    (dotimes (i 50)
+      (windmove-down)))
+
+  (switch-to-buffer snails-input-buffer)
+  (set-window-margins (selected-window) 1 1)
+
+  (split-window (selected-window) (line-pixel-height) nil t)
+  (windmove-down)
+  (split-window (selected-window) (line-pixel-height) nil t)
+
+  (switch-to-buffer snails-tips-buffer)
+  (set-window-margins (selected-window) 1 1)
+  (windmove-down)
+
+  (switch-to-buffer snails-content-buffer)
+  (set-window-margins (selected-window) 1 1)
+  (other-window -2)
+
+  (add-hook 'after-change-functions 'snails-monitor-input nil t)
+
+  (unless snails-default-show-prefix-tips
+    (snails-toggle-prefix-tips-buffer)))
 
 (defun snails-toggle-prefix-tips-buffer ()
   "Toggle whether to show prefix tips buffer."
