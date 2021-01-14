@@ -1206,7 +1206,8 @@ influence of C1 on the result."
           (snails-quit)
 
           ;; Switch to init frame.
-          (select-frame snails-init-frame)
+          (when snails-show-with-frame
+            (select-frame snails-init-frame))
 
           ;; Do.
           (funcall do-func candidate)
