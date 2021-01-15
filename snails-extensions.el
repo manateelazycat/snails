@@ -92,18 +92,23 @@
         (let ((backend-name (nth 0 candidate-info))
               (candidate (nth 1 candidate-info)))
           (snails-quit)
-          (with-selected-frame snails-init-frame
-            (cond ((string-equal backend-name "EAF-BROWSER-HISTORY")
-                   (cond
-                    ;; If url starts with github, only pick `github.com/user/repo'
-                    ((and (string-prefix-p "https://github.com/" candidate)
-                          (> (length (split-string candidate "/")) 4))
-                     (eaf-open-browser (string-join (subseq (split-string candidate "/") 2 5) "/")))
-                    ;; Otherwise pick url host from url string.
-                    (t
-                     (eaf-open-browser (url-host (url-generic-parse-url candidate)))))
-                   ))))
+          (if snails-show-with-frame
+              (with-selected-frame snails-init-frame
+                (snails-candiate-alternate-open backend-name candidate))
+            (snails-candiate-alternate-open backend-name candidate)))
       (message "Nothing selected."))))
+
+(defun snails-candiate-alternate-open (backend-name candidate)
+  (cond ((string-equal backend-name "EAF-BROWSER-HISTORY")
+         (cond
+          ;; If url starts with github, only pick `github.com/user/repo'
+          ((and (string-prefix-p "https://github.com/" candidate)
+                (> (length (split-string candidate "/")) 4))
+           (eaf-open-browser (string-join (subseq (split-string candidate "/") 2 5) "/")))
+          ;; Otherwise pick url host from url string.
+          (t
+           (eaf-open-browser (url-host (url-generic-parse-url candidate)))))
+         )))
 
 (define-key snails-mode-map (kbd "C-j") 'snails-candiate-alternate-do)
 
