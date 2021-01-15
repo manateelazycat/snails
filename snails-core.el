@@ -7,8 +7,8 @@
 ;; Maintainer: Andy Stewart <lazycat.manatee@gmail.com>
 ;; Copyright (C) 2019, Andy Stewart, all rights reserved.
 ;; Created: 2019-05-16 21:26:09
-;; Version: 7.3
-;; Last-Updated: 2020-06-19 02:07:26
+;; Version: 7.4
+;; Last-Updated: 2021-01-15 09:02:31
 ;;           By: Andy Stewart
 ;; URL: http://www.emacswiki.org/emacs/download/snails-core.el
 ;; Keywords:
@@ -385,11 +385,11 @@ If `fuz' library has load, set with `load'.")
 (defvar snails-select-candidate-offset nil
   "Record candidate offset of selected candidate.")
 
-(defvar snails-frame-window-conf nil
-  "Record snails frame window configuration.")
+(defvar snails-popup-window-conf nil
+  "Record snails popup window configuration.")
 
-(defvar snails-init-conf nil
-  "Record snails init configuration.")
+(defvar snails-split-window-conf nil
+  "Record snails split window configuration.")
 
 (defvar snails-mode-map
   (let ((map (make-sparse-keymap)))
@@ -461,8 +461,8 @@ or set it with any string you want."
 
     ;; Create.
     (if snails-show-with-frame
-        (snails-create-frame)
-      (snails-create-window))
+        (snails-create-popup-window)
+      (snails-create-split-window))
 
     ;; Search.
     (cond
@@ -539,7 +539,7 @@ or set it with any string you want."
      ;; Execute backend command if `candidate-info' is valid info.
      (candidate-info
       (unless snails-show-with-frame
-        (set-window-configuration snails-init-conf))
+        (set-window-configuration snails-split-window-conf))
       (snails-backend-do (nth 0 candidate-info) (nth 1 candidate-info)))
      ;; Message to user if nothing selected.
      (t
@@ -561,7 +561,7 @@ or set it with any string you want."
       ;; Delete frame first.
       (make-frame-invisible snails-frame)
     ;; Restore window configuration.
-    (set-window-configuration snails-init-conf))
+    (set-window-configuration snails-split-window-conf))
 
   ;; Reset vars.
   (setq snails-project-root-dir nil)
@@ -688,8 +688,8 @@ or set it with any string you want."
                       (buffer-substring (point-min) (point-max)))))
         (snails-search input)))))
 
-(defun snails-create-frame ()
-  "Create popup frame."
+(defun snails-create-popup-window ()
+  "Create popup window."
   ;; Record frame before snails start.
   (setq snails-init-frame (selected-frame))
 
@@ -758,7 +758,7 @@ or set it with any string you want."
 
       ;; Save window configuration without prefix tips.
       (other-window 1)
-      (setq snails-frame-window-conf (current-window-configuration))
+      (setq snails-popup-window-conf (current-window-configuration))
 
       ;; Jump to content buffer and split a buffer for prefix tips.
       (other-window 1)
@@ -784,36 +784,37 @@ or set it with any string you want."
     (make-frame-visible snails-frame)
     (select-frame-set-input-focus snails-frame)))
 
-(defun snails-create-window ()
-  (setq snails-init-conf (current-window-configuration))
+(defun snails-create-split-window ()
+  "Create split window."
+  ;; Record window configuration first.
+  (setq snails-split-window-conf (current-window-configuration))
 
+  ;; Focus downest window.
   (delete-other-windows)
-
   (split-window)
-
   (ignore-errors
     (dotimes (i 50)
       (windmove-down)))
 
+  ;; Create input window.
   (switch-to-buffer snails-input-buffer)
   (set-window-margins (selected-window) 1 1)
 
+  ;; Create tips window.
   (split-window (selected-window) (line-pixel-height) nil t)
   (windmove-down)
   (split-window (selected-window) (line-pixel-height) nil t)
-
   (switch-to-buffer snails-tips-buffer)
   (set-window-margins (selected-window) 1 1)
   (windmove-down)
 
+  ;; Create content window.
   (switch-to-buffer snails-content-buffer)
   (set-window-margins (selected-window) 1 1)
   (other-window -2)
 
-  (add-hook 'after-change-functions 'snails-monitor-input nil t)
-
-  (unless snails-default-show-prefix-tips
-    (snails-toggle-prefix-tips-buffer)))
+  ;; Add input change hook.
+  (add-hook 'after-change-functions 'snails-monitor-input nil t))
 
 (defun snails-toggle-prefix-tips-buffer ()
   "Toggle whether to show prefix tips buffer."
@@ -822,12 +823,12 @@ or set it with any string you want."
          (snails-content-window (get-buffer-window snails-content-buffer))
          (snails-content-window-state (window-state-get snails-content-window)))
     ;; restore saved window configuration
-    (set-window-configuration snails-frame-window-conf)
+    (set-window-configuration snails-popup-window-conf)
     ;; restore snails content window state,
     ;; content window info need reacquire after restore window configuration.
     (window-state-put snails-content-window-state (get-buffer-window snails-content-buffer))
     ;; store newest window configuration
-    (setq snails-frame-window-conf window-conf)))
+    (setq snails-popup-window-conf window-conf)))
 
 (defun snails-search (input)
   "Search input with backends."
