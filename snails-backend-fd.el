@@ -123,7 +123,7 @@
 
  :candidate-icon
  (lambda (candidate)
-   (snails-render-search-file-icon candidate candidate))
+   (snails-render-search-file-icon candidate))
 
  :candidate-do
  (lambda (candidate)

@@ -195,25 +195,27 @@
 
 (when (and snails-use-exec-path-from-shell
            (featurep 'cocoa))
+  (eval-when-compile (require 'exec-path-from-shell nil t))
   (require 'exec-path-from-shell)
   (exec-path-from-shell-initialize))
 
 ;;; Code:
 
+(defgroup snails nil
+  "A modern, easy-to-expand fuzzy search framework"
+  :group 'applications)
+
 (defcustom snails-mode-hook '()
   "Snails mode hook."
-  :type 'hook
-  :group 'snails)
+  :type 'hook)
 
 (defcustom snails-frame-width-proportion 0.618
   "The width of snails frame, width ratio of the parent frame."
-  :type 'integer
-  :group 'snails)
+  :type 'integer)
 
 (defcustom snails-frame-height-proportion 0.618
   "The height of snails frame, height ratio of the parent frame."
-  :type 'integer
-  :group 'snails)
+  :type 'integer)
 
 (defcustom snails-default-backends
   '(snails-backend-eaf-browser-history
@@ -228,8 +230,7 @@
     snails-backend-directory-files
     snails-backend-bookmark)
   "The default backend"
-  :type 'cons
-  :group 'snails)
+  :type 'cons)
 
 (defcustom snails-prefix-backends
   '((">" '(snails-backend-command))
@@ -238,83 +239,68 @@
     ("!" '(snails-backend-rg))
     ("?" '(snails-backend-projectile snails-backend-fd snails-backend-mdfind snails-backend-everything)))
   "The prefix/backends pair."
-  :type 'cons
-  :group 'snails)
+  :type 'cons)
 
 (defcustom snails-input-buffer-text-scale 1.25
   "The font scale of input buffer."
-  :type 'float
-  :group 'snails)
+  :type 'float)
 
 (defcustom snails-need-render-candidate-icon t
   "If non nil try render candidate icon."
-  :type 'boolean
-  :group 'snails)
+  :type 'boolean)
 
 (defcustom snails-default-show-prefix-tips t
   "If non nil show prefix tips buffer when showing snails-frame."
-  :type 'boolean
-  :group 'snails)
+  :type 'boolean)
 
 (defcustom snails-input-buffer-window-min-height 1
   "The minimum window height of input buffer."
-  :type 'integer
-  :type 'snails)
+  :type 'integer)
 
 (defcustom snails-tips-buffer-window-min-height 2
   "The minimum window height of tips buffer."
-  :type 'integer
-  :type 'snails)
+  :type 'integer)
 
 (defcustom snails-show-with-frame t
   "If non nil show snails with new frame."
-  :type 'boolean
-  :group 'snails)
+  :type 'boolean)
 
 (defface snails-header-line-face
   '((t (:inherit font-lock-function-name-face :underline t :height 1.1)))
-  "Face for header line"
-  :group 'snails)
+  "Face for header line")
 
 (defface snails-header-index-face
   '((t (:inherit font-lock-function-name-face :underline t :height 1.1)))
-  "Face for header index"
-  :group 'snails)
+  "Face for header index")
 
 (defface snails-candiate-content-face
   '((t))
   "Face for candidate content.
 Note, candidate name is display name you can see in content buffer.
 Candidate content use for confirm, it's invisible, it doesn't
-need to set face attribute, such as foreground and background."
-  :group 'snails)
+need to set face attribute, such as foreground and background.")
 
 (defface snails-select-line-face
   '((t))
-  "Face for select line."
-  :group 'snails)
+  "Face for select line.")
 
 (defface snails-input-buffer-face
   '((t (:height 220)))
-  "Face for input area."
-  :group 'snails)
+  "Face for input area.")
 
 (defface snails-content-buffer-face
   '((t (:height 140)))
-  "Face for content area."
-  :group 'snails)
+  "Face for content area.")
 
 (defface snails-tips-prefix-key-face
   '((t (:inherit font-lock-function-name-face
                  :height 120)))
-  "Face for tips prefix key."
-  :group 'snails)
+  "Face for tips prefix key.")
 
 (defface snails-tips-prefix-backend-face
   '((t (:inherit font-lock-comment-face
                  :height 120)))
-  "Face for tips backend name."
-  :group 'snails)
+  "Face for tips backend name.")
 
 (defvar snails-init-frame nil
   "The frame before snails start, use for focus after snails hide.")
@@ -413,7 +399,6 @@ If `fuz' library has load, set with `load'.")
   "Keymap used by `snails-mode'.")
 
 (define-derived-mode snails-mode text-mode "snails"
-  (interactive)
   ;; Kill all local variables.
   (kill-all-local-variables)
   ;; Switch new mode.
@@ -575,7 +560,7 @@ or set it with any string you want."
 
   ;; Kill all subprocess and process buffers.
   (maphash
-   (lambda (name process)
+   (lambda (_name process)
      (when process
        (kill-buffer (process-buffer process)))
      (when (and process
@@ -648,7 +633,7 @@ or set it with any string you want."
       ;; Set tips window minimum height.
       (setq-local window-min-height snails-tips-buffer-window-min-height)
       ;; Move coursor to the begin of buffer to show all information.
-      (beginning-of-buffer)
+      (goto-char (point-min))
       )))
 
 (defun snails-create-content-buffer ()
@@ -676,7 +661,7 @@ or set it with any string you want."
   (when disable-cursor
     (setq-local cursor-type nil)))
 
-(defun snails-monitor-input (begin end length)
+(defun snails-monitor-input (_begin _end _length)
   "This is input monitor callback to hook `after-change-functions'."
   ;; Send new input to all backends when user change input.
   (when (string-equal (buffer-name) snails-input-buffer)
@@ -775,7 +760,7 @@ or set it with any string you want."
 
       ;; Focus out to hide snails frame on Mac.
       (when (featurep 'cocoa)
-        (add-hook 'focus-out-hook 'snails-quit)))
+        (add-hook 'after-focus-change-function 'snails-quit)))
 
     ;; Show popup frame.
     ;; `select-frame-set-input-focus' is necessary for gnome-shell DE.
@@ -791,7 +776,7 @@ or set it with any string you want."
   (delete-other-windows)
   (split-window)
   (ignore-errors
-    (dotimes (i 50)
+    (dotimes (_ 50)
       (windmove-down)))
 
   ;; Create input window.
@@ -1146,19 +1131,19 @@ influence of C1 on the result."
   ;; Adjust line if reach bottom line.
   (when (and (eobp)
              (snails-empty-line-p))
-    (ignore-errors (previous-line 2))))
+    (ignore-errors (forward-line -2))))
 
 (defun snails-jump-to-previous-item ()
   "Select previous candidate item."
   ;; Previous line.
-  (previous-line)
+  (forward-line -1)
   (move-beginning-of-line 1)
   ;; Skip empty line and header line.
   (while (and (not (bobp))
               (or
                (snails-empty-line-p)
                (snails-header-line-p)))
-    (previous-line)
+    (forward-line -1)
     (move-beginning-of-line 1))
   ;; Adjust line if reach to line.
   (when (bobp)
@@ -1184,7 +1169,8 @@ influence of C1 on the result."
 
 (defun snails-select-backend-first-candidate (backend-overlay)
   (when backend-overlay
-    (goto-line (line-number-at-pos (overlay-start backend-overlay)))
+    (goto-char (point-min))
+    (forward-line (line-number-at-pos (overlay-start backend-overlay)))
     (snails-jump-to-next-item)
     (snails-update-select-line)
     ))
@@ -1266,7 +1252,7 @@ influence of C1 on the result."
       (all-the-icons-faicon icon-name :v-adjust -0.03)
     ""))
 
-(defun snails-render-search-file-icon (file candidate &optional no-trim)
+(defun snails-render-search-file-icon (file)
   "Render search tools file icon."
   (if (featurep 'all-the-icons)
       (all-the-icons-icon-for-file (format "hello.%s" (file-name-extension file)) :height 1)

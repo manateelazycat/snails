@@ -104,7 +104,7 @@
           ;; If url starts with github, only pick `github.com/user/repo'
           ((and (string-prefix-p "https://github.com/" candidate)
                 (> (length (split-string candidate "/")) 4))
-           (eaf-open-browser (string-join (subseq (split-string candidate "/") 2 5) "/")))
+           (eaf-open-browser (string-join (cl-subseq (split-string candidate "/") 2 5) "/")))
           ;; Otherwise pick url host from url string.
           (t
            (eaf-open-browser (url-host (url-generic-parse-url candidate)))))

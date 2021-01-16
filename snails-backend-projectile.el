@@ -89,12 +89,13 @@
 
 (defun snails-backend-projectile-project-root ()
   "Find projectile root."
+  (eval-when-compile (require 'projectile nil t))
   (when (ignore-errors (require 'projectile))
     (projectile-project-root (snails-start-buffer-dir))))
 
 (defun snails-backend-projectile-candidates ()
   "List project files."
-  (when (featurep 'projectile)
+  (when (ignore-errors (require 'projectile))
     (let ((project-root (snails-backend-projectile-project-root)))
       (when project-root
         (projectile-project-files project-root)))))
@@ -107,7 +108,8 @@
  (lambda (input)
    (let ((candidates)
          (project-root (snails-backend-projectile-project-root))
-         (project-files (snails-backend-projectile-candidates)))
+         (project-files (snails-backend-projectile-candidates))
+         file-path)
      (when project-files
        (catch 'search-end
          (dolist (file project-files)

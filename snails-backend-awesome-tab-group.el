@@ -91,10 +91,8 @@
  :candidate-filter
  (lambda (input)
    (let (candidates)
-     (when (or (featurep 'awesome-tab)
-               (featurep 'centaur-tabs))
-       (dolist (group (cond ((featurep 'awesome-tab) (awesome-tab-get-groups))
-                            ((featurep 'centaur-tabs) (centaur-tabs-get-groups))))
+     (when (or (featurep 'awesome-tab))
+       (dolist (group (cond ((featurep 'awesome-tab) (awesome-tab-get-groups))))
          (when (or
                 (string-equal input "")
                 (snails-match-input-p input group))

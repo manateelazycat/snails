@@ -97,7 +97,7 @@
          (let ((toc (eaf-call "call_function" eaf--buffer-id "get_toc")))
            (with-temp-buffer
              (insert toc)
-             (beginning-of-buffer)
+             (goto-char (point-min))
 
              (while (not (eobp))
                (end-of-line)

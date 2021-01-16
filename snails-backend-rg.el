@@ -133,9 +133,7 @@
 
  :candidate-icon
  (lambda (candidate)
-   (snails-render-search-file-icon
-    (nth 0 (split-string candidate ":"))
-    (string-remove-prefix (or snails-project-root-dir "") candidate)))
+   (snails-render-search-file-icon (nth 0 (split-string candidate ":"))))
 
  :candidate-do
  (lambda (candidate)
