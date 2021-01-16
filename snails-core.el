@@ -654,6 +654,9 @@ or set it with any string you want."
   ;; Disable line numbers mode.
   (when display-line-numbers
     (setq-local display-line-numbers nil))
+  ;; Disable tab-line.
+  (when (version< "27.0" emacs-version)
+    (setq-local tab-line-format nil))
   ;; Disable hl-line, header-line and mode-line in input buffer.
   (setq-local header-line-format nil)
   (setq-local mode-line-format nil)
@@ -711,7 +714,6 @@ or set it with any string you want."
                (undecorated . t)
                (unsplittable . t)
                (tool-bar-lines . 0)
-               (tab-bar-lines . 0)
                (menu-bar-lines . 0)
                ))))
 
