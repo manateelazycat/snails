@@ -1172,7 +1172,7 @@ influence of C1 on the result."
 (defun snails-select-backend-first-candidate (backend-overlay)
   (when backend-overlay
     (goto-char (point-min))
-    (forward-line (line-number-at-pos (overlay-start backend-overlay)))
+    (forward-line (1- (line-number-at-pos (overlay-start backend-overlay))))
     (snails-jump-to-next-item)
     (snails-update-select-line)
     ))
