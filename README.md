@@ -16,8 +16,6 @@ regardless of how complex the search framework is.
 (require 'snails)
 ```
 
-### ***Note: don't build snails to elc, otherwise snails will not start.***
-
 ## Usage
 ```M-x snails``` to launch snails
 
