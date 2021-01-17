@@ -715,6 +715,7 @@ or set it with any string you want."
                (unsplittable . t)
                (tool-bar-lines . 0)
                (menu-bar-lines . 0)
+               (tab-bar-lines . 0)
                ))))
 
     ;; Configuration frame.
