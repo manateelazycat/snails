@@ -128,7 +128,7 @@
        (if (require 'eaf nil 'noerror)
            (progn
              (eaf-open (nth 0 file-info))
-             (eaf-call "handle_input_message"
+             (eaf-call-async "handle_input_message"
                        eaf--buffer-id
                        "jump_page"
                        (string-to-number (substring (nth 2 file-info) 5))))
