@@ -123,7 +123,12 @@
             'candidates
             ;; Truncate search file path to make sure search content in visible area.
             (format "%s:%s"
-                    (string-truncate-left (nth 0 candidate-items) snails-backend-rg-candidate-truncate-length)
+                    (let* ((s (nth 0 candidate-items))
+                           (l (length s))
+                           (n snails-backend-rg-candidate-truncate-length))
+                      (if (<= l n)
+                          s
+                        (concat "..." (substring s (- l n)))))
                     (string-join (rest candidate-items) ":"))
             candidate))
 

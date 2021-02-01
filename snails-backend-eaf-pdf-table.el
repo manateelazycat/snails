@@ -104,10 +104,10 @@
                (backward-word 1)
                (when (or
                       (string-equal input "")
-                      (snails-match-input-p input (buffer-substring (point-at-bol) (point-at-eol))))
+                      (snails-match-input-p input (buffer-substring-no-properties (point-at-bol) (point-at-eol))))
                  (snails-add-candiate 'candidates
-                                      (buffer-substring (point-at-bol) (point-at-eol))
-                                      (buffer-substring (point) (point-at-eol))))
+                                      (buffer-substring-no-properties (point-at-bol) (point-at-eol))
+                                      (buffer-substring-no-properties (point) (point-at-eol))))
                (forward-line 1))))))
      candidates))
 
