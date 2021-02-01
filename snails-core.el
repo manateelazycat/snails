@@ -670,7 +670,7 @@ or set it with any string you want."
   (when (string-equal (buffer-name) snails-input-buffer)
     (with-current-buffer snails-content-buffer
       (let* ((input (with-current-buffer snails-input-buffer
-                      (buffer-substring (point-min) (point-max)))))
+                      (buffer-substring-no-properties (point-min) (point-max)))))
         (snails-search input)))))
 
 (defun snails-create-popup-window ()
@@ -998,7 +998,7 @@ or set it with any string you want."
       (catch 'line-offset
         (dolist (header-line-overlay snails-header-line-overlays)
           (when (> (overlay-end snails-select-line-overlay) (overlay-end header-line-overlay))
-            (setq snails-select-backend-name (buffer-substring (overlay-start header-line-overlay) (overlay-end header-line-overlay)))
+            (setq snails-select-backend-name (buffer-substring-no-properties (overlay-start header-line-overlay) (overlay-end header-line-overlay)))
             (setq snails-select-candidate-offset
                   (- (line-number-at-pos (overlay-end snails-select-line-overlay))
                      (line-number-at-pos (overlay-start header-line-overlay))))
@@ -1015,7 +1015,7 @@ or set it with any string you want."
   (unless (catch 'restore-line-offset
             (dolist (header-line-overlay snails-header-line-overlays)
               ;; Restore select line offset before render content buffer.
-              (when (string-equal snails-select-backend-name (buffer-substring (overlay-start header-line-overlay) (overlay-end header-line-overlay)))
+              (when (string-equal snails-select-backend-name (buffer-substring-no-properties (overlay-start header-line-overlay) (overlay-end header-line-overlay)))
                 (goto-char (overlay-start header-line-overlay))
                 (forward-line snails-select-candidate-offset)
                 (snails-update-select-line)
@@ -1183,7 +1183,7 @@ influence of C1 on the result."
   (catch 'backend-name
     (dolist (header-line-overlay snails-header-line-overlays)
       (when (> candidate-point (overlay-end header-line-overlay))
-        (throw 'backend-name (buffer-substring (overlay-start header-line-overlay) (overlay-end header-line-overlay))))
+        (throw 'backend-name (buffer-substring-no-properties (overlay-start header-line-overlay) (overlay-end header-line-overlay))))
       )))
 
 (defun snails-backend-do (backend-name candidate)
@@ -1384,7 +1384,7 @@ And render result when subprocess finish search."
                 (throw 'candidate
                        (list
                         (snails-get-candidate-backend-name (point))
-                        (buffer-substring (overlay-start overlay) (overlay-end overlay))))))
+                        (buffer-substring-no-properties (overlay-start overlay) (overlay-end overlay))))))
             (setq overlays (cdr overlays))))
         ))))
 
