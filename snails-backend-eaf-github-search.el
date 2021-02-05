@@ -92,7 +92,7 @@
  (lambda (input)
    (let (candidates)
      (when (ignore-errors (require 'eaf))
-       (unless (eaf-is-valid-url input)
+       (unless (eaf-is-valid-web-url input)
          (snails-add-candiate 'candidates (format "Search in github: %s" input) input)))
      candidates))
 

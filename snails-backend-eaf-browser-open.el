@@ -93,7 +93,7 @@
    (let (candidates)
      (when (and (ignore-errors (require 'eaf))
                 (> (length input) 3))
-       (when (eaf-is-valid-url input)
+       (when (eaf-is-valid-web-url input)
          (snails-add-candiate 'candidates (format "Open in browser: %s" input) input)))
      candidates))
 
