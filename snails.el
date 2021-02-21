@@ -93,7 +93,6 @@
 (require 'snails-backend-bookmark)
 (require 'snails-backend-rg)
 (require 'snails-backend-everything)
-(require 'snails-backend-projectile)
 (require 'snails-backend-directory-files)
 (require 'snails-backend-eaf-pdf-table)
 (require 'snails-backend-eaf-browser-history)

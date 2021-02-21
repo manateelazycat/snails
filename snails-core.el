@@ -237,8 +237,7 @@
     ("@" '(snails-backend-imenu))
     ("#" '(snails-backend-current-buffer))
     ("!" '(snails-backend-rg))
-    ("?" '(snails-backend-projectile))
-    ("&" '(snails-backend-fd snails-backend-mdfind snails-backend-everything))
+    ("?" '(snails-backend-fd snails-backend-mdfind snails-backend-everything))
     )
   "The prefix/backends pair."
   :type 'cons)
@@ -445,6 +444,13 @@ or set it with any string you want."
     (snails-create-input-buffer)
     (snails-create-tips-buffer)
     (snails-create-content-buffer)
+
+    ;; Set project directory.
+    (setq snails-project-root-dir
+          (let ((project (project-current)))
+            (when project
+              (expand-file-name (cdr project))
+              )))
 
     ;; Create.
     (if snails-show-with-frame
@@ -690,13 +696,6 @@ or set it with any string you want."
          (frame-height (truncate (* snails-frame-height-proportion height)))
          (frame-x (+ x (/ (- width frame-width) 2)))
          (frame-y (+ y (/ (- height frame-height) 3))))
-
-    ;; Set project directory.
-    (setq snails-project-root-dir
-          (let ((project (project-current)))
-            (when project
-              (expand-file-name (cdr project))
-              )))
 
     ;; Make popup frame, and position at center of current frame.
     (unless (and
