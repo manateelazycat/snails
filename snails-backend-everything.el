@@ -82,7 +82,7 @@
  :build-command
  (lambda (input)
    (when (and (executable-find "es")
-              (> (length input) 5))
+              (> (length input) 3))
      (list "es" input)))
 
  :candidate-filter

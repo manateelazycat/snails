@@ -95,7 +95,7 @@
  :build-command
  (lambda (input)
    (when (and (executable-find "rg")
-              (> (length input) 5))
+              (> (length input) 3))
      (let ((search-dir snails-project-root-dir)
            (search-input input)
            (search-info (snails-pick-search-info-from-input input)))
