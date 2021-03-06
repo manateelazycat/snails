@@ -552,6 +552,9 @@ or set it with any string you want."
      (candidate-info
       (unless snails-show-with-frame
         (set-window-configuration snails-split-window-conf))
+      (snails-quit)
+      (when snails-show-with-frame
+        (select-frame snails-init-frame))
       (insert (nth 1 candidate-info)))
      ;; Message to user if nothing selected.
      (t
