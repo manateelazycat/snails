@@ -395,7 +395,7 @@ If `fuz' library has load, set with `load'.")
     (define-key map (kbd "M-k") 'snails-select-prev-backend)
     (define-key map (kbd "C-m") 'snails-candidate-do)
     (define-key map (kbd "RET") 'snails-candidate-do)
-    (define-key map (kbd "M-m") 'snails-candidate-insert)
+    (define-key map (kbd "C-h") 'snails-candidate-insert)
     (define-key map (kbd "C-?") 'snails-toggle-prefix-tips-buffer)
     map)
   "Keymap used by `snails-mode'.")
@@ -1232,7 +1232,7 @@ influence of C1 on the result."
   (catch 'backend-insert
     (dolist (backend snails-backends)
       (let ((name (cdr (assoc "name" (eval backend))))
-            (insert-func (cdr (assoc "insert" (eval backend)))))
+            (insert-match (assoc "insert" (eval backend))))
 
         (when (equal (eval name) backend-name)
           ;; Quit frame first.
@@ -1243,7 +1243,11 @@ influence of C1 on the result."
             (select-frame snails-init-frame))
 
           ;; Do.
-          (funcall insert-func candidate)
+          (if insert-match
+              ;; Call candidate-insert function insert candidate if backend include `candidate-insert' part.
+              (funcall (cdr insert-match) candidate)
+            ;; Or just insert candidate plain text.
+            (insert candidate))
 
           (throw 'backend-insert nil)
           )))))
