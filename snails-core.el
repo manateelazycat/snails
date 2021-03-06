@@ -552,10 +552,7 @@ or set it with any string you want."
      (candidate-info
       (unless snails-show-with-frame
         (set-window-configuration snails-split-window-conf))
-      (snails-quit)
-      (when snails-show-with-frame
-        (select-frame snails-init-frame))
-      (insert (nth 1 candidate-info)))
+      (snails-backend-insert (nth 0 candidate-info) (nth 1 candidate-info)))
      ;; Message to user if nothing selected.
      (t
       (message "Nothing inserted."))
@@ -1230,6 +1227,27 @@ influence of C1 on the result."
           (throw 'backend-do nil)
           )))))
 
+(defun snails-backend-insert (backend-name candidate)
+  "Insert candidate with special backend."
+  (catch 'backend-insert
+    (dolist (backend snails-backends)
+      (let ((name (cdr (assoc "name" (eval backend))))
+            (insert-func (cdr (assoc "insert" (eval backend)))))
+
+        (when (equal (eval name) backend-name)
+          ;; Quit frame first.
+          (snails-quit)
+
+          ;; Switch to init frame.
+          (when snails-show-with-frame
+            (select-frame snails-init-frame))
+
+          ;; Do.
+          (funcall insert-func candidate)
+
+          (throw 'backend-insert nil)
+          )))))
+
 (defun snails-keep-cursor-visible ()
   "Scrol window to keep cursor in visible area of window."
   ;; Scrol window to keep cursor in visible area of window.
@@ -1549,7 +1567,7 @@ Otherwise return nil."
 
 (add-hook 'minibuffer-setup-hook 'snails-monitor-minibuffer-enter)
 
-(cl-defmacro snails-create-sync-backend (&rest args &key name candidate-filter candidate-icon candidate-do)
+(cl-defmacro snails-create-sync-backend (&rest args &key name candidate-filter candidate-icon candidate-do candidate-insert)
   "Macro to create sync backend code.
 
 `name' is backend name, such 'Foo Bar'.
@@ -1574,10 +1592,11 @@ Otherwise return nil."
                ("search" . ,search-function)
                ("icon" . ,candidate-icon)
                ("do" . ,candidate-do)
+               ("insert" . ,candidate-insert)
                )
              ))))
 
-(cl-defmacro snails-create-async-backend (&rest args &key name build-command candidate-filter candidate-icon candidate-do)
+(cl-defmacro snails-create-async-backend (&rest args &key name build-command candidate-filter candidate-icon candidate-do candidate-insert)
   "Macro to create sync backend code.
 
 `name' is backend name, such 'Foo Bar'.
@@ -1606,6 +1625,7 @@ Otherwise return nil."
                ("search" . ,search-function)
                ("icon" . ,candidate-icon)
                ("do" . ,candidate-do)
+               ("insert" . ,candidate-insert)
                )
              ))))
 

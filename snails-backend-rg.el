@@ -151,6 +151,16 @@
 
        ;; Flash match line.
        (snails-flash-line)
+       )))
+
+ :candidate-insert
+ (lambda (candidate)
+   (let ((file-info (split-string candidate ":")))
+     (when (> (length file-info) 3)
+       (insert (nth 3 file-info))
+
+       ;; Flash match line.
+       (snails-flash-line)
        ))))
 
 (provide 'snails-backend-rg)
