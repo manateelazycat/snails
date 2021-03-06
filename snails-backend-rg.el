@@ -124,7 +124,7 @@
             ;; Truncate search file path to make sure search content in visible area.
             (format "%s:%s"
                     (let* ((candidate-str (nth 0 candidate-items))
-                           (candidate-length (length s))
+                           (candidate-length (length candidate-str))
                            (candidate-truncate-length snails-backend-rg-candidate-truncate-length))
                       (if (<= candidate-length candidate-truncate-length)
                           candidate-str
