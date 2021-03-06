@@ -157,7 +157,7 @@
  (lambda (candidate)
    (let ((file-info (split-string candidate ":")))
      (when (> (length file-info) 3)
-       (insert (nth 3 file-info))
+       (insert (string-join (cdddr file-info) ":"))
 
        ;; Flash match line.
        (snails-flash-line)
