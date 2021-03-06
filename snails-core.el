@@ -1232,7 +1232,7 @@ influence of C1 on the result."
   (catch 'backend-insert
     (dolist (backend snails-backends)
       (let ((name (cdr (assoc "name" (eval backend))))
-            (insert-match (assoc "insert" (eval backend))))
+            (insert-func (cdr (assoc "insert" (eval backend)))))
 
         (when (equal (eval name) backend-name)
           ;; Quit frame first.
@@ -1243,9 +1243,9 @@ influence of C1 on the result."
             (select-frame snails-init-frame))
 
           ;; Do.
-          (if insert-match
+          (if insert-func
               ;; Call candidate-insert function insert candidate if backend include `candidate-insert' part.
-              (funcall (cdr insert-match) candidate)
+              (funcall insert-func candidate)
             ;; Or just insert candidate plain text.
             (insert candidate))
 
