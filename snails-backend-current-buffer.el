@@ -126,6 +126,16 @@
 
        ;; Flash match line.
        (snails-flash-line)
+       )))
+
+ :candidate-insert
+ (lambda (candidate)
+   (let ((file-info (split-string candidate ":")))
+     (when (> (length file-info) 2)
+       (insert (string-join (cddr file-info) ":"))
+
+       ;; Flash match line.
+       (snails-flash-line)
        ))))
 
 (provide 'snails-backend-current-buffer)
