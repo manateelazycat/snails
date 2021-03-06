@@ -7,7 +7,7 @@
 ;; Maintainer: Andy Stewart <lazycat.manatee@gmail.com>
 ;; Copyright (C) 2019, Andy Stewart, all rights reserved.
 ;; Created: 2019-05-16 21:26:09
-;; Version: 7.4
+;; Version: 7.5
 ;; Last-Updated: 2021-01-15 09:02:31
 ;;           By: Andy Stewart
 ;; URL: http://www.emacswiki.org/emacs/download/snails-core.el
@@ -395,6 +395,7 @@ If `fuz' library has load, set with `load'.")
     (define-key map (kbd "M-k") 'snails-select-prev-backend)
     (define-key map (kbd "C-m") 'snails-candidate-do)
     (define-key map (kbd "RET") 'snails-candidate-do)
+    (define-key map (kbd "C-j") 'snails-candidate-insert)
     (define-key map (kbd "C-?") 'snails-toggle-prefix-tips-buffer)
     map)
   "Keymap used by `snails-mode'.")
@@ -537,6 +538,24 @@ or set it with any string you want."
      ;; Message to user if nothing selected.
      (t
       (message "Nothing selected."))
+     )))
+
+(defun snails-candidate-insert ()
+  "Insert current candidate."
+  (interactive)
+  (let ((candidate-info (snails-candidate-get-info)))
+    (cond
+     ;; Quit snails if candidate is empty string.
+     ((and (stringp candidate-info) (string-empty-p (string-trim candidate-info)))
+      (snails-quit))
+     ;; Insert candidate if `candidate-info' is valid info.
+     (candidate-info
+      (unless snails-show-with-frame
+        (set-window-configuration snails-split-window-conf))
+      (insert (nth 1 candidate-info)))
+     ;; Message to user if nothing selected.
+     (t
+      (message "Nothing inserted."))
      )))
 
 (defun snails-kill ()
