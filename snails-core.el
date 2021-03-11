@@ -976,14 +976,15 @@ or set it with any string you want."
             (when snails-need-render-candidate-icon
               (setq candidate-render-icon-func (cdr (assoc "icon" (eval (nth candiate-index snails-backends))))))
 
-            ;; Trick: make icon have same indent.
-            (setq-local tab-width 1)
-
             ;; Render candidate list.
             (dolist (candiate candiate-list)
               ;; Render candiate icon.
               (when candidate-render-icon-func
-                (insert (format "%s\t" (funcall candidate-render-icon-func (nth 0 candiate)))))
+                (insert (funcall candidate-render-icon-func (nth 0 candiate))))
+
+              ;; Insert indent char.
+              (insert " ")
+              (put-text-property (point) (- (point) 1) 'display (snails-indent-pixel 60))
 
               ;; Render candidate display name.
               (insert (string-trim (nth 0 candiate)))
@@ -1010,6 +1011,10 @@ or set it with any string you want."
 
     ;; Reset render flag.
     (setq snails-need-render nil)))
+
+(defsubst snails-indent-pixel (xpos)
+  "Return a display property that aligns to XPOS."
+  `(space :align-to (,xpos)))
 
 (defun snails-record-select-line-offset ()
   "Record select line offset."
