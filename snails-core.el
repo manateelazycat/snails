@@ -980,7 +980,7 @@ or set it with any string you want."
             (dolist (candiate candiate-list)
               ;; Render candiate icon.
               (when candidate-render-icon-func
-                (insert (funcall candidate-render-icon-func (nth 0 candiate))))
+                (insert (format "%s" (funcall candidate-render-icon-func (nth 0 candiate)))))
 
               ;; Insert indent char.
               (insert " ")
