@@ -111,7 +111,7 @@
 ;; 2019/07/28
 ;;      * Optimize performance: fixed rendering every 100 milliseconds, instead of rendering once backend return candidates, avoiding rendering computation waste.
 ;;      * `snails-select-line-number' is not need anymore, `snails-select-line-overlay' is enough.
-;;      * Add `snails-render-bufer' to timer when first start.
+;;      * Add `snails-render-buffer' to timer when first start.
 ;;      * Keep offset of selected candidate.
 ;;      * Optimize start performance: delay 50 milliseconds to start search backend.
 ;;
@@ -914,11 +914,11 @@ or set it with any string you want."
   "Get all backend names."
   (mapcar (lambda (b) (eval (cdr (assoc "name" (eval b))))) snails-backends))
 
-;; Add `snails-render-bufer' to timer when first start.
+;; Add `snails-render-buffer' to timer when first start.
 (when (not (featurep 'snails))
-  (run-with-timer 0 0.1 'snails-render-bufer))
+  (run-with-timer 0 0.1 'snails-render-buffer))
 
-(defun snails-render-bufer ()
+(defun snails-render-buffer ()
   "Render candidates when `snails-need-render' flag is set."
   (when snails-need-render
     (with-current-buffer snails-content-buffer
