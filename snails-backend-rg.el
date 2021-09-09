@@ -153,14 +153,11 @@
        (snails-flash-line)
        )))
 
- :candidate-insert
+ :candidate-content
  (lambda (candidate)
    (let ((file-info (split-string candidate ":")))
      (when (> (length file-info) 3)
-       (insert (string-join (cdddr file-info) ":"))
-
-       ;; Flash match line.
-       (snails-flash-line)
+       (string-join (cdddr file-info) ":")
        ))))
 
 (provide 'snails-backend-rg)
