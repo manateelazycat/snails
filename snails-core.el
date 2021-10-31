@@ -1010,8 +1010,9 @@ or set it with any string you want."
                 (insert (format "%s" (funcall candidate-render-icon-func (nth 0 candiate)))))
 
               ;; Insert indent char.
-              (insert " ")
-              (put-text-property (point) (- (point) 1) 'display (snails-indent-pixel 60))
+              (when (featurep 'all-the-icons)
+                (insert " ")
+                (put-text-property (point) (- (point) 1) 'display (snails-indent-pixel 60)))
 
               ;; Render candidate display name.
               (insert (string-trim (nth 0 candiate)))
