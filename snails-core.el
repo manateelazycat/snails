@@ -242,7 +242,7 @@
   "The prefix/backends pair."
   :type 'cons)
 
-(defcustom snails-input-buffer-text-scale 1.25
+(defcustom snails-input-buffer-text-scale 0.5
   "The font scale of input buffer."
   :type 'float)
 
