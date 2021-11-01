@@ -749,7 +749,7 @@ or set it with any string you want."
              (frame-visible-p snails-frame))
       (setq snails-frame
             (make-frame
-             '((parent-frame . (window-frame))
+             '((parent-frame . snails-init-frame)
                (skip-taskbar . t)
                (minibuffer . nil)
                (visibility . nil)
@@ -1436,7 +1436,7 @@ And render result when subprocess finish search."
 (defun snails-frame-is-active-p ()
   (and snails-frame
        (frame-visible-p snails-frame)
-       (eq (window-frame (selected-window)) snails-frame)))
+       (eq (window-frame) snails-frame)))
 
 (defun snails-frame-is-visible-p ()
   (and snails-frame
