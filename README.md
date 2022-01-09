@@ -43,6 +43,8 @@ If you don't like popup style, you can change to helm style with below code:
 (setq snails-show-with-frame nil)
 ```
 
+<img src="./images/frame_screenshot.png">
+
 ### Use Snails With Custom Backends
 You can also customize the search backends you want to use! (similar to [Ivy](https://github.com/abo-abo/swiper#ivy))
 
