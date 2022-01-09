@@ -810,7 +810,7 @@ or set it with any string you want."
 
       ;; Focus out to hide snails frame on Mac.
       (when (featurep 'cocoa)
-        (add-hook 'after-focus-change-function 'snails-quit)))
+        (add-function :after after-focus-change-function 'snails-quit)))
 
     ;; Show popup frame.
     ;; `select-frame-set-input-focus' is necessary for gnome-shell DE.
