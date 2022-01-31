@@ -88,8 +88,8 @@
 
        ;; If the user input character includes the path separator @, replace the current directory with the entered directory.
        (when search-info
-         (setq search-dir (first search-info))
-         (setq search-input (second search-info)))
+         (setq search-dir (cl-first search-info))
+         (setq search-input (cl-second search-info)))
 
        (when (memq system-type '(cygwin windows-nt ms-dos))
          (setq search-input (encode-coding-string search-input locale-coding-system))
