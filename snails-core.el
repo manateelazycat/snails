@@ -451,7 +451,7 @@ or set it with any string you want."
     (setq snails-project-root-dir
           (let ((project (project-current)))
             (when project
-              (expand-file-name (cdr project))
+              (expand-file-name (car (last project)))
               )))
 
     ;; Create.
