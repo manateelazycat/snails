@@ -306,6 +306,9 @@ need to set face attribute, such as foreground and background.")
 (defvar snails-init-frame nil
   "The frame before snails start, use for focus after snails hide.")
 
+(defvar snails-frame-name "emacs-snails"
+  "The frame name of snails created.")
+
 (defvar snails-input-buffer " *snails input*"
   "The buffer name of search input buffer.")
 
@@ -751,7 +754,8 @@ or set it with any string you want."
              (frame-visible-p snails-frame))
       (setq snails-frame
             (make-frame
-             '((parent-frame . snails-init-frame)
+             '((name . snails-frame-name)
+               (parent-frame . snails-init-frame)
                (skip-taskbar . t)
                (minibuffer . nil)
                (visibility . nil)
