@@ -110,7 +110,7 @@
 
        ;; Search.
        (when search-dir
-         (list "rg" "--no-heading" "--column" "--color" "never" "--max-columns" "300" search-input search-dir)
+         (list "rg" "-S" "--no-heading" "--column" "--color" "never" "--max-columns" "300" search-input search-dir)
          ))))
 
  :candidate-filter
