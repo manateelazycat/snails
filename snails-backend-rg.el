@@ -119,13 +119,10 @@
      (catch 'search-end
        (dolist (candidate candidate-list)
          (let ((candidate-items
-             (if (and (memq system-type '(cygwin windows-nt ms-dos)) (string-match-p "^[a-zA-Z]:" candidate))
-                (let* ((a (split-string candidate ":"))
-                      (b (append (list (concat (car a) ":" (cadr a)))  (cddr a))))
-                b)
-                (split-string candidate ":")
-             )
-          ))
+                (if (and (memq system-type '(cygwin windows-nt ms-dos)) (string-match-p "^[a-zA-Z]:" candidate))
+                    (let ((substrings (split-string candidate ":")))
+                      (append (list (concat (car substrings) ":" (cadr substrings))) (cddr substrings)))
+                  (split-string candidate ":"))))
            (snails-add-candiate
             'candidates
             ;; Truncate search file path to make sure search content in visible area.
@@ -150,11 +147,9 @@
  :candidate-do
  (lambda (candidate)
    (let ((file-info (if (and (memq system-type '(cygwin windows-nt ms-dos)) (string-match-p "^[a-zA-Z]:" candidate))
-      (let* ((a (split-string candidate ":"))
-             (b (append (list (concat (car a) ":" (cadr a)))  (cddr a))))
-            b)
-      (split-string candidate ":")
-      )))
+                        (let ((substrings (split-string candidate ":")))
+                          (append (list (concat (car substrings) ":" (cadr substrings)))  (cddr substrings)))
+                      (split-string candidate ":"))))
      (when (> (length file-info) 3)
        ;; Open file and jump to position.
        (find-file (nth 0 file-info))
