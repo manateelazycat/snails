@@ -118,7 +118,14 @@
    (let (candidates)
      (catch 'search-end
        (dolist (candidate candidate-list)
-         (let ((candidate-items (split-string candidate ":")))
+         (let ((candidate-items
+             (if (and (memq system-type '(cygwin windows-nt ms-dos)) (string-match-p "^[a-zA-Z]:" candidate))
+                (let* ((a (split-string candidate ":"))
+                      (b (append (list (concat (car a) ":" (cadr a)))  (cddr a))))
+                b)
+                (split-string candidate ":")
+             )
+          ))
            (snails-add-candiate
             'candidates
             ;; Truncate search file path to make sure search content in visible area.
@@ -129,7 +136,7 @@
                       (if (<= candidate-length candidate-truncate-length)
                           candidate-str
                         (concat "..." (substring candidate-str (- candidate-length candidate-truncate-length)))))
-                    (string-join (rest candidate-items) ":"))
+                    (string-join (cdr candidate-items) ":"))
             candidate))
 
          (when (> (length candidates) snails-backend-rg-filter-number)
@@ -142,7 +149,12 @@
 
  :candidate-do
  (lambda (candidate)
-   (let ((file-info (split-string candidate ":")))
+   (let ((file-info (if (and (memq system-type '(cygwin windows-nt ms-dos)) (string-match-p "^[a-zA-Z]:" candidate))
+      (let* ((a (split-string candidate ":"))
+             (b (append (list (concat (car a) ":" (cadr a)))  (cddr a))))
+            b)
+      (split-string candidate ":")
+      )))
      (when (> (length file-info) 3)
        ;; Open file and jump to position.
        (find-file (nth 0 file-info))
