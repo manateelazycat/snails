@@ -455,7 +455,9 @@ or set it with any string you want."
           (let ((project (project-current)))
             (when project
               (if (version< "27.0" emacs-version)
-                  (expand-file-name (cdr project))
+                  (if (functionp 'project-root)
+                      (project-root project)
+                    (expand-file-name (cdr project)))
                 (expand-file-name (car (last project))))
               )))
 
@@ -754,7 +756,7 @@ or set it with any string you want."
              (frame-visible-p snails-frame))
       (setq snails-frame
             (make-frame
-             '((name . snails-frame-name)
+             `((name . ,snails-frame-name)
                (parent-frame . snails-init-frame)
                (skip-taskbar . t)
                (minibuffer . nil)
