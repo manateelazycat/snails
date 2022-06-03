@@ -83,20 +83,7 @@
 (require 'snails-core)
 
 ;;; Code:
-(defvar snails-backend-command-list nil)
-
 (defvar snails-backend-command-filter-number 20)
-
-(defun snails-backend-command-get-commands ()
-  (let (cmds)
-    (mapatoms (lambda (s) (when (commandp s) (push (symbol-name s) cmds))))
-    (setq snails-backend-command-list cmds)))
-
-(add-hook 'after-init-hook 'snails-backend-command-get-commands)
-
-(run-with-idle-timer 2 nil 'snails-backend-command-get-commands)
-
-(run-with-idle-timer 60 t 'snails-backend-command-get-commands)
 
 (defun snails-backend-command-wrap-command-with-key (command)
   (let ((keys (mapconcat
@@ -115,15 +102,12 @@
  (lambda (input)
    (let (candidates)
      (catch 'search-end
-       (dolist (command snails-backend-command-list)
-         (when (or
-                (string-equal input "")
-                (snails-match-input-p input command))
-           (snails-add-candiate 'candidates (snails-backend-command-wrap-command-with-key command) command)
+       (dolist (command (all-completions input obarray))
+         (snails-add-candiate 'candidates (snails-backend-command-wrap-command-with-key command) command)
 
-           (when (> (length candidates) snails-backend-command-filter-number)
-             (throw 'search-end nil))
-           )))
+         (when (> (length candidates) snails-backend-command-filter-number)
+           (throw 'search-end nil))
+         ))
      (snails-sort-candidates input candidates 0 0)))
 
  :candidate-do
