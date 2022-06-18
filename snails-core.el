@@ -829,9 +829,9 @@ or set it with any string you want."
   (setq snails-split-window-conf (current-window-configuration))
 
   ;; Focus downest window.
-  (delete-other-windows)
-  (split-window)
   (ignore-errors
+    (delete-other-windows)
+    (split-window)
     (dotimes (_ 50)
       (windmove-down)))
 
