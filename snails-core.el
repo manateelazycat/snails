@@ -482,17 +482,13 @@ or set it with any string you want."
 
 (defun snails-project-root-dir ()
   (let ((project (project-current)))
-    (if project
-        (cond
-         ;; 27 <= <= 28
-         ((and
-           (version< "27" emacs-version)
-           (version< emacs-version "29"))
-          (expand-file-name (cdr project)))
-         ;; >= 29
-         ((version<= "29" emacs-version)
-          (expand-file-name (car (last project))))
-         (t nil)))))
+    (when project
+      (setq project (cdr project))
+
+      (when (listp project)
+        (setq project (nth (- (length project) 1) project)))
+
+      (expand-file-name project))))
 
 (defun snails-search-point ()
   "Search symbol at point"
