@@ -451,13 +451,7 @@ or set it with any string you want."
     (snails-create-content-buffer)
 
     ;; Set project directory.
-    (setq snails-project-root-dir
-          (let ((project (project-current)))
-            (when project
-              (if (version< "27.0" emacs-version)
-                  (expand-file-name (cdr project))
-                (expand-file-name (car (last project))))
-              )))
+    (setq snails-project-root-dir (snails-project-root-dir))
 
     ;; Create.
     (if snails-show-with-frame
@@ -485,6 +479,20 @@ or set it with any string you want."
      ;; Just launch with empty string when `search-object' is nil.
      (t
       (snails-search "")))))
+
+(defun snails-project-root-dir ()
+  (let ((project (project-current)))
+    (if project
+        (cond
+         ;; 27 <= <= 28
+         ((and
+           (version< "27" emacs-version)
+           (version< emacs-version "29"))
+          (expand-file-name (cdr project)))
+         ;; >= 29
+         ((version<= "29" emacs-version)
+          (expand-file-name (car (last project))))
+         (t nil)))))
 
 (defun snails-search-point ()
   "Search symbol at point"
