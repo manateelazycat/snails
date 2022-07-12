@@ -56,6 +56,9 @@
 
 ;;; Change log:
 ;;
+;; 2022/07/12
+;;      * Support path separator.
+;;
 ;; 2019/07/31
 ;;      * First released.
 ;;
@@ -83,7 +86,25 @@
  (lambda (input)
    (when (and (executable-find "es")
               (> (length input) 3))
-     (list "es" "-n" "30" input)))
+     (let (search-dir
+          (search-input input)
+          (search-info (snails-pick-search-info-from-input input)))
+
+       (when search-info
+         (setq search-dir (cl-first search-info))
+         (setq search-input (cl-second search-info)))
+
+       (when (and search-info
+              (memq system-type '(cygwin windows-nt ms-dos)))
+         (setq search-input (encode-coding-string search-input locale-coding-system))
+         (setq search-dir (encode-coding-string search-dir locale-coding-system)))
+
+       ;; If the user input character includes the path separator @, replace the current directory with the entered directory.
+       (cond (search-dir (list "es"
+                     "-n" "30"
+                     "-path" search-dir
+                     search-input))
+             (t (list "es" "-n" "30" input))))))
 
  :candidate-filter
  (lambda (candidate-list)
