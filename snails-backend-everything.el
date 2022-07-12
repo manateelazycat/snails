@@ -86,9 +86,9 @@
  (lambda (input)
    (when (and (executable-find "es")
               (> (length input) 3))
-     (let ((search-dir nil)
-           (search-input input)
-           (search-info (snails-pick-search-info-from-input input)))
+     (let (search-dir
+          (search-input input)
+          (search-info (snails-pick-search-info-from-input input)))
 
        (when search-info
          (setq search-dir (cl-first search-info))
