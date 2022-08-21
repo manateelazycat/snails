@@ -87,24 +87,24 @@
    (when (and (executable-find "es")
               (> (length input) 3))
      (let (search-dir
-          (search-input input)
-          (search-info (snails-pick-search-info-from-input input)))
+           (search-input input)
+           (search-info (snails-pick-search-info-from-input input)))
 
        (when search-info
          (setq search-dir (cl-first search-info))
          (setq search-input (cl-second search-info)))
 
        (when (and search-info
-              (memq system-type '(cygwin windows-nt ms-dos)))
+                  (memq system-type '(cygwin windows-nt ms-dos)))
          (setq search-input (encode-coding-string search-input locale-coding-system))
          (setq search-dir (encode-coding-string search-dir locale-coding-system)))
 
        ;; If the user input character includes the path separator @, replace the current directory with the entered directory.
-       (cond (search-dir (list "es"
-                     "-n" "30"
-                     "-path" search-dir
-                     search-input))
-             (t (list "es" "-n" "30" input))))))
+       (cond (search-dir
+              (nconc (list "es" "-n" "30" "-path" search-dir)
+                     (split-string search-input " ")))
+             (t (nconc (list "es" "-n" "30") (split-string input " "))))
+       )))
 
  :candidate-filter
  (lambda (candidate-list)
