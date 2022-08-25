@@ -110,6 +110,10 @@
          ))
      (snails-sort-candidates input candidates 0 0)))
 
+ :candidate-icon
+ (lambda (candidate)
+   (snails-render-faicon-icon "terminal"))
+
  :candidate-do
  (lambda (candidate)
    (call-interactively (intern candidate))))
