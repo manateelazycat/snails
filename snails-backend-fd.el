@@ -94,7 +94,7 @@
  (lambda (input)
    (when (and (executable-find "fd")
               (> (length input) 1))
-     (let ((search-dir (or snails-project-root-dir (snails-start-buffer-dir)))
+     (let ((search-dir (snails-init-dir))
            (search-input input)
            (search-info (snails-pick-search-info-from-input input)))
        ;; If the user input character includes the path separator @, replace the current directory with the entered directory.

@@ -480,6 +480,11 @@ or set it with any string you want."
      (t
       (snails-search "")))))
 
+(defun snails-init-dir ()
+  "Project directory or buffer start directory."
+  (or snails-project-root-dir 
+      (expand-file-name (snails-start-buffer-dir))))
+
 (defun snails-project-root-dir ()
   (let ((project (project-current)))
     (when project

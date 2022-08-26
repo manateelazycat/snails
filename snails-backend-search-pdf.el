@@ -82,7 +82,7 @@
  (lambda (input)
    (when (and (executable-find "rga")
               (> (length input) 3))
-     (let ((search-dir (or snails-project-root-dir (expand-file-name (snails-start-buffer-dir) )))
+     (let ((search-dir (snails-init-dir))
            (search-input input)
            (search-info (snails-pick-search-info-from-input input)))
 
