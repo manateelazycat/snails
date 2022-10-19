@@ -482,7 +482,7 @@ or set it with any string you want."
 
 (defun snails-init-dir ()
   "Project directory or buffer start directory."
-  (or snails-project-root-dir 
+  (or snails-project-root-dir
       (expand-file-name (snails-start-buffer-dir))))
 
 (defun snails-project-root-dir ()
@@ -1027,7 +1027,7 @@ or set it with any string you want."
               ;; Insert indent char.
               (when (featurep 'all-the-icons)
                 (insert " ")
-                (put-text-property (point) (- (point) 1) 'display (snails-indent-pixel 60)))
+                (put-text-property (point) (- (point) 1) 'display (snails-indent-pixel (if (eq window-system 'pgtk) 30 60))))
 
               ;; Render candidate display name.
               (insert (string-trim (nth 0 candiate)))
