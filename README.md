@@ -93,7 +93,8 @@ When you customize the search backends, snails won't filter search result with i
 | snails-backend-eaf-browser-history | Search history of browser, united [EAF](https://github.com/manateelazycat/emacs-application-framework) technology, need install ```fzf``` |
 | snails-backend-eaf-browser-open    | Open url in browser, united [EAF](https://github.com/manateelazycat/emacs-application-framework) technology                               |
 | snails-backend-eaf-browser-search  | Open keyword in browser, united [EAF](https://github.com/manateelazycat/emacs-application-framework) technology                           |
-| snails-backend-eaf-github-search  | Search keyword in github, united [EAF](https://github.com/manateelazycat/emacs-application-framework) technology                           |
+| snails-backend-eaf-github-search   | Search keyword in github, united [EAF](https://github.com/manateelazycat/emacs-application-framework) technology                          |
+| snails-backend-kv-store            | Read/Set/Update/Del key-value pair in sqlite3, need install ```sqlite3``` and required [emacsql](https://github.com/magit/emacsql)        |
 
 ## Fuzz match
 Snails use normal match algorithm default.

@@ -102,6 +102,7 @@
 (require 'snails-backend-google-suggestion)
 (require 'snails-backend-fasd)
 (require 'snails-backend-search-pdf)
+(require 'snails-backend-kv-store)
 
 (provide 'snails)
 ;;; snails.el ends here
