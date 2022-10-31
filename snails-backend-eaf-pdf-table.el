@@ -94,7 +94,7 @@
        (when (and (featurep 'eaf)
                   (derived-mode-p 'eaf-mode)
                   (string-equal eaf--buffer-app-name "pdf-viewer"))
-         (let ((toc (eaf-call-sync "call_function" eaf--buffer-id "get_toc")))
+         (let ((toc (eaf-call-sync "execute_function" eaf--buffer-id "get_toc")))
            (with-temp-buffer
              (insert toc)
              (goto-char (point-min))
@@ -113,10 +113,10 @@
 
  :candidate-do
  (lambda (candidate)
-   (eaf-call-async "handle_input_message"
-             eaf--buffer-id
-             "jump_page"
-             candidate)))
+   (eaf-call-async "handle_input_response"
+                   eaf--buffer-id
+                   "jump_page"
+                   candidate)))
 
 (provide 'snails-backend-eaf-pdf-table)
 
