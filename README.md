@@ -1,5 +1,7 @@
 <img src="./images/snails.png" width="200">
 
+# This project has been replaced by [blink-search](https://github.com/manateelazycat/blink-search), thank you!
+
 # What is snails?
 Snails is a modern, easy-to-expand fuzzy search framework.
 
